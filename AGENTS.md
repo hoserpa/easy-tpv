@@ -75,6 +75,7 @@ No es un ERP completo, sino un TPV ligero y rápido.
   - Botones grandes
   - Espacios amplios
   - Tipografía legible
+  - Diseño de pantalla: Parte izquierda resumen ticket arriba y calculadora abajo. Parte derecha arriba familias y abajo articulos (Ver imagen "ejemplo.PNG").
 - No usar librerías UI pesadas innecesarias
 - No introducir gestores de estado externos sin justificación
 
