@@ -29,6 +29,7 @@ No es un ERP completo, sino un TPV ligero y rápido.
 ## 🧱 Arquitectura y stack tecnológico
 
 ### Frontend
+
 - Lenguaje: **TypeScript**
 - Framework: **React**
 - Meta-framework: **Next.js**
@@ -39,16 +40,19 @@ No es un ERP completo, sino un TPV ligero y rápido.
 - Enfoque: interfaz táctil, botones grandes, navegación simple
 
 ### Backend
+
 - Lenguaje: **TypeScript**
 - Framework: **NestJS**
 - API REST
 - Comunicación con frontend vía JSON
 
 ### Base de datos
+
 - **MySQL / MariaDB**
 - Modelo relacional clásico (familias, artículos, tickets, líneas)
 
 ### Aplicación
+
 - **PWA (Progressive Web App)**
   - Pantalla completa
   - Arranque rápido
@@ -119,7 +123,90 @@ No es un ERP completo, sino un TPV ligero y rápido.
 
 ---
 
+## 🛠️ Comandos de desarrollo
+
+### Frontend (Next.js)
+
+- `npm run dev` - Iniciar servidor de desarrollo
+- `npm run build` - Compilar para producción
+- `npm run lint` - Ejecutar ESLint
+- `npm run type-check` - Verificación de tipos TypeScript
+- `npm test` - Ejecutar todos los tests
+- `npm test -- --testNamePattern="nombre"` - Ejecutar test específico
+
+### Backend (NestJS)
+
+- `npm run start:dev` - Iniciar servidor en modo desarrollo
+- `npm run build` - Compilar aplicación
+- `npm run lint` - Ejecutar ESLint
+- `npm test` - Ejecutar tests unitarios
+- `npm test:e2e` - Ejecutar tests e2e
+
+## 📐 Estilo de código
+
+### Importaciones
+
+- Agrupar: React → librerías externas → componentes locales → tipos/utilidades
+- Usar importaciones nombradas siempre que sea posible
+
+### Formato y tipos
+
+- Sin punto y coma obligatorio
+- Tipos explícitos en parámetros de funciones
+- Interfaces para objetos, types para uniones/primitivos
+- Nombres en español: `Familia`, `Articulo`, `Ticket`
+
+### Manejo de errores
+
+- Try-catch en operaciones asíncronas
+- Respuestas de error consistentes en API
+- Validación de datos de entrada en backend
+
 ## 📝 Filosofía del proyecto
 
 > Este TPV debe ser fácil de usar, rápido de aprender y estable en el día a día.
 > Cualquier decisión técnica debe justificarse en función de esos objetivos.
+
+## Estructura de la base de datos
+
+> families
+>
+> - id: INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
+> - name: VARCHAR(100) NOT NULL UNIQUE
+> - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+> - updated_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+> items
+>
+> - id: INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
+> - family_id: INT UNSIGNED NOT NULL
+> - name: VARCHAR(150) NOT NULL
+> - price: DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0.00
+> - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+> - updated_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+> - FOREIGN KEY (family_id) REFERENCES families(id) ON DELETE CASCADE
+
+> tickets
+>
+> - id: INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
+> - subtotal: DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0.00
+> - discount_type: ENUM('fixed', 'percent') NULL
+> - discount_value: DECIMAL(10,2) UNSIGNED NULL
+> - total: DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0.00
+> - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+> - updated_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+> ticket_lines
+>
+> - id: INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
+> - ticket_id: INT UNSIGNED NOT NULL
+> - item_id: INT UNSIGNED NOT NULL
+> - qty: INT UNSIGNED NOT NULL DEFAULT 1
+> - unit_price: DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0.00
+> - discount_type: ENUM('fixed', 'percent') NULL
+> - discount_value: DECIMAL(10,2) UNSIGNED NULL
+> - total: DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0.00
+> - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+> - updated_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+> - FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE
+> - FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE RESTRICT
