@@ -5,6 +5,8 @@ import React, { useState } from 'react';
 interface ConfigModalProps {
   isOpen: boolean;
   onClose: () => void;
+  esTemaOscuro: boolean;
+  setEsTemaOscuro: (value: boolean) => void;
 }
 
 interface SelectOption {
@@ -12,7 +14,7 @@ interface SelectOption {
   label: string;
 }
 
-export default function ConfigModal({ isOpen, onClose }: ConfigModalProps) {
+export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOscuro }: ConfigModalProps) {
   const [selectedOption, setSelectedOption] = useState<string>('familias');
   const [showCrudModal, setShowCrudModal] = useState(false);
 
@@ -29,15 +31,44 @@ export default function ConfigModal({ isOpen, onClose }: ConfigModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-slate-800 rounded-lg p-6 w-full max-w-md">
+      <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-md`}>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-white">Configuración</h2>
+          <h2 className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Configuración</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white text-2xl font-bold"
+            className={`${esTemaOscuro ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-800'} text-2xl font-bold`}
           >
             ×
           </button>
+        </div>
+
+        {/* Slider de Tema */}
+        <div className="mb-6 flex justify-end">
+          <div className={`w-32 p-2 ${esTemaOscuro ? 'bg-slate-700' : 'bg-gray-200'} rounded-lg`}>
+            <div className="flex items-center justify-between">
+              {esTemaOscuro ? (
+                <span className="text-blue-400 text-lg">🌙</span>
+              ) : (
+                <span className="text-yellow-500 text-lg">☀️</span>
+              )}
+              
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  className="sr-only peer" 
+                  checked={!esTemaOscuro}
+                  onChange={() => setEsTemaOscuro(!esTemaOscuro)}
+                />
+                <div className={`w-10 h-5 ${esTemaOscuro ? 'bg-gray-600' : 'bg-gray-300'} peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-400`}></div>
+              </label>
+              
+              {esTemaOscuro ? (
+                <span className="text-yellow-400 text-lg">☀️</span>
+              ) : (
+                <span className="text-indigo-600 text-lg">🌙</span>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -47,14 +78,16 @@ export default function ConfigModal({ isOpen, onClose }: ConfigModalProps) {
           >
             📝 Gestión de Datos
           </button>
-          
+            
+
+            
           <button
             disabled
             className="w-full bg-gray-600 text-gray-400 font-semibold py-3 px-4 rounded-lg text-left cursor-not-allowed"
           >
             ⚙️ Configuración General (Próximamente)
           </button>
-          
+            
           <button
             disabled
             className="w-full bg-gray-600 text-gray-400 font-semibold py-3 px-4 rounded-lg text-left cursor-not-allowed"

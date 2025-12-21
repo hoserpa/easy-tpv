@@ -1,0 +1,16 @@
+\Users\jr_ik\Proyectos\easy-tpv\frontend\src\app\page.tsx
+   34:31  warning  'setFamiliaSeleccionada' is assigned a value but never used      @typescript-eslint/no-unused-vars
+   36:10  warning  'mostrarModalCobro' is assigned a value but never used           @typescript-eslint/no-unused-vars
+   38:9   warning  'agregarArticulo' is assigned a value but never used             @typescript-eslint/no-unused-vars
+   77:9   warning  'mostrarPrecioUnitario' is assigned a value but never used       @typescript-eslint/no-unused-vars
+   84:9   warning  'mostrarCantidad' is assigned a value but never used             @typescript-eslint/no-unused-vars
+   91:9   warning  'agregarDigito' is assigned a value but never used               @typescript-eslint/no-unused-vars
+  126:9   warning  'agregarPunto' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  155:9   warning  'aplicarDescuentoPorcentaje' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  162:9   warning  'aplicarDescuentoFijo' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  174:9   warning  'familias' is assigned a value but never used                    @typescript-eslint/no-unused-vars
+  195:9   warning  'articulosFiltrados' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  200:9   warning  'limpiarSeleccion' is assigned a value but never used            @typescript-eslint/no-unused-vars
+  206:9   warning  'calcularVueltas' is assigned a value but never used             @typescript-eslint/no-unused-vars
+  309:9   warning  'limpiarCalculadora' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  315:9   warning  'calcularTotal' is assigned a value but never used               @typescript-eslint/no-unused-vars
