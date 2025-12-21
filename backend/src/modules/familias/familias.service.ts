@@ -22,6 +22,7 @@ export class FamiliasService {
       name: createFamiliaDto.name,
       created_at: new Date(),
       updated_at: new Date(),
+      articulos: [],
     };
     this.familias.push(nuevaFamilia);
     return nuevaFamilia;

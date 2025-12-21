@@ -1,4 +1,5 @@
-export interface Ticket {
+import { TicketLine } from './ticket-line.entity';
+export declare class Ticket {
     id: number;
     subtotal: number;
     discount_type: 'fixed' | 'percent' | null;
@@ -6,4 +7,5 @@ export interface Ticket {
     total: number;
     created_at: Date;
     updated_at: Date;
+    ticketLines: TicketLine[];
 }

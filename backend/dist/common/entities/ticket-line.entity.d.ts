@@ -1,4 +1,6 @@
-export interface TicketLine {
+import { Ticket } from './ticket.entity';
+import { Articulo } from './articulo.entity';
+export declare class TicketLine {
     id: number;
     ticket_id: number;
     item_id: number;
@@ -9,4 +11,6 @@ export interface TicketLine {
     total: number;
     created_at: Date;
     updated_at: Date;
+    ticket: Ticket;
+    articulo: Articulo;
 }

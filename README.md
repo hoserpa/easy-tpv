@@ -6,7 +6,7 @@ TPV web sencillo para pequeñas empresas, optimizado para pantallas táctiles.
 
 - **Frontend**: Next.js + TypeScript + Tailwind CSS
 - **Backend**: NestJS + TypeScript
-- **Base de datos**: MySQL/MariaDB
+- **Base de datos**: PostgreSQL (Neon)
 - **Despliegue**: PWA (Progressive Web App)
 
 ## 📁 Estructura del Proyecto
@@ -22,13 +22,24 @@ easy-tpv/
 
 ### Backend
 
-```bash
-cd backend
-npm install
-npm run start:dev
-```
+1. **Configurar variables de entorno**
+   ```bash
+   cd backend
+   # Crear archivo .env con la configuración de la base de datos
+   cp .env.example .env
+   ```
 
-El backend estará disponible en `http://localhost:3000`
+2. **Instalar dependencias**
+   ```bash
+   npm install
+   ```
+
+3. **Ejecutar servidor**
+   ```bash
+   npm run start:dev
+   ```
+
+El backend estará disponible en `http://localhost:3002`
 
 ### Frontend
 
@@ -38,11 +49,33 @@ npm install
 npm run dev
 ```
 
-El frontend estará disponible en `http://localhost:3001`
+El frontend estará disponible en `http://localhost:3000`
 
 ## 🧪 Tests
 
 ### Backend
+
+#### Tests de Integración con Base de Datos
+```bash
+cd backend
+npm test -- --testPathPatterns=database-integration.spec.ts
+```
+Este test crea una fila en cada tabla para verificar la conectividad:
+- ✅ Crea una familia
+- ✅ Crea un artículo asociado a una familia  
+- ✅ Crea un ticket con líneas
+
+Resultado esperado:
+```
+PASS src/database-integration.spec.ts
+DatabaseIntegrationService
+✓ should create a familia (5 ms)
+✓ should create an articulo (1 ms) 
+✓ should create a ticket with lines (2 ms)
+
+Test Suites: 1 passed, 1 total
+Tests: 3 passed, 3 total
+```
 
 #### Ejecutar todos los tests unitarios
 ```bash
@@ -117,21 +150,21 @@ npm run build        # Compilación para producción
 
 ### Crear una familia
 ```bash
-curl -X POST http://localhost:3000/familias \
+curl -X POST http://localhost:3002/familias \
   -H "Content-Type: application/json" \
   -d '{"name": "Bebidas"}'
 ```
 
 ### Crear un artículo
 ```bash
-curl -X POST http://localhost:3000/articulos \
+curl -X POST http://localhost:3002/articulos \
   -H "Content-Type: application/json" \
   -d '{"family_id": 1, "name": "Coca Cola", "price": 1.50}'
 ```
 
 ### Crear un ticket
 ```bash
-curl -X POST http://localhost:3000/tickets \
+curl -X POST http://localhost:3002/tickets \
   -H "Content-Type: application/json" \
   -d '{
     "lines": [
@@ -146,8 +179,56 @@ curl -X POST http://localhost:3000/tickets \
 ## 📋 Requisitos
 
 - Node.js 18+
-- MySQL/MariaDB
+- PostgreSQL (recomendado Neon Cloud para desarrollo)
 - npm o yarn
+
+## 🌐 Configuración Base de Datos
+
+### Usando Neon (Recomendado)
+
+1. **Crear cuenta en [Neon](https://neon.tech/)**
+2. **Crear nuevo proyecto**
+3. **Copiar cadena de conexión**
+4. **Configurar variables de entorno en backend/.env**
+
+### Base de Datos Local
+
+```bash
+# Instalar PostgreSQL localmente
+sudo apt-get install postgresql postgresql-contrib  # Ubuntu/Debian
+brew install postgresql                               # macOS
+
+# Crear base de datos
+createdb easy_tpv
+```
+
+## 🎯 Verificación Rápida
+
+Después de configurar el backend, ejecuta estos pasos para verificar que todo funciona:
+
+1. **Iniciar backend**
+   ```bash
+   cd backend && npm run start:dev
+   ```
+
+2. **Verificar conectividad con base de datos**
+   ```bash
+   # En otra terminal
+   cd backend && npm test -- --testPathPatterns=database-integration.spec.ts
+   ```
+
+3. **Probar API manualmente**
+   ```bash
+   # Crear una familia
+   curl -X POST http://localhost:3002/familias \
+     -H "Content-Type: application/json" \
+     -d '{"name": "Bebidas"}'
+
+   # Listar familias
+   curl http://localhost:3002/familias
+   ```
+
+Si todo funciona correctamente, el backend está listo para usarse con el frontend.
 
 ## 🤖 Guía para Agentes
 

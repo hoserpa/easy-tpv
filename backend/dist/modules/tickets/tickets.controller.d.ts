@@ -17,6 +17,7 @@ export declare class TicketsController {
         total: number;
         created_at: Date;
         updated_at: Date;
+        ticketLines: import("../../common/entities/ticket-line.entity").TicketLine[];
     };
     findTicketLines(id: string): import("../../common/entities/ticket-line.entity").TicketLine[];
 }

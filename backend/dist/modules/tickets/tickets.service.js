@@ -64,6 +64,7 @@ let TicketsService = class TicketsService {
             total,
             created_at: new Date(),
             updated_at: new Date(),
+            ticketLines: [],
         };
         this.tickets.push(nuevoTicket);
         const nuevasLineas = createTicketDto.lines.map((lineDto) => {
@@ -79,6 +80,8 @@ let TicketsService = class TicketsService {
                 total: lineTotal,
                 created_at: new Date(),
                 updated_at: new Date(),
+                ticket: nuevoTicket,
+                articulo: {},
             };
             this.ticketLines.push(linea);
             return linea;

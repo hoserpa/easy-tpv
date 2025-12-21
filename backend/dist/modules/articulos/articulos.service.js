@@ -18,16 +18,18 @@ let ArticulosService = class ArticulosService {
         return this.articulos.find((articulo) => articulo.id === id) || null;
     }
     findByFamily(familyId) {
-        return this.articulos.filter((articulo) => articulo.family_id === familyId);
+        return this.articulos.filter((articulo) => articulo.familia_id === familyId);
     }
     create(createArticuloDto) {
         const nuevoArticulo = {
             id: this.nextId++,
-            family_id: createArticuloDto.family_id,
+            familia_id: createArticuloDto.family_id,
             name: createArticuloDto.name,
             price: createArticuloDto.price,
             created_at: new Date(),
             updated_at: new Date(),
+            familia: {},
+            ticketLines: [],
         };
         this.articulos.push(nuevoArticulo);
         return nuevoArticulo;

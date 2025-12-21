@@ -96,6 +96,7 @@ export class TicketsService {
       total,
       created_at: new Date(),
       updated_at: new Date(),
+      ticketLines: [],
     };
 
     this.tickets.push(nuevoTicket);
@@ -113,6 +114,8 @@ export class TicketsService {
         total: lineTotal,
         created_at: new Date(),
         updated_at: new Date(),
+        ticket: nuevoTicket,
+        articulo: {} as any,
       };
       this.ticketLines.push(linea);
       return linea;
