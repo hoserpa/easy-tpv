@@ -1,3 +1,3 @@
 export declare class UpdateFamiliaDto {
-    name: string;
+    name?: string;
 }

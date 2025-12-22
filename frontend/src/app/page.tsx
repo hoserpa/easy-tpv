@@ -1,19 +1,10 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import ConfigModal from '../components/ConfigModal';
+import { apiService, Familia, Articulo } from '../services/api';
 
-interface Articulo {
-  id: number;
-  name: string;
-  price: number;
-  family_id: number;
-}
 
-interface Familia {
-  id: number;
-  name: string;
-}
 
 interface LineaTicket {
   id: number;
@@ -37,31 +28,30 @@ export default function Home() {
   const [nextId, setNextId] = useState(1);
   const [dineroRecibido, setDineroRecibido] = useState('');
   const [esTemaOscuro, setEsTemaOscuro] = useState(true);
-  const familias: Familia[] = [
-    { id: 1, name: 'Bebidas' },
-    { id: 2, name: 'Comidas' },
-    { id: 3, name: 'Postres' },
-    { id: 4, name: 'Snacks' },
-    { id: 5, name: 'Otros' }
-  ];
-  
-  const articulos: Articulo[] = [
-    { id: 1, name: 'Café', price: 1.20, family_id: 1 },
-    { id: 2, name: 'Refresco', price: 1.50, family_id: 1 },
-    { id: 3, name: 'Agua', price: 1.00, family_id: 1 },
-    { id: 4, name: 'Zumo', price: 2.00, family_id: 1 },
-    { id: 5, name: 'Bocadillo', price: 3.50, family_id: 2 },
-    { id: 6, name: 'Ensalada', price: 4.25, family_id: 2 },
-    { id: 7, name: 'Pizza', price: 6.50, family_id: 2 },
-    { id: 8, name: 'Hamburguesa', price: 5.75, family_id: 2 },
-    { id: 9, name: 'Helado', price: 2.00, family_id: 3 },
-    { id: 10, name: 'Tarta', price: 3.00, family_id: 3 },
-    { id: 11, name: 'Fruta', price: 1.50, family_id: 3 },
-    { id: 12, name: 'Patatas', price: 2.50, family_id: 4 },
-    { id: 13, name: 'Galletas', price: 1.75, family_id: 4 },
-    { id: 14, name: 'Nueces', price: 2.00, family_id: 4 },
-    { id: 15, name: 'Chicles', price: 0.50, family_id: 4 }
-  ];
+  const [familias, setFamilias] = useState<Familia[]>([]);
+  const [articulos, setArticulos] = useState<Articulo[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Cargar datos desde la API
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [familiasData, articulosData] = await Promise.all([
+        apiService.getFamilias(),
+        apiService.getArticulos()
+      ]);
+      setFamilias(familiasData);
+      setArticulos(articulosData);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const agregarArticulo = (articulo: Articulo) => {
     const precioFinal = articulo.price;
@@ -239,6 +229,14 @@ export default function Home() {
 
 
 
+  if (loading) {
+    return (
+      <div className={`flex items-center justify-center h-screen ${esTemaOscuro ? 'bg-slate-800' : 'bg-gray-100'}`}>
+        <div className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Cargando datos...</div>
+      </div>
+    );
+  }
+
   return (
     <div className={`flex flex-col h-screen ${esTemaOscuro ? 'bg-slate-800' : 'bg-gray-100'}`}>
       {/* Panel superior */}
@@ -261,7 +259,10 @@ export default function Home() {
               ❌ Cancelar
             </button>
             <button 
-              onClick={() => setIsConfigOpen(true)}
+              onClick={() => {
+                setIsConfigOpen(true);
+                // No necesitamos recargar aquí, el modal ya cargará los datos
+              }}
               className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
             >
               ⚙️
@@ -418,7 +419,10 @@ export default function Home() {
       {/* Modal de Configuración */}
       <ConfigModal 
         isOpen={isConfigOpen} 
-        onClose={() => setIsConfigOpen(false)} 
+        onClose={() => {
+          setIsConfigOpen(false);
+          loadData(); // Recargar datos al cerrar configuración
+        }} 
         esTemaOscuro={esTemaOscuro}
         setEsTemaOscuro={setEsTemaOscuro}
       />

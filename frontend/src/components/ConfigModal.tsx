@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { apiService, Familia, Articulo } from '../services/api';
 
 interface ConfigModalProps {
   isOpen: boolean;
   onClose: () => void;
   esTemaOscuro: boolean;
   setEsTemaOscuro: (value: boolean) => void;
+  onDataUpdate?: () => void;
 }
 
 interface SelectOption {
@@ -16,7 +18,13 @@ interface SelectOption {
 
 export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOscuro }: ConfigModalProps) {
   const [selectedOption, setSelectedOption] = useState<string>('familias');
-  const [showCrudModal, setShowCrudModal] = useState(false);
+  const [showCrudView, setShowCrudView] = useState(false);
+
+
+
+
+
+
 
   const options: SelectOption[] = [
     { value: 'familias', label: 'Familias' },
@@ -24,113 +32,122 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
   ];
 
   const handleOpenCrud = () => {
-    setShowCrudModal(true);
+    setShowCrudView(true);
+  };
+
+  const handleBackToMenu = () => {
+    setShowCrudView(false);
   };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-md`}>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Configuración</h2>
-          <button
-            onClick={onClose}
-            className={`${esTemaOscuro ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-800'} text-2xl font-bold`}
-          >
-            ×
-          </button>
-        </div>
+      {!showCrudView ? (
+        // Vista del menú de configuración
+        <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-md`}>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Configuración</h2>
+            <button
+              onClick={onClose}
+              className={`${esTemaOscuro ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-800'} text-2xl font-bold`}
+            >
+              ×
+            </button>
+          </div>
 
-        {/* Slider de Tema */}
-        <div className="mb-6 flex justify-end">
-          <div className={`w-32 p-2 ${esTemaOscuro ? 'bg-slate-700' : 'bg-gray-200'} rounded-lg`}>
-            <div className="flex items-center justify-between">
-              {esTemaOscuro ? (
-                <span className="text-blue-400 text-lg">🌙</span>
-              ) : (
-                <span className="text-yellow-500 text-lg">☀️</span>
-              )}
-              
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="sr-only peer" 
-                  checked={!esTemaOscuro}
-                  onChange={() => setEsTemaOscuro(!esTemaOscuro)}
-                />
-                <div className={`w-10 h-5 ${esTemaOscuro ? 'bg-gray-600' : 'bg-gray-300'} peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-400`}></div>
-              </label>
-              
-              {esTemaOscuro ? (
-                <span className="text-yellow-400 text-lg">☀️</span>
-              ) : (
-                <span className="text-indigo-600 text-lg">🌙</span>
-              )}
+          {/* Slider de Tema */}
+          <div className="mb-6 flex justify-end">
+            <div className={`w-32 p-2 ${esTemaOscuro ? 'bg-slate-700' : 'bg-gray-200'} rounded-lg`}>
+              <div className="flex items-center justify-between">
+                {esTemaOscuro ? (
+                  <span className="text-blue-400 text-lg">🌙</span>
+                ) : (
+                  <span className="text-yellow-500 text-lg">☀️</span>
+                )}
+                
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer" 
+                    checked={!esTemaOscuro}
+                    onChange={() => setEsTemaOscuro(!esTemaOscuro)}
+                  />
+                  <div className={`w-10 h-5 ${esTemaOscuro ? 'bg-gray-600' : 'bg-gray-300'} peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-400`}></div>
+                </label>
+                
+                {esTemaOscuro ? (
+                  <span className="text-yellow-400 text-lg">☀️</span>
+                ) : (
+                  <span className="text-indigo-600 text-lg">🌙</span>
+                )}
+              </div>
             </div>
           </div>
+
+          <div className="space-y-4">
+            <button
+              onClick={handleOpenCrud}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors text-left"
+            >
+              📝 Gestión de Datos
+            </button>
+            
+            <button
+              disabled
+              className="w-full bg-gray-600 text-gray-400 font-semibold py-3 px-4 rounded-lg text-left cursor-not-allowed"
+            >
+              ⚙️ Configuración General (Próximamente)
+            </button>
+            
+            <button
+              disabled
+              className="w-full bg-gray-600 text-gray-400 font-semibold py-3 px-4 rounded-lg text-left cursor-not-allowed"
+            >
+              🖨️ Impresoras (Próximamente)
+            </button>
+          </div>
         </div>
-
-        <div className="space-y-4">
-          <button
-            onClick={handleOpenCrud}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors text-left"
-          >
-            📝 Gestión de Datos
-          </button>
-            
-
-            
-          <button
-            disabled
-            className="w-full bg-gray-600 text-gray-400 font-semibold py-3 px-4 rounded-lg text-left cursor-not-allowed"
-          >
-            ⚙️ Configuración General (Próximamente)
-          </button>
-            
-          <button
-            disabled
-            className="w-full bg-gray-600 text-gray-400 font-semibold py-3 px-4 rounded-lg text-left cursor-not-allowed"
-          >
-            🖨️ Impresoras (Próximamente)
-          </button>
-        </div>
-      </div>
-
-      {/* Modal CRUD */}
-      {showCrudModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
-          <div className="bg-slate-800 rounded-lg p-6 w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold text-white">Gestión de Datos</h2>
+      ) : (
+        // Vista del CRUD
+        <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col`}>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold text-white">Gestión de Datos</h2>
+            <div className="flex gap-2">
               <button
-                onClick={() => setShowCrudModal(false)}
-                className="text-gray-400 hover:text-white text-2xl font-bold"
+                onClick={handleBackToMenu}
+                className={`${esTemaOscuro ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-300 hover:bg-gray-400'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
+              >
+                ← Volver
+              </button>
+              <button
+                onClick={onClose}
+                className={`${esTemaOscuro ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
               >
                 ×
               </button>
             </div>
+          </div>
 
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Seleccionar entidad:
-              </label>
-              <select
-                value={selectedOption}
-                onChange={(e) => setSelectedOption(e.target.value)}
-                className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {options.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="mb-6">
+            <label className={`block text-sm font-medium ${esTemaOscuro ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+              Seleccionar entidad:
+            </label>
+            <select
+              value={selectedOption}
+              onChange={(e) => setSelectedOption(e.target.value)}
+              className={`w-full ${esTemaOscuro ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-800'} border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            >
+              {options.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-            <div className="flex-1 overflow-y-auto bg-slate-900 rounded-lg p-4">
-              <CrudContent entityType={selectedOption} />
-            </div>
+          <div className={`flex-1 overflow-y-auto rounded-lg p-4 ${esTemaOscuro ? 'bg-slate-900' : 'bg-gray-50'}`}>
+            <CrudContent entityType={selectedOption} />
           </div>
         </div>
       )}
@@ -142,18 +159,6 @@ interface CrudContentProps {
   entityType: string;
 }
 
-interface Familia {
-  id: number;
-  name: string;
-}
-
-interface Articulo {
-  id: number;
-  name: string;
-  price: number;
-  family_id: number;
-}
-
 type CrudItem = Familia | Articulo;
 
 function CrudContent({ entityType }: CrudContentProps) {
@@ -162,25 +167,35 @@ function CrudContent({ entityType }: CrudContentProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editingItem, setEditingItem] = useState<CrudItem | null>(null);
   const [formData, setFormData] = useState<Record<string, string | number>>({});
+  const [loading, setLoading] = useState(false);
 
   const items = entityType === 'familias' ? familias : articulos;
 
-  // Simulación de datos - en un futuro vendrá de la API
-  React.useEffect(() => {
-    if (entityType === 'familias') {
-      setFamilias([
-        { id: 1, name: 'Bebidas' },
-        { id: 2, name: 'Comidas' },
-        { id: 3, name: 'Postres' }
-      ]);
-    } else if (entityType === 'articulos') {
-      setArticulos([
-        { id: 1, name: 'Café', price: 1.20, family_id: 1 },
-        { id: 2, name: 'Refresco', price: 1.50, family_id: 1 },
-        { id: 3, name: 'Bocadillo', price: 3.50, family_id: 2 }
-      ]);
+
+
+  // Cargar datos desde la API
+  useEffect(() => {
+    if (entityType) {
+      loadData();
     }
   }, [entityType]);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      if (entityType === 'familias') {
+        const data = await apiService.getFamilias();
+        setFamilias(data);
+      } else if (entityType === 'articulos') {
+        const data = await apiService.getArticulos();
+        setArticulos(data);
+      }
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCreate = () => {
     setEditingItem(null);
@@ -194,47 +209,63 @@ function CrudContent({ entityType }: CrudContentProps) {
     setIsEditing(true);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (confirm('¿Estás seguro de eliminar este elemento?')) {
-      if (entityType === 'familias') {
-        setFamilias(familias.filter(item => item.id !== id));
-      } else {
-        setArticulos(articulos.filter(item => item.id !== id));
+      try {
+        if (entityType === 'familias') {
+          await apiService.deleteFamilia(id);
+          setFamilias(familias.filter(item => item.id !== id));
+        } else {
+          await apiService.deleteArticulo(id);
+          setArticulos(articulos.filter(item => item.id !== id));
+        }
+
+      } catch (error) {
+        console.error('Error deleting item:', error);
+        alert('Error al eliminar el elemento');
       }
     }
   };
 
-  const handleSave = () => {
-    if (editingItem) {
-      if (entityType === 'familias') {
-        setFamilias(familias.map(item => 
-          item.id === editingItem.id ? { ...item, ...formData } as Familia : item
-        ));
+  const handleSave = async () => {
+    try {
+      if (editingItem) {
+        if (entityType === 'familias') {
+          const updated = await apiService.updateFamilia(editingItem.id, { name: String(formData.name) });
+          setFamilias(familias.map(item => 
+            item.id === editingItem.id ? updated : item
+          ));
+        } else {
+          const updated = await apiService.updateArticulo(editingItem.id, {
+            name: String(formData.name),
+            price: parseFloat(String(formData.price)),
+            family_id: parseInt(String(formData.family_id))
+          });
+          setArticulos(articulos.map(item => 
+            item.id === editingItem.id ? updated : item
+          ));
+        }
       } else {
-        setArticulos(articulos.map(item => 
-          item.id === editingItem.id ? { ...item, ...formData } as Articulo : item
-        ));
+        if (entityType === 'familias') {
+          const newItem = await apiService.createFamilia({ name: String(formData.name) });
+          setFamilias([...familias, newItem]);
+        } else {
+          const newItem = await apiService.createArticulo({
+            name: String(formData.name),
+            price: parseFloat(String(formData.price)),
+            family_id: parseInt(String(formData.family_id))
+          });
+          setArticulos([...articulos, newItem]);
+        }
       }
-    } else {
-      if (entityType === 'familias') {
-        const newItem: Familia = {
-          id: Math.max(...familias.map(i => i.id), 0) + 1,
-          name: String(formData.name) || ''
-        };
-        setFamilias([...familias, newItem]);
-      } else {
-        const newItem: Articulo = {
-          id: Math.max(...articulos.map(i => i.id), 0) + 1,
-          name: String(formData.name) || '',
-          price: parseFloat(String(formData.price)) || 0,
-          family_id: parseInt(String(formData.family_id)) || 1
-        };
-        setArticulos([...articulos, newItem]);
-      }
+      // Primero volver a la vista de lista
+      setIsEditing(false);
+      setEditingItem(null);
+      setFormData({});
+    } catch (error) {
+      console.error('Error saving item:', error);
+      alert('Error al guardar el elemento');
     }
-    setIsEditing(false);
-    setEditingItem(null);
-    setFormData({});
   };
 
   const handleCancel = () => {
@@ -242,6 +273,14 @@ function CrudContent({ entityType }: CrudContentProps) {
     setEditingItem(null);
     setFormData({});
   };
+
+  if (loading) {
+    return (
+      <div className="bg-slate-800 rounded-lg p-6 flex items-center justify-center">
+        <div className="text-white">Cargando...</div>
+      </div>
+    );
+  }
 
   if (isEditing) {
     return (
@@ -286,9 +325,11 @@ function CrudContent({ entityType }: CrudContentProps) {
                   onChange={(e) => setFormData({ ...formData, family_id: parseInt(e.target.value) })}
                   className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="1">Bebidas</option>
-                  <option value="2">Comidas</option>
-                  <option value="3">Postres</option>
+                  {familias.map(familia => (
+                    <option key={familia.id} value={familia.id}>
+                      {familia.name}
+                    </option>
+                  ))}
                 </select>
               </div>
             </>
@@ -304,9 +345,9 @@ function CrudContent({ entityType }: CrudContentProps) {
           </button>
           <button
             onClick={handleCancel}
-            className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+            className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
           >
-            ❌ Cancelar
+            Cancelar
           </button>
         </div>
       </div>
@@ -372,7 +413,7 @@ function CrudContent({ entityType }: CrudContentProps) {
                   <td className="py-3 px-4 font-medium">{item.name}</td>
                   <td className="py-3 px-4">{item.price.toFixed(2)}€</td>
                   <td className="py-3 px-4">
-                    {item.family_id === 1 ? 'Bebidas' : item.family_id === 2 ? 'Comidas' : 'Postres'}
+                    {familias.find(f => f.id === item.family_id)?.name || `ID: ${item.family_id}`}
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex gap-2">

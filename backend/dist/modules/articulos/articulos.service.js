@@ -18,12 +18,12 @@ let ArticulosService = class ArticulosService {
         return this.articulos.find((articulo) => articulo.id === id) || null;
     }
     findByFamily(familyId) {
-        return this.articulos.filter((articulo) => articulo.familia_id === familyId);
+        return this.articulos.filter((articulo) => articulo.family_id === familyId);
     }
     create(createArticuloDto) {
         const nuevoArticulo = {
             id: this.nextId++,
-            familia_id: createArticuloDto.family_id,
+            family_id: createArticuloDto.family_id,
             name: createArticuloDto.name,
             price: createArticuloDto.price,
             created_at: new Date(),

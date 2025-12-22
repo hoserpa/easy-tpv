@@ -29,7 +29,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Articulo.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'int', unsigned: true }),
+    (0, typeorm_1.Column)({ name: 'familia_id', type: 'int', unsigned: true }),
     __metadata("design:type", Number)
 ], Articulo.prototype, "family_id", void 0);
 __decorate([
@@ -50,7 +50,7 @@ __decorate([
 ], Articulo.prototype, "updated_at", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => familia_entity_1.Familia, familia => familia.articulos),
-    (0, typeorm_1.JoinColumn)({ name: 'familia_id' }),
+    (0, typeorm_1.JoinColumn)({ name: 'family_id' }),
     __metadata("design:type", familia_entity_1.Familia)
 ], Articulo.prototype, "familia", void 0);
 __decorate([
