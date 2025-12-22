@@ -219,15 +219,15 @@ function CrudContent({ entityType }: CrudContentProps) {
       if (entityType === 'familias') {
         const newItem: Familia = {
           id: Math.max(...familias.map(i => i.id), 0) + 1,
-          name: formData.name || ''
+          name: String(formData.name) || ''
         };
         setFamilias([...familias, newItem]);
       } else {
         const newItem: Articulo = {
           id: Math.max(...articulos.map(i => i.id), 0) + 1,
-          name: formData.name || '',
-          price: parseFloat(formData.price) || 0,
-          family_id: parseInt(formData.family_id) || 1
+          name: String(formData.name) || '',
+          price: parseFloat(String(formData.price)) || 0,
+          family_id: parseInt(String(formData.family_id)) || 1
         };
         setArticulos([...articulos, newItem]);
       }
