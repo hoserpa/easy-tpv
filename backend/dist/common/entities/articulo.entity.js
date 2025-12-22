@@ -15,7 +15,7 @@ const familia_entity_1 = require("./familia.entity");
 const ticket_line_entity_1 = require("./ticket-line.entity");
 let Articulo = class Articulo {
     id;
-    familia_id;
+    family_id;
     name;
     price;
     created_at;
@@ -31,7 +31,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ type: 'int', unsigned: true }),
     __metadata("design:type", Number)
-], Articulo.prototype, "familia_id", void 0);
+], Articulo.prototype, "family_id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 150 }),
     __metadata("design:type", String)

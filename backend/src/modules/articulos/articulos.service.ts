@@ -17,13 +17,13 @@ export class ArticulosService {
   }
 
   findByFamily(familyId: number): Articulo[] {
-    return this.articulos.filter((articulo) => articulo.familia_id === familyId);
+    return this.articulos.filter((articulo) => articulo.family_id === familyId);
   }
 
   create(createArticuloDto: CreateArticuloDto): Articulo {
     const nuevoArticulo: Articulo = {
       id: this.nextId++,
-      familia_id: createArticuloDto.family_id,
+      family_id: createArticuloDto.family_id,
       name: createArticuloDto.name,
       price: createArticuloDto.price,
       created_at: new Date(),
