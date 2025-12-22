@@ -28,19 +28,45 @@ __decorate([
     __metadata("design:type", Number)
 ], Ticket.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00, name: 'subtotal' }),
+    (0, typeorm_1.Column)({
+        type: 'decimal',
+        precision: 10,
+        scale: 2,
+        unsigned: true,
+        default: 0.0,
+        name: 'subtotal',
+    }),
     __metadata("design:type", Number)
 ], Ticket.prototype, "subtotal", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'enum', enum: ['fixed', 'percent'], nullable: true, name: 'discount_type' }),
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: ['fixed', 'percent'],
+        nullable: true,
+        name: 'discount_type',
+    }),
     __metadata("design:type", Object)
 ], Ticket.prototype, "discount_type", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 2, unsigned: true, nullable: true, name: 'discount_value' }),
+    (0, typeorm_1.Column)({
+        type: 'decimal',
+        precision: 10,
+        scale: 2,
+        unsigned: true,
+        nullable: true,
+        name: 'discount_value',
+    }),
     __metadata("design:type", Object)
 ], Ticket.prototype, "discount_value", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00, name: 'total' }),
+    (0, typeorm_1.Column)({
+        type: 'decimal',
+        precision: 10,
+        scale: 2,
+        unsigned: true,
+        default: 0.0,
+        name: 'total',
+    }),
     __metadata("design:type", Number)
 ], Ticket.prototype, "total", void 0);
 __decorate([
@@ -52,7 +78,7 @@ __decorate([
     __metadata("design:type", Date)
 ], Ticket.prototype, "updated_at", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => ticket_line_entity_1.TicketLine, ticketLine => ticketLine.ticket),
+    (0, typeorm_1.OneToMany)(() => ticket_line_entity_1.TicketLine, (ticketLine) => ticketLine.ticket),
     __metadata("design:type", Array)
 ], Ticket.prototype, "ticketLines", void 0);
 exports.Ticket = Ticket = __decorate([

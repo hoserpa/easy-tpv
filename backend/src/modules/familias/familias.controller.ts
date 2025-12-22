@@ -54,7 +54,10 @@ export class FamiliasController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateFamiliaDto: UpdateFamiliaDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateFamiliaDto: UpdateFamiliaDto,
+  ) {
     const familiaId = parseInt(id, 10);
     if (isNaN(familiaId)) {
       throw new HttpException('ID inválido', HttpStatus.BAD_REQUEST);
@@ -65,7 +68,10 @@ export class FamiliasController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const familia = await this.familiasService.update(familiaId, updateFamiliaDto);
+    const familia = await this.familiasService.update(
+      familiaId,
+      updateFamiliaDto,
+    );
     if (!familia) {
       throw new HttpException('Familia no encontrada', HttpStatus.NOT_FOUND);
     }
@@ -80,7 +86,8 @@ export class FamiliasController {
     }
 
     // Verificar si hay artículos asociados a esta familia
-    const articulosAsociados = await this.articulosService.findByFamily(familiaId);
+    const articulosAsociados =
+      await this.articulosService.findByFamily(familiaId);
     if (articulosAsociados.length > 0) {
       throw new HttpException(
         `No se puede eliminar esta familia porque tiene ${articulosAsociados.length} artículo(s) asociado(s). Elimine primero los artículos o reasígnelos a otra familia.`,

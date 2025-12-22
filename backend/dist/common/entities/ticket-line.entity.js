@@ -45,19 +45,45 @@ __decorate([
     __metadata("design:type", Number)
 ], TicketLine.prototype, "qty", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00, name: 'unit_price' }),
+    (0, typeorm_1.Column)({
+        type: 'decimal',
+        precision: 10,
+        scale: 2,
+        unsigned: true,
+        default: 0.0,
+        name: 'unit_price',
+    }),
     __metadata("design:type", Number)
 ], TicketLine.prototype, "unit_price", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'enum', enum: ['fixed', 'percent'], nullable: true, name: 'discount_type' }),
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: ['fixed', 'percent'],
+        nullable: true,
+        name: 'discount_type',
+    }),
     __metadata("design:type", Object)
 ], TicketLine.prototype, "discount_type", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 2, unsigned: true, nullable: true, name: 'discount_value' }),
+    (0, typeorm_1.Column)({
+        type: 'decimal',
+        precision: 10,
+        scale: 2,
+        unsigned: true,
+        nullable: true,
+        name: 'discount_value',
+    }),
     __metadata("design:type", Object)
 ], TicketLine.prototype, "discount_value", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00, name: 'total' }),
+    (0, typeorm_1.Column)({
+        type: 'decimal',
+        precision: 10,
+        scale: 2,
+        unsigned: true,
+        default: 0.0,
+        name: 'total',
+    }),
     __metadata("design:type", Number)
 ], TicketLine.prototype, "total", void 0);
 __decorate([
@@ -69,12 +95,16 @@ __decorate([
     __metadata("design:type", Date)
 ], TicketLine.prototype, "updated_at", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => ticket_entity_1.Ticket, ticket => ticket.ticketLines, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => ticket_entity_1.Ticket, (ticket) => ticket.ticketLines, {
+        onDelete: 'CASCADE',
+    }),
     (0, typeorm_1.JoinColumn)({ name: 'ticket_id' }),
     __metadata("design:type", ticket_entity_1.Ticket)
 ], TicketLine.prototype, "ticket", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => articulo_entity_1.Articulo, articulo => articulo.ticketLines, { onDelete: 'RESTRICT' }),
+    (0, typeorm_1.ManyToOne)(() => articulo_entity_1.Articulo, (articulo) => articulo.ticketLines, {
+        onDelete: 'RESTRICT',
+    }),
     (0, typeorm_1.JoinColumn)({ name: 'articulo_id' }),
     __metadata("design:type", articulo_entity_1.Articulo)
 ], TicketLine.prototype, "articulo", void 0);

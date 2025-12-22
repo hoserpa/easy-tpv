@@ -29,12 +29,10 @@ exports.AppModule = AppModule = __decorate([
             typeorm_1.TypeOrmModule.forRoot(database_config_1.databaseConfig),
             familias_module_1.FamiliasModule,
             articulos_module_1.ArticulosModule,
-            tickets_module_1.TicketsModule
+            tickets_module_1.TicketsModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [
-            app_service_1.AppService,
-        ],
+        providers: [app_service_1.AppService],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

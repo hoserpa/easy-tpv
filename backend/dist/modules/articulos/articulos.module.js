@@ -19,7 +19,10 @@ let ArticulosModule = class ArticulosModule {
 exports.ArticulosModule = ArticulosModule;
 exports.ArticulosModule = ArticulosModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([articulo_entity_1.Articulo, familia_entity_1.Familia]), (0, common_1.forwardRef)(() => familias_module_1.FamiliasModule)],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([articulo_entity_1.Articulo, familia_entity_1.Familia]),
+            (0, common_1.forwardRef)(() => familias_module_1.FamiliasModule),
+        ],
         controllers: [articulos_controller_1.ArticulosController],
         providers: [articulos_service_1.ArticulosService],
         exports: [articulos_service_1.ArticulosService],

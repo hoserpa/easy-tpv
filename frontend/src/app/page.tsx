@@ -47,7 +47,7 @@ export default function Home() {
       setFamilias(familiasData);
       setArticulos(articulosData);
     } catch (error) {
-      console.error('Error loading data:', error);
+      // Error loading data
     } finally {
       setLoading(false);
     }
@@ -559,11 +559,11 @@ export default function Home() {
                       discount_value: null
                     };
 
-                    console.log('Enviando ticket:', JSON.stringify(ticketData, null, 2));
+
 
                     // Enviar a la API
                     const response = await apiService.createTicket(ticketData);
-                    console.log('Ticket guardado:', response);
+
 
                     // Éxito: cerrar modal y limpiar
                     alert('Ticket guardado correctamente');
@@ -571,9 +571,6 @@ export default function Home() {
                     setMostrarModalCobro(false);
                     setDineroRecibido('');
                   } catch (error) {
-                    console.error('Error guardando ticket:', error);
-                    console.error('Detalle del error:', JSON.stringify(error, null, 2));
-                    
                     // Extraer mensaje de error del backend
                     const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
                     alert(`Error al guardar el ticket: ${errorMessage}`);

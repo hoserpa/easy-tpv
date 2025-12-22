@@ -25,7 +25,10 @@ export class FamiliasService {
     return this.familiasRepository.save(nuevaFamilia);
   }
 
-  async update(id: number, updateFamiliaDto: UpdateFamiliaDto): Promise<Familia | null> {
+  async update(
+    id: number,
+    updateFamiliaDto: UpdateFamiliaDto,
+  ): Promise<Familia | null> {
     await this.familiasRepository.update(id, updateFamiliaDto);
     return this.findOne(id);
   }

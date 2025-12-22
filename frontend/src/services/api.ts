@@ -11,9 +11,32 @@ export interface Articulo {
   id: number;
   name: string;
   price: number;
-  family_id: number;
+  familia_id: number;
   created_at?: string;
   updated_at?: string;
+}
+
+interface Ticket {
+  id: number;
+  subtotal: number;
+  discount_type: 'fixed' | 'percent' | null;
+  discount_value: number | null;
+  total: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface TicketLine {
+  id: number;
+  ticket_id: number;
+  articulo_id: number;
+  qty: number;
+  unit_price: number;
+  discount_type: 'fixed' | 'percent' | null;
+  discount_value: number | null;
+  total: number;
+  created_at: string;
+  updated_at: string;
 }
 
 class ApiService {
@@ -33,13 +56,11 @@ class ApiService {
       
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('API error response:', errorText);
         throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
       
       return await response.json();
     } catch (error) {
-      console.error('API request error:', error);
       throw error;
     }
   }
@@ -107,25 +128,24 @@ class ApiService {
   }
 
   // Tickets
-  async createTicket(data: { lines: Array<{ articulo_id: number; qty: number; unit_price: number; discount_type?: 'fixed' | 'percent' | null; discount_value?: number | null }>; discount_type?: 'fixed' | 'percent' | null; discount_value?: number | null }): Promise<any> {
+  async createTicket(data: { lines: Array<{ articulo_id: number; qty: number; unit_price: number; discount_type?: 'fixed' | 'percent' | null; discount_value?: number | null }>; discount_type?: 'fixed' | 'percent' | null; discount_value?: number | null }): Promise<{ ticket: Ticket; lines: TicketLine[] }> {
     try {
-      // Ahora vamos directamente al endpoint real (con tipo any)
-      return this.request<any>('/tickets', {
+      // Ahora vamos directamente al endpoint real
+      return this.request<{ ticket: Ticket; lines: TicketLine[] }>('/tickets', {
         method: 'POST',
         body: JSON.stringify(data),
       });
     } catch (error) {
-      console.error('API Error creating ticket:', error);
       throw error;
     }
   }
 
-  async getTickets(): Promise<any[]> {
-    return this.request<any[]>('/tickets');
+  async getTickets(): Promise<Ticket[]> {
+    return this.request<Ticket[]>('/tickets');
   }
 
-  async getTicket(id: number): Promise<any> {
-    return this.request<any>(`/tickets/${id}`);
+  async getTicket(id: number): Promise<Ticket> {
+    return this.request<Ticket>(`/tickets/${id}`);
   }
 }
 

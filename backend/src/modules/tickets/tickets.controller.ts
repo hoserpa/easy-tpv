@@ -8,22 +8,31 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { TicketsService } from './tickets.service';
-import { CreateTicketDto } from '../../common/dto/create-ticket.dto';
+
+interface CreateTicketRequest {
+  lines: Array<{
+    articulo_id: number;
+    qty: number;
+    unit_price: number;
+    discount_type?: 'fixed' | 'percent' | null;
+    discount_value?: number | null;
+  }>;
+  discount_type?: 'fixed' | 'percent' | null;
+  discount_value?: number | null;
+}
 
 @Controller('tickets')
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
   @Post('test')
-  async test(@Body() data: any) {
-    console.log('Test endpoint received:', JSON.stringify(data, null, 2));
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async test(@Body() data: CreateTicketRequest) {
     return { message: 'Test received', data };
   }
 
   @Post()
-  async create(@Body() createTicketDto: any) {
-    console.log('Received ticket data:', JSON.stringify(createTicketDto, null, 2));
-
+  async create(@Body() createTicketDto: CreateTicketRequest) {
     if (!createTicketDto.lines || createTicketDto.lines.length === 0) {
       throw new HttpException(
         'El ticket debe tener al menos una línea',
@@ -33,21 +42,18 @@ export class TicketsController {
 
     for (const line of createTicketDto.lines) {
       if (!line.articulo_id || line.articulo_id <= 0) {
-        console.error('Invalid articulo_id:', line.articulo_id);
         throw new HttpException(
           'ID de artículo inválido en línea',
           HttpStatus.BAD_REQUEST,
         );
       }
       if (!line.qty || line.qty <= 0) {
-        console.error('Invalid qty:', line.qty);
         throw new HttpException(
           'Cantidad inválida en línea',
           HttpStatus.BAD_REQUEST,
         );
       }
       if (line.unit_price < 0) {
-        console.error('Invalid unit_price:', line.unit_price);
         throw new HttpException(
           'Precio unitario inválido en línea',
           HttpStatus.BAD_REQUEST,
@@ -57,14 +63,16 @@ export class TicketsController {
         line.discount_type &&
         !['fixed', 'percent'].includes(line.discount_type)
       ) {
-        console.error('Invalid discount_type:', line.discount_type);
         throw new HttpException(
           'Tipo de descuento inválido en línea',
           HttpStatus.BAD_REQUEST,
         );
       }
-      if (line.discount_value !== null && line.discount_value !== undefined && line.discount_value < 0) {
-        console.error('Invalid discount_value:', line.discount_value);
+      if (
+        line.discount_value !== null &&
+        line.discount_value !== undefined &&
+        line.discount_value < 0
+      ) {
         throw new HttpException(
           'Valor de descuento inválido en línea',
           HttpStatus.BAD_REQUEST,
@@ -74,10 +82,8 @@ export class TicketsController {
 
     try {
       const result = await this.ticketsService.create(createTicketDto);
-      console.log('Ticket created successfully:', result);
       return result;
     } catch (error) {
-      console.error('Error creating ticket:', error);
       throw error;
     }
   }

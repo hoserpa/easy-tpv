@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { apiService, Familia, Articulo } from '../services/api';
 
 interface ConfigModalProps {
@@ -170,18 +170,11 @@ function CrudContent({ entityType }: CrudContentProps) {
   const [loading, setLoading] = useState(false);
 
   const items = entityType === 'familias' ? familias : articulos;
-  const canCreateArticulos = entityType === 'articulos' && familias.length > 0;
 
 
 
   // Cargar datos desde la API
-  useEffect(() => {
-    if (entityType) {
-      loadData();
-    }
-  }, [entityType]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       if (entityType === 'familias') {
@@ -192,11 +185,17 @@ function CrudContent({ entityType }: CrudContentProps) {
         setArticulos(data);
       }
     } catch (error) {
-      console.error('Error loading data:', error);
+      // Error loading data
     } finally {
       setLoading(false);
     }
-  };
+  }, [entityType]);
+
+  useEffect(() => {
+    if (entityType) {
+      loadData();
+    }
+  }, [entityType, loadData]);
 
   const handleCreate = () => {
     // Verificar si hay familias disponibles al crear un artículo
@@ -244,7 +243,6 @@ function CrudContent({ entityType }: CrudContentProps) {
           }
         }, 50);
       } catch (error) {
-        console.error('Error deleting item:', error);
         alert('Error al eliminar el elemento');
       }
     }
@@ -286,7 +284,6 @@ function CrudContent({ entityType }: CrudContentProps) {
       setEditingItem(null);
       setFormData({});
     } catch (error) {
-      console.error('Error saving item:', error);
       alert('Error al guardar el elemento');
     }
   };

@@ -28,13 +28,13 @@ let ArticulosService = class ArticulosService {
     findOne(id) {
         return this.articulosRepository.findOne({
             where: { id },
-            relations: ['familia']
+            relations: ['familia'],
         });
     }
     findByFamily(familyId) {
         return this.articulosRepository.find({
             where: { familia_id: familyId },
-            relations: ['familia']
+            relations: ['familia'],
         });
     }
     create(createArticuloDto) {

@@ -37,7 +37,14 @@ __decorate([
     __metadata("design:type", String)
 ], Articulo.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00, name: 'price' }),
+    (0, typeorm_1.Column)({
+        type: 'decimal',
+        precision: 10,
+        scale: 2,
+        unsigned: true,
+        default: 0.0,
+        name: 'price',
+    }),
     __metadata("design:type", Number)
 ], Articulo.prototype, "price", void 0);
 __decorate([
@@ -49,12 +56,12 @@ __decorate([
     __metadata("design:type", Date)
 ], Articulo.prototype, "updated_at", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => familia_entity_1.Familia, familia => familia.articulos),
+    (0, typeorm_1.ManyToOne)(() => familia_entity_1.Familia, (familia) => familia.articulos),
     (0, typeorm_1.JoinColumn)({ name: 'familia_id' }),
     __metadata("design:type", familia_entity_1.Familia)
 ], Articulo.prototype, "familia", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => ticket_line_entity_1.TicketLine, ticketLine => ticketLine.articulo),
+    (0, typeorm_1.OneToMany)(() => ticket_line_entity_1.TicketLine, (ticketLine) => ticketLine.articulo),
     __metadata("design:type", Array)
 ], Articulo.prototype, "ticketLines", void 0);
 exports.Articulo = Articulo = __decorate([

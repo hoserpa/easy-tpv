@@ -37,7 +37,7 @@ __decorate([
     __metadata("design:type", Date)
 ], Familia.prototype, "updated_at", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => articulo_entity_1.Articulo, articulo => articulo.familia),
+    (0, typeorm_1.OneToMany)(() => articulo_entity_1.Articulo, (articulo) => articulo.familia),
     __metadata("design:type", Array)
 ], Familia.prototype, "articulos", void 0);
 exports.Familia = Familia = __decorate([

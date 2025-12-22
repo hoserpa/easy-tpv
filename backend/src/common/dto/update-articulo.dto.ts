@@ -1,4 +1,13 @@
-import { IsString, IsNotEmpty, IsNumber, Min, Max, MinLength, MaxLength, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  Min,
+  Max,
+  MinLength,
+  MaxLength,
+  IsOptional,
+} from 'class-validator';
 
 export class UpdateArticuloDto {
   @IsOptional()

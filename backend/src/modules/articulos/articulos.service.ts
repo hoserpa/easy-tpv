@@ -17,16 +17,16 @@ export class ArticulosService {
   }
 
   findOne(id: number): Promise<Articulo | null> {
-    return this.articulosRepository.findOne({ 
-      where: { id }, 
-      relations: ['familia'] 
+    return this.articulosRepository.findOne({
+      where: { id },
+      relations: ['familia'],
     });
   }
 
   findByFamily(familyId: number): Promise<Articulo[]> {
-    return this.articulosRepository.find({ 
+    return this.articulosRepository.find({
       where: { familia_id: familyId },
-      relations: ['familia']
+      relations: ['familia'],
     });
   }
 
@@ -35,7 +35,10 @@ export class ArticulosService {
     return this.articulosRepository.save(nuevoArticulo);
   }
 
-  async update(id: number, updateArticuloDto: UpdateArticuloDto): Promise<Articulo | null> {
+  async update(
+    id: number,
+    updateArticuloDto: UpdateArticuloDto,
+  ): Promise<Articulo | null> {
     await this.articulosRepository.update(id, updateArticuloDto);
     return this.findOne(id);
   }

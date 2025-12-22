@@ -44,16 +44,18 @@ export class ArticulosController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    
+
     // Verificar que la familia exista
-    const familia = await this.familiasService.findOne(createArticuloDto.familia_id);
+    const familia = await this.familiasService.findOne(
+      createArticuloDto.familia_id,
+    );
     if (!familia) {
       throw new HttpException(
         'La familia especificada no existe',
         HttpStatus.NOT_FOUND,
       );
     }
-    
+
     return this.articulosService.create(createArticuloDto);
   }
 
@@ -108,10 +110,12 @@ export class ArticulosController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    
+
     // Verificar que la nueva familia exista (si se está actualizando)
     if (updateArticuloDto.familia_id !== undefined) {
-      const familia = await this.familiasService.findOne(updateArticuloDto.familia_id);
+      const familia = await this.familiasService.findOne(
+        updateArticuloDto.familia_id,
+      );
       if (!familia) {
         throw new HttpException(
           'La familia especificada no existe',

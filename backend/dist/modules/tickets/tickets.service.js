@@ -59,13 +59,13 @@ let TicketsService = class TicketsService {
     findOne(id) {
         return this.ticketsRepository.findOne({
             where: { id },
-            relations: ['ticketLines']
+            relations: ['ticketLines'],
         });
     }
     findTicketLines(ticketId) {
         return this.ticketLinesRepository.find({
             where: { ticket_id: ticketId },
-            relations: ['ticket', 'articulo']
+            relations: ['ticket', 'articulo'],
         });
     }
     async create(createTicketDto) {

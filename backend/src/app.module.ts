@@ -7,7 +7,6 @@ import { FamiliasModule } from './modules/familias/familias.module';
 import { ArticulosModule } from './modules/articulos/articulos.module';
 import { TicketsModule } from './modules/tickets/tickets.module';
 import { databaseConfig } from './config/database.config';
-import { ValidationPipe } from '@nestjs/common';
 
 @Module({
   imports: [
@@ -16,13 +15,11 @@ import { ValidationPipe } from '@nestjs/common';
       envFilePath: '.env.local',
     }),
     TypeOrmModule.forRoot(databaseConfig),
-    FamiliasModule, 
-    ArticulosModule, 
-    TicketsModule
+    FamiliasModule,
+    ArticulosModule,
+    TicketsModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-  ],
+  providers: [AppService],
 })
 export class AppModule {}

@@ -67,16 +67,16 @@ export class TicketsService {
   }
 
   findOne(id: number): Promise<Ticket | null> {
-    return this.ticketsRepository.findOne({ 
-      where: { id }, 
-      relations: ['ticketLines'] 
+    return this.ticketsRepository.findOne({
+      where: { id },
+      relations: ['ticketLines'],
     });
   }
 
   findTicketLines(ticketId: number): Promise<TicketLine[]> {
-    return this.ticketLinesRepository.find({ 
+    return this.ticketLinesRepository.find({
       where: { ticket_id: ticketId },
-      relations: ['ticket', 'articulo']
+      relations: ['ticket', 'articulo'],
     });
   }
 

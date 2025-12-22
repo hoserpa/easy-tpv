@@ -7,7 +7,10 @@ import { ArticulosService } from './articulos.service';
 import { FamiliasModule } from '../familias/familias.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Articulo, Familia]), forwardRef(() => FamiliasModule)],
+  imports: [
+    TypeOrmModule.forFeature([Articulo, Familia]),
+    forwardRef(() => FamiliasModule),
+  ],
   controllers: [ArticulosController],
   providers: [ArticulosService],
   exports: [ArticulosService],

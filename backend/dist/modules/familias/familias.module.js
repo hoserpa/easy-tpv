@@ -18,7 +18,10 @@ let FamiliasModule = class FamiliasModule {
 exports.FamiliasModule = FamiliasModule;
 exports.FamiliasModule = FamiliasModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([familia_entity_1.Familia]), (0, common_1.forwardRef)(() => articulos_module_1.ArticulosModule)],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([familia_entity_1.Familia]),
+            (0, common_1.forwardRef)(() => articulos_module_1.ArticulosModule),
+        ],
         controllers: [familias_controller_1.FamiliasController],
         providers: [familias_service_1.FamiliasService],
         exports: [familias_service_1.FamiliasService],

@@ -21,7 +21,7 @@ describe('DatabaseIntegrationService', () => {
   beforeAll(async () => {
     // Aumentar timeout a 30 segundos para conexión a base de datos
     jest.setTimeout(30000);
-    
+
     module = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
@@ -58,12 +58,12 @@ describe('DatabaseIntegrationService', () => {
     const articulo = await articulosService.create({
       family_id: familia.id,
       name: 'Hamburguesa',
-      price: 10.50,
+      price: 10.5,
     });
     expect(articulo).toBeDefined();
     expect(articulo.id).toBeDefined();
     expect(articulo.name).toBe('Hamburguesa');
-    expect(articulo.price).toBe(10.50);
+    expect(articulo.price).toBe(10.5);
   });
 
   it('should create a ticket with lines', async () => {
@@ -71,7 +71,7 @@ describe('DatabaseIntegrationService', () => {
     const articulo = await articulosService.create({
       family_id: familia.id,
       name: 'Tiramisú',
-      price: 4.50,
+      price: 4.5,
     });
 
     const ticket = await ticketsService.create({
@@ -79,7 +79,7 @@ describe('DatabaseIntegrationService', () => {
         {
           item_id: articulo.id,
           qty: 2,
-          unit_price: 4.50,
+          unit_price: 4.5,
         },
       ],
     });
@@ -87,7 +87,7 @@ describe('DatabaseIntegrationService', () => {
     expect(ticket).toBeDefined();
     expect(ticket.ticket).toBeDefined();
     expect(ticket.ticket.id).toBeDefined();
-    expect(ticket.ticket.total).toBe(9.00);
+    expect(ticket.ticket.total).toBe(9.0);
     expect(ticket.lines).toHaveLength(1);
   });
 });
