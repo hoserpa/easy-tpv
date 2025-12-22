@@ -36,6 +36,7 @@ export default function Home() {
   const [modoEdicion, setModoEdicion] = useState<'precio' | 'cantidad' | 'dtoFijo' | 'dtoPorcentaje' | null>(null);
   const [nextId, setNextId] = useState(1);
   const [dineroRecibido, setDineroRecibido] = useState('');
+  const [esTemaOscuro, setEsTemaOscuro] = useState(true);
   const familias: Familia[] = [
     { id: 1, name: 'Bebidas' },
     { id: 2, name: 'Comidas' },
@@ -239,11 +240,11 @@ export default function Home() {
 
 
   return (
-    <div className="flex flex-col h-screen bg-slate-800">
+    <div className={`flex flex-col h-screen ${esTemaOscuro ? 'bg-slate-800' : 'bg-gray-100'}`}>
       {/* Panel superior */}
-      <div className="bg-slate-900 border-b border-slate-600 p-4">
+      <div className={`${esTemaOscuro ? 'bg-slate-900 border-slate-600' : 'bg-white border-gray-300'} border-b p-4`}>
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-white">TPV</h1>
+          <h1 className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>TPV</h1>
           <div className="flex gap-3">
             <button 
               onClick={() => setMostrarModalCobro(true)}
@@ -271,54 +272,54 @@ export default function Home() {
       
       <div className="flex flex-1">
         {/* Panel izquierdo: Resumen del ticket y calculadora */}
-        <div className="w-1/3 bg-slate-900 border-r border-slate-600 flex flex-col">
+        <div className={`w-1/3 ${esTemaOscuro ? 'bg-slate-900 border-slate-600' : 'bg-white border-gray-300'} border-r flex flex-col`}>
           {/* Resumen del ticket */}
-          <div className="flex-1 p-4 border-b border-slate-600 flex flex-col">
-            <div className="bg-slate-800 rounded-lg p-4 flex-1 flex flex-col">
-              <h2 className="text-xl font-bold mb-4 text-white">Ticket</h2>
+          <div className={`flex-1 p-4 ${esTemaOscuro ? 'border-slate-600' : 'border-gray-200'} border-b flex flex-col`}>
+            <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-gray-50'} rounded-lg p-4 flex-1 flex flex-col`}>
+              <h2 className={`text-xl font-bold mb-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Ticket</h2>
               <div className="flex-1 space-y-3 mb-4 overflow-y-auto">
                 {lineasTicket.map((linea) => (
                   <div 
                     key={linea.id} 
-                    className={`rounded-lg p-3 flex items-center justify-between cursor-pointer transition-colors ${
-                      lineaSeleccionada === linea.id 
-                        ? 'bg-blue-600 border-2 border-blue-400' 
-                        : 'bg-slate-700 hover:bg-slate-600'
-                    }`}
-                    onClick={() => seleccionarLinea(linea.id)}
-                  >
-                    <div className="flex-1">
-                      <div className={`font-medium ${lineaSeleccionada === linea.id ? 'text-white' : 'text-white'}`}>
-                        {linea.articulo.name}
-                      </div>
-                      <div className="text-sm text-gray-400">
-                        {linea.cantidad} ud. × {linea.precioUnitario.toFixed(2)}€
-                        {linea.descuentoTipo && (
-                          <span className="text-orange-400 ml-2">
-                            -{linea.descuentoValor}{linea.descuentoTipo === 'percent' ? '%' : '€'}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center">
-                      <span className={`font-bold text-lg mr-4 ${lineaSeleccionada === linea.id ? 'text-white' : 'text-white'}`}>
-                        {linea.total.toFixed(2)}€
-                      </span>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          eliminarLinea(linea.id);
-                        }}
-                        className="bg-red-500 hover:bg-red-600 text-white rounded-lg p-2 transition-colors"
-                      >
-                        🗑️
-                      </button>
-                    </div>
+                     className={`rounded-lg p-3 flex items-center justify-between cursor-pointer transition-colors ${
+                       lineaSeleccionada === linea.id 
+                         ? 'bg-blue-600 border-2 border-blue-400' 
+                         : esTemaOscuro ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-200 hover:bg-gray-300'
+                     }`}
+                     onClick={() => seleccionarLinea(linea.id)}
+                   >
+                     <div className="flex-1">
+                       <div className={`font-medium ${lineaSeleccionada === linea.id ? 'text-white' : esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+                         {linea.articulo.name}
+                       </div>
+                        <div className={`text-sm ${lineaSeleccionada === linea.id ? 'text-white' : esTemaOscuro ? 'text-gray-400' : 'text-gray-700'}`}>
+                          {linea.cantidad} ud. × {linea.precioUnitario.toFixed(2)}€
+                          {linea.descuentoTipo && (
+                            <span className="text-orange-400 ml-2">
+                              -{linea.descuentoValor}{linea.descuentoTipo === 'percent' ? '%' : '€'}
+                            </span>
+                          )}
+                        </div>
+                     </div>
+                     <div className="flex items-center">
+                        <span className={`font-bold text-lg mr-4 ${lineaSeleccionada === linea.id ? 'text-white' : esTemaOscuro ? 'text-white' : 'text-gray-900'}`}>
+                         {linea.total.toFixed(2)}€
+                       </span>
+                       <button 
+                         onClick={(e) => {
+                           e.stopPropagation();
+                           eliminarLinea(linea.id);
+                         }}
+                         className="bg-red-500 hover:bg-red-600 text-white rounded-lg p-2 transition-colors"
+                       >
+                         🗑️
+                       </button>
+                     </div>
                   </div>
                 ))}
               </div>
-              <div className="border-t border-slate-600 pt-4 mt-auto">
-                <div className="flex justify-between font-bold text-2xl text-white">
+              <div className={`border-t ${esTemaOscuro ? 'border-slate-600' : 'border-gray-300'} pt-4 mt-auto`}>
+                <div className={`flex justify-between font-bold text-2xl ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
                   <span>Total:</span>
                   <span>{calcularTotal().toFixed(2)}€</span>
                 </div>
@@ -328,11 +329,11 @@ export default function Home() {
 
           {/* Calculadora */}
           <div className="flex-1 p-4">
-            <div className="bg-slate-800 rounded-lg p-4 h-full flex flex-col">
+            <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-gray-50'} rounded-lg p-4 h-full flex flex-col`}>
               <div className="mb-4">
                 <input 
                   type="text" 
-                  className="w-full text-right text-2xl font-bold p-3 bg-slate-700 border border-slate-600 text-white rounded-lg"
+                  className={`w-full text-right text-2xl font-bold p-3 ${esTemaOscuro ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-800'} border rounded-lg`}
                   value={parseFloat(valorCalculadora).toFixed(2)}
                   readOnly
                 />
@@ -367,10 +368,10 @@ export default function Home() {
         </div>
 
         {/* Panel derecho: Familias y artículos */}
-        <div className="w-2/3 bg-slate-900 flex flex-col">
+        <div className={`w-2/3 ${esTemaOscuro ? 'bg-slate-900' : 'bg-white'} flex flex-col`}>
           {/* Familias */}
-          <div className="h-1/2 p-4 border-b border-slate-600">
-            <h2 className="text-xl font-bold mb-4 text-white">Familias</h2>
+          <div className={`h-1/2 p-4 ${esTemaOscuro ? 'border-slate-600' : 'border-gray-300'} border-b`}>
+            <h2 className={`text-xl font-bold mb-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Familias</h2>
             <div className="grid grid-cols-3 gap-3">
               {familias.map((familia) => (
                 <button
@@ -390,10 +391,10 @@ export default function Home() {
 
           {/* Artículos */}
           <div className="h-1/2 p-4">
-            <h2 className="text-xl font-bold mb-4 text-white">Artículos</h2>
+            <h2 className={`text-xl font-bold mb-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Artículos</h2>
             <div className="grid grid-cols-3 gap-3">
               {articulosFiltrados.length === 0 ? (
-                <div className="col-span-3 text-center text-gray-500 py-8">
+                <div className={`col-span-3 text-center ${esTemaOscuro ? 'text-gray-500' : 'text-gray-600'} py-8`}>
                   Selecciona una familia para ver los artículos
                 </div>
               ) : (
@@ -402,10 +403,10 @@ export default function Home() {
                     key={articulo.id}
                     onClick={() => agregarArticulo(articulo)}
 
-                    className="bg-slate-700 border-2 border-slate-600 hover:border-blue-400 hover:bg-slate-600 font-medium py-4 px-3 rounded-lg text-center transition-all text-gray-300"
+                    className={`${esTemaOscuro ? 'bg-slate-700 border-slate-600 hover:border-blue-400 hover:bg-slate-600 text-gray-300' : 'bg-gray-100 border-gray-300 hover:border-blue-400 hover:bg-gray-200 text-gray-700'} border-2 font-medium py-4 px-3 rounded-lg text-center transition-all`}
                   >
                     <div className="text-sm font-bold">{articulo.name}</div>
-                    <div className="text-lg font-bold text-blue-400">{articulo.price.toFixed(2)}€</div>
+                    <div className={`text-lg font-bold ${esTemaOscuro ? 'text-blue-400' : 'text-blue-600'}`}>{articulo.price.toFixed(2)}€</div>
                   </button>
                 ))
               )}
@@ -418,32 +419,32 @@ export default function Home() {
       <ConfigModal 
         isOpen={isConfigOpen} 
         onClose={() => setIsConfigOpen(false)} 
-        esTemaOscuro={true}
-        setEsTemaOscuro={() => {}}
+        esTemaOscuro={esTemaOscuro}
+        setEsTemaOscuro={setEsTemaOscuro}
       />
 
       {/* Modal de Cobro */}
       {mostrarModalCobro && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-slate-800 rounded-lg p-6 w-96">
-            <h2 className="text-2xl font-bold text-white mb-4">Cobrar</h2>
+          <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-96`}>
+            <h2 className={`text-2xl font-bold mb-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Cobrar</h2>
             <div className="mb-4">
-              <div className="text-lg text-white mb-2">Total a pagar:</div>
+              <div className={`text-lg ${esTemaOscuro ? 'text-white' : 'text-gray-700'} mb-2`}>Total a pagar:</div>
               <div className="text-3xl font-bold text-yellow-400">{calcularTotal().toFixed(2)}€</div>
             </div>
             <div className="mb-4">
-              <label className="block text-white mb-2">Dinero recibido:</label>
+              <label className={`block ${esTemaOscuro ? 'text-white' : 'text-gray-700'} mb-2`}>Dinero recibido:</label>
               <input
                 type="number"
                 value={dineroRecibido}
                 onChange={(e) => setDineroRecibido(e.target.value)}
-                className="w-full p-3 bg-slate-700 border border-slate-600 text-white rounded-lg"
+                className={`w-full p-3 ${esTemaOscuro ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-800'} border rounded-lg`}
                 placeholder="0.00"
               />
             </div>
             {dineroRecibido && (
               <div className="mb-4">
-                <div className="text-lg text-white mb-2">Vueltas:</div>
+                <div className={`text-lg ${esTemaOscuro ? 'text-white' : 'text-gray-700'} mb-2`}>Vueltas:</div>
                 <div className="text-2xl font-bold text-green-400">
                   {Math.max(0, calcularVueltas()).toFixed(2)}€
                 </div>
