@@ -54,7 +54,7 @@ export default function Home() {
   };
 
   const agregarArticulo = (articulo: Articulo) => {
-    const precioFinal = articulo.price;
+    const precioFinal = parseFloat(String(articulo.price));
     const indiceExistente = lineasTicket.findIndex(
       linea => linea.articulo.id === articulo.id && linea.precioUnitario === precioFinal
     );
@@ -190,7 +190,7 @@ export default function Home() {
   }, []);
 
   const articulosFiltrados = familiaSeleccionada 
-    ? articulos.filter(a => a.family_id === familiaSeleccionada.id)
+    ? articulos.filter(a => a.familia_id === familiaSeleccionada.id)
     : [];
 
 
@@ -294,7 +294,7 @@ export default function Home() {
                          {linea.articulo.name}
                        </div>
                         <div className={`text-sm ${lineaSeleccionada === linea.id ? 'text-white' : esTemaOscuro ? 'text-gray-400' : 'text-gray-700'}`}>
-                          {linea.cantidad} ud. × {linea.precioUnitario.toFixed(2)}€
+                          {linea.cantidad} ud. × {parseFloat(String(linea.precioUnitario)).toFixed(2)}€
                           {linea.descuentoTipo && (
                             <span className="text-orange-400 ml-2">
                               -{linea.descuentoValor}{linea.descuentoTipo === 'percent' ? '%' : '€'}
@@ -303,9 +303,9 @@ export default function Home() {
                         </div>
                      </div>
                      <div className="flex items-center">
-                        <span className={`font-bold text-lg mr-4 ${lineaSeleccionada === linea.id ? 'text-white' : esTemaOscuro ? 'text-white' : 'text-gray-900'}`}>
-                         {linea.total.toFixed(2)}€
-                       </span>
+                         <span className={`font-bold text-lg mr-4 ${lineaSeleccionada === linea.id ? 'text-white' : esTemaOscuro ? 'text-white' : 'text-gray-900'}`}>
+                          {parseFloat(String(linea.total)).toFixed(2)}€
+                        </span>
                        <button 
                          onClick={(e) => {
                            e.stopPropagation();
@@ -322,7 +322,7 @@ export default function Home() {
               <div className={`border-t ${esTemaOscuro ? 'border-slate-600' : 'border-gray-300'} pt-4 mt-auto`}>
                 <div className={`flex justify-between font-bold text-2xl ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
                   <span>Total:</span>
-                  <span>{calcularTotal().toFixed(2)}€</span>
+                   <span>{parseFloat(String(calcularTotal())).toFixed(2)}€</span>
                 </div>
               </div>
             </div>
@@ -407,7 +407,7 @@ export default function Home() {
                     className={`${esTemaOscuro ? 'bg-slate-700 border-slate-600 hover:border-blue-400 hover:bg-slate-600 text-gray-300' : 'bg-gray-100 border-gray-300 hover:border-blue-400 hover:bg-gray-200 text-gray-700'} border-2 font-medium py-4 px-3 rounded-lg text-center transition-all`}
                   >
                     <div className="text-sm font-bold">{articulo.name}</div>
-                    <div className={`text-lg font-bold ${esTemaOscuro ? 'text-blue-400' : 'text-blue-600'}`}>{articulo.price.toFixed(2)}€</div>
+                     <div className={`text-lg font-bold ${esTemaOscuro ? 'text-blue-400' : 'text-blue-600'}`}>{parseFloat(String(articulo.price)).toFixed(2)}€</div>
                   </button>
                 ))
               )}
@@ -443,7 +443,7 @@ export default function Home() {
                         {linea.cantidad} × {linea.articulo.name}
                       </div>
                       <div className={`text-sm ${esTemaOscuro ? 'text-gray-400' : 'text-gray-600'}`}>
-                        {linea.precioUnitario.toFixed(2)}€/ud
+                        {parseFloat(String(linea.precioUnitario)).toFixed(2)}€/ud
                         {linea.descuentoTipo && (
                           <span className="text-orange-400 ml-2">
                             -{linea.descuentoValor}{linea.descuentoTipo === 'percent' ? '%' : '€'} dto
@@ -452,7 +452,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div className={`font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
-                      {linea.total.toFixed(2)}€
+                      {parseFloat(String(linea.total)).toFixed(2)}€
                     </div>
                   </div>
                 ))}
@@ -464,17 +464,17 @@ export default function Home() {
               <div className="flex justify-between">
                 <span className={`${esTemaOscuro ? 'text-gray-400' : 'text-gray-600'}`}>Subtotal:</span>
                 <span className={`font-medium ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
-                  {lineasTicket.reduce((total, linea) => {
+                  {parseFloat(String(lineasTicket.reduce((total, linea) => {
                     const subtotal = linea.precioUnitario * linea.cantidad;
                     return total + subtotal;
-                  }, 0).toFixed(2)}€
+                  }, 0))).toFixed(2)}€
                 </span>
               </div>
               
               <div className="flex justify-between">
                 <span className={`${esTemaOscuro ? 'text-gray-400' : 'text-gray-600'}`}>Descuentos:</span>
                 <span className={`font-medium text-orange-400`}>
-                  -{lineasTicket.reduce((total, linea) => {
+                  -{parseFloat(String(lineasTicket.reduce((total, linea) => {
                     if (linea.descuentoTipo) {
                       const subtotal = linea.precioUnitario * linea.cantidad;
                       if (linea.descuentoTipo === 'fixed') {
@@ -484,13 +484,13 @@ export default function Home() {
                       }
                     }
                     return total;
-                  }, 0).toFixed(2)}€
+                  }, 0))).toFixed(2)}€
                 </span>
               </div>
               
               <div className={`flex justify-between text-xl font-bold pt-3 border-t ${esTemaOscuro ? 'border-slate-600 text-white' : 'border-gray-300 text-gray-800'}`}>
                 <span>Total:</span>
-                <span className="text-yellow-400">{calcularTotal().toFixed(2)}€</span>
+                 <span className="text-yellow-400">{parseFloat(String(calcularTotal())).toFixed(2)}€</span>
               </div>
             </div>
 
@@ -498,7 +498,7 @@ export default function Home() {
             <div className="mb-6">
               <div className="mb-4">
                 <div className={`text-lg ${esTemaOscuro ? 'text-white' : 'text-gray-700'} mb-2`}>Total a pagar:</div>
-                <div className="text-3xl font-bold text-yellow-400">{calcularTotal().toFixed(2)}€</div>
+                 <div className="text-3xl font-bold text-yellow-400">{parseFloat(String(calcularTotal())).toFixed(2)}€</div>
               </div>
               
               <div className="mb-4">
@@ -534,7 +534,7 @@ export default function Home() {
                 <div className="mb-4">
                   <div className={`text-lg ${esTemaOscuro ? 'text-white' : 'text-gray-700'} mb-2`}>Vueltas:</div>
                   <div className="text-2xl font-bold text-green-400">
-                    {Math.max(0, calcularVueltas()).toFixed(2)}€
+                     {parseFloat(String(Math.max(0, calcularVueltas()))).toFixed(2)}€
                   </div>
                 </div>
               )}

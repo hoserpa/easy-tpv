@@ -1,5 +1,5 @@
 export declare class CreateArticuloDto {
-    family_id: number;
+    familia_id: number;
     name: string;
     price: number;
 }

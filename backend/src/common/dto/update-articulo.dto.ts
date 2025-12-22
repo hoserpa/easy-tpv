@@ -4,7 +4,7 @@ export class UpdateArticuloDto {
   @IsOptional()
   @IsNumber()
   @Min(1)
-  family_id?: number;
+  familia_id?: number;
 
   @IsOptional()
   @IsString()

@@ -25,44 +25,44 @@ let ArticulosController = class ArticulosController {
         this.articulosService = articulosService;
         this.familiasService = familiasService;
     }
-    create(createArticuloDto) {
+    async create(createArticuloDto) {
         if (!createArticuloDto.name || createArticuloDto.name.trim().length === 0) {
             throw new common_1.HttpException('El nombre del artículo es obligatorio', common_1.HttpStatus.BAD_REQUEST);
         }
-        if (!createArticuloDto.family_id || createArticuloDto.family_id <= 0) {
+        if (!createArticuloDto.familia_id || createArticuloDto.familia_id <= 0) {
             throw new common_1.HttpException('El ID de la familia es inválido', common_1.HttpStatus.BAD_REQUEST);
         }
         if (createArticuloDto.price < 0) {
             throw new common_1.HttpException('El precio no puede ser negativo', common_1.HttpStatus.BAD_REQUEST);
         }
-        const familia = this.familiasService.findOne(createArticuloDto.family_id);
+        const familia = await this.familiasService.findOne(createArticuloDto.familia_id);
         if (!familia) {
             throw new common_1.HttpException('La familia especificada no existe', common_1.HttpStatus.NOT_FOUND);
         }
         return this.articulosService.create(createArticuloDto);
     }
-    findAll() {
+    async findAll() {
         return this.articulosService.findAll();
     }
-    findByFamily(familyId) {
+    async findByFamily(familyId) {
         const idFamilia = parseInt(familyId, 10);
         if (isNaN(idFamilia) || idFamilia <= 0) {
             throw new common_1.HttpException('ID de familia inválido', common_1.HttpStatus.BAD_REQUEST);
         }
         return this.articulosService.findByFamily(idFamilia);
     }
-    findOne(id) {
+    async findOne(id) {
         const articuloId = parseInt(id, 10);
         if (isNaN(articuloId)) {
             throw new common_1.HttpException('ID inválido', common_1.HttpStatus.BAD_REQUEST);
         }
-        const articulo = this.articulosService.findOne(articuloId);
+        const articulo = await this.articulosService.findOne(articuloId);
         if (!articulo) {
             throw new common_1.HttpException('Artículo no encontrado', common_1.HttpStatus.NOT_FOUND);
         }
         return articulo;
     }
-    update(id, updateArticuloDto) {
+    async update(id, updateArticuloDto) {
         const articuloId = parseInt(id, 10);
         if (isNaN(articuloId)) {
             throw new common_1.HttpException('ID inválido', common_1.HttpStatus.BAD_REQUEST);
@@ -70,12 +70,12 @@ let ArticulosController = class ArticulosController {
         if (updateArticuloDto.name && updateArticuloDto.name.trim().length === 0) {
             throw new common_1.HttpException('El nombre del artículo no puede estar vacío', common_1.HttpStatus.BAD_REQUEST);
         }
-        if (updateArticuloDto.family_id !== undefined &&
-            updateArticuloDto.family_id <= 0) {
+        if (updateArticuloDto.familia_id !== undefined &&
+            updateArticuloDto.familia_id <= 0) {
             throw new common_1.HttpException('El ID de la familia es inválido', common_1.HttpStatus.BAD_REQUEST);
         }
-        if (updateArticuloDto.family_id !== undefined) {
-            const familia = this.familiasService.findOne(updateArticuloDto.family_id);
+        if (updateArticuloDto.familia_id !== undefined) {
+            const familia = await this.familiasService.findOne(updateArticuloDto.familia_id);
             if (!familia) {
                 throw new common_1.HttpException('La familia especificada no existe', common_1.HttpStatus.NOT_FOUND);
             }
@@ -83,18 +83,18 @@ let ArticulosController = class ArticulosController {
         if (updateArticuloDto.price !== undefined && updateArticuloDto.price < 0) {
             throw new common_1.HttpException('El precio no puede ser negativo', common_1.HttpStatus.BAD_REQUEST);
         }
-        const articulo = this.articulosService.update(articuloId, updateArticuloDto);
+        const articulo = await this.articulosService.update(articuloId, updateArticuloDto);
         if (!articulo) {
             throw new common_1.HttpException('Artículo no encontrado', common_1.HttpStatus.NOT_FOUND);
         }
         return articulo;
     }
-    remove(id) {
+    async remove(id) {
         const articuloId = parseInt(id, 10);
         if (isNaN(articuloId)) {
             throw new common_1.HttpException('ID inválido', common_1.HttpStatus.BAD_REQUEST);
         }
-        const eliminado = this.articulosService.remove(articuloId);
+        const eliminado = await this.articulosService.remove(articuloId);
         if (!eliminado) {
             throw new common_1.HttpException('Artículo no encontrado', common_1.HttpStatus.NOT_FOUND);
         }
@@ -107,27 +107,27 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_articulo_dto_1.CreateArticuloDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ArticulosController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ArticulosController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)('family/:familyId'),
     __param(0, (0, common_1.Param)('familyId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ArticulosController.prototype, "findByFamily", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ArticulosController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
@@ -135,14 +135,14 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, update_articulo_dto_1.UpdateArticuloDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ArticulosController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ArticulosController.prototype, "remove", null);
 exports.ArticulosController = ArticulosController = __decorate([
     (0, common_1.Controller)('articulos'),

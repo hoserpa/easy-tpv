@@ -25,7 +25,7 @@ export class FamiliasController {
   ) {}
 
   @Post()
-  create(@Body() createFamiliaDto: CreateFamiliaDto) {
+  async create(@Body() createFamiliaDto: CreateFamiliaDto) {
     if (!createFamiliaDto.name || createFamiliaDto.name.trim().length === 0) {
       throw new HttpException(
         'El nombre de la familia es obligatorio',
@@ -36,17 +36,17 @@ export class FamiliasController {
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.familiasService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     const familiaId = parseInt(id, 10);
     if (isNaN(familiaId)) {
       throw new HttpException('ID inválido', HttpStatus.BAD_REQUEST);
     }
-    const familia = this.familiasService.findOne(familiaId);
+    const familia = await this.familiasService.findOne(familiaId);
     if (!familia) {
       throw new HttpException('Familia no encontrada', HttpStatus.NOT_FOUND);
     }
@@ -54,7 +54,7 @@ export class FamiliasController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFamiliaDto: UpdateFamiliaDto) {
+  async update(@Param('id') id: string, @Body() updateFamiliaDto: UpdateFamiliaDto) {
     const familiaId = parseInt(id, 10);
     if (isNaN(familiaId)) {
       throw new HttpException('ID inválido', HttpStatus.BAD_REQUEST);
@@ -65,7 +65,7 @@ export class FamiliasController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const familia = this.familiasService.update(familiaId, updateFamiliaDto);
+    const familia = await this.familiasService.update(familiaId, updateFamiliaDto);
     if (!familia) {
       throw new HttpException('Familia no encontrada', HttpStatus.NOT_FOUND);
     }
@@ -73,14 +73,14 @@ export class FamiliasController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     const familiaId = parseInt(id, 10);
     if (isNaN(familiaId)) {
       throw new HttpException('ID inválido', HttpStatus.BAD_REQUEST);
     }
 
     // Verificar si hay artículos asociados a esta familia
-    const articulosAsociados = this.articulosService.findByFamily(familiaId);
+    const articulosAsociados = await this.articulosService.findByFamily(familiaId);
     if (articulosAsociados.length > 0) {
       throw new HttpException(
         `No se puede eliminar esta familia porque tiene ${articulosAsociados.length} artículo(s) asociado(s). Elimine primero los artículos o reasígnelos a otra familia.`,
@@ -88,7 +88,7 @@ export class FamiliasController {
       );
     }
 
-    const eliminado = this.familiasService.remove(familiaId);
+    const eliminado = await this.familiasService.remove(familiaId);
     if (!eliminado) {
       throw new HttpException('Familia no encontrada', HttpStatus.NOT_FOUND);
     }

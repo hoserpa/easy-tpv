@@ -3,7 +3,7 @@ import { IsString, IsNotEmpty, IsNumber, Min, Max, MinLength, MaxLength } from '
 export class CreateArticuloDto {
   @IsNumber()
   @Min(1)
-  family_id: number;
+  familia_id: number;
 
   @IsString()
   @IsNotEmpty()

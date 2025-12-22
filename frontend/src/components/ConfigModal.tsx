@@ -207,7 +207,7 @@ function CrudContent({ entityType }: CrudContentProps) {
     
     setEditingItem(null);
     const defaultFamilyId = familias.length > 0 ? familias[0].id : 1;
-    setFormData(entityType === 'familias' ? { name: '' } : { name: '', price: 0, family_id: defaultFamilyId });
+    setFormData(entityType === 'familias' ? { name: '' } : { name: '', price: 0, familia_id: defaultFamilyId });
     setIsEditing(true);
   };
 
@@ -220,7 +220,7 @@ function CrudContent({ entityType }: CrudContentProps) {
   const handleDelete = async (id: number) => {
     if (entityType === 'familias') {
       // Verificar si hay artículos asociados a esta familia
-      const articulosAsociados = articulos.filter(articulo => articulo.family_id === id);
+      const articulosAsociados = articulos.filter(articulo => articulo.familia_id === id);
       
       if (articulosAsociados.length > 0) {
         alert(`No se puede eliminar esta familia porque tiene ${articulosAsociados.length} artículo(s) asociado(s).\n\nElimina primero los artículos o reasígnalos a otra familia.`);
@@ -262,7 +262,7 @@ function CrudContent({ entityType }: CrudContentProps) {
           const updated = await apiService.updateArticulo(editingItem.id, {
             name: String(formData.name),
             price: parseFloat(String(formData.price)),
-            family_id: parseInt(String(formData.family_id))
+            familia_id: parseInt(String(formData.familia_id))
           });
           setArticulos(articulos.map(item => 
             item.id === editingItem.id ? updated : item
@@ -276,7 +276,7 @@ function CrudContent({ entityType }: CrudContentProps) {
           const newItem = await apiService.createArticulo({
             name: String(formData.name),
             price: parseFloat(String(formData.price)),
-            family_id: parseInt(String(formData.family_id))
+            familia_id: parseInt(String(formData.familia_id))
           });
           setArticulos([...articulos, newItem]);
         }
@@ -344,8 +344,8 @@ function CrudContent({ entityType }: CrudContentProps) {
                   Familia:
                 </label>
                 <select
-                  value={formData.family_id || ''}
-                  onChange={(e) => setFormData({ ...formData, family_id: parseInt(e.target.value) })}
+                  value={formData.familia_id || ''}
+                  onChange={(e) => setFormData({ ...formData, familia_id: parseInt(e.target.value) })}
                   className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   disabled={familias.length === 0}
                 >
@@ -435,12 +435,12 @@ function CrudContent({ entityType }: CrudContentProps) {
                       </button>
                       <button
                         onClick={() => handleDelete(item.id)}
-                        className={`${articulos.filter(a => a.family_id === item.id).length > 0 
+                        className={`${articulos.filter(a => a.familia_id === item.id).length > 0 
                           ? 'bg-gray-400 text-gray-300 cursor-not-allowed' 
                           : 'bg-red-500 hover:bg-red-600 text-white'} px-3 py-1 rounded text-sm transition-colors`}
-                        disabled={articulos.filter(a => a.family_id === item.id).length > 0}
-                        title={articulos.filter(a => a.family_id === item.id).length > 0 
-                          ? `Hay ${articulos.filter(a => a.family_id === item.id).length} artículos asociados` 
+                        disabled={articulos.filter(a => a.familia_id === item.id).length > 0}
+                        title={articulos.filter(a => a.familia_id === item.id).length > 0 
+                          ? `Hay ${articulos.filter(a => a.familia_id === item.id).length} artículos asociados` 
                           : 'Eliminar familia'}
                       >
                         🗑️ Eliminar
@@ -453,9 +453,9 @@ function CrudContent({ entityType }: CrudContentProps) {
                 <tr key={item.id} className="border-b border-slate-700 hover:bg-slate-700">
                   <td className="py-3 px-4">{item.id}</td>
                   <td className="py-3 px-4 font-medium">{item.name}</td>
-                  <td className="py-3 px-4">{item.price.toFixed(2)}€</td>
+                  <td className="py-3 px-4">{parseFloat(String(item.price)).toFixed(2)}€</td>
                   <td className="py-3 px-4">
-                    {familias.find(f => f.id === item.family_id)?.name || `ID: ${item.family_id}`}
+                    {familias.find(f => f.id === item.familia_id)?.name || `ID: ${item.familia_id}`}
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex gap-2">

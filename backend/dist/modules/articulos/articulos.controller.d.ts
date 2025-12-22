@@ -6,12 +6,12 @@ export declare class ArticulosController {
     private readonly articulosService;
     private readonly familiasService;
     constructor(articulosService: ArticulosService, familiasService: FamiliasService);
-    create(createArticuloDto: CreateArticuloDto): import("../../common/entities/articulo.entity").Articulo;
-    findAll(): import("../../common/entities/articulo.entity").Articulo[];
-    findByFamily(familyId: string): import("../../common/entities/articulo.entity").Articulo[];
-    findOne(id: string): import("../../common/entities/articulo.entity").Articulo;
-    update(id: string, updateArticuloDto: UpdateArticuloDto): import("../../common/entities/articulo.entity").Articulo;
-    remove(id: string): {
+    create(createArticuloDto: CreateArticuloDto): Promise<import("../../common/entities/articulo.entity").Articulo>;
+    findAll(): Promise<import("../../common/entities/articulo.entity").Articulo[]>;
+    findByFamily(familyId: string): Promise<import("../../common/entities/articulo.entity").Articulo[]>;
+    findOne(id: string): Promise<import("../../common/entities/articulo.entity").Articulo>;
+    update(id: string, updateArticuloDto: UpdateArticuloDto): Promise<import("../../common/entities/articulo.entity").Articulo>;
+    remove(id: string): Promise<{
         message: string;
-    };
+    }>;
 }

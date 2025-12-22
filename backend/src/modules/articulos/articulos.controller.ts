@@ -25,14 +25,14 @@ export class ArticulosController {
   ) {}
 
   @Post()
-  create(@Body() createArticuloDto: CreateArticuloDto) {
+  async create(@Body() createArticuloDto: CreateArticuloDto) {
     if (!createArticuloDto.name || createArticuloDto.name.trim().length === 0) {
       throw new HttpException(
         'El nombre del artículo es obligatorio',
         HttpStatus.BAD_REQUEST,
       );
     }
-    if (!createArticuloDto.family_id || createArticuloDto.family_id <= 0) {
+    if (!createArticuloDto.familia_id || createArticuloDto.familia_id <= 0) {
       throw new HttpException(
         'El ID de la familia es inválido',
         HttpStatus.BAD_REQUEST,
@@ -46,7 +46,7 @@ export class ArticulosController {
     }
     
     // Verificar que la familia exista
-    const familia = this.familiasService.findOne(createArticuloDto.family_id);
+    const familia = await this.familiasService.findOne(createArticuloDto.familia_id);
     if (!familia) {
       throw new HttpException(
         'La familia especificada no existe',
@@ -58,12 +58,12 @@ export class ArticulosController {
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.articulosService.findAll();
   }
 
   @Get('family/:familyId')
-  findByFamily(@Param('familyId') familyId: string) {
+  async findByFamily(@Param('familyId') familyId: string) {
     const idFamilia = parseInt(familyId, 10);
     if (isNaN(idFamilia) || idFamilia <= 0) {
       throw new HttpException('ID de familia inválido', HttpStatus.BAD_REQUEST);
@@ -72,12 +72,12 @@ export class ArticulosController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     const articuloId = parseInt(id, 10);
     if (isNaN(articuloId)) {
       throw new HttpException('ID inválido', HttpStatus.BAD_REQUEST);
     }
-    const articulo = this.articulosService.findOne(articuloId);
+    const articulo = await this.articulosService.findOne(articuloId);
     if (!articulo) {
       throw new HttpException('Artículo no encontrado', HttpStatus.NOT_FOUND);
     }
@@ -85,7 +85,7 @@ export class ArticulosController {
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateArticuloDto: UpdateArticuloDto,
   ) {
@@ -100,8 +100,8 @@ export class ArticulosController {
       );
     }
     if (
-      updateArticuloDto.family_id !== undefined &&
-      updateArticuloDto.family_id <= 0
+      updateArticuloDto.familia_id !== undefined &&
+      updateArticuloDto.familia_id <= 0
     ) {
       throw new HttpException(
         'El ID de la familia es inválido',
@@ -110,8 +110,8 @@ export class ArticulosController {
     }
     
     // Verificar que la nueva familia exista (si se está actualizando)
-    if (updateArticuloDto.family_id !== undefined) {
-      const familia = this.familiasService.findOne(updateArticuloDto.family_id);
+    if (updateArticuloDto.familia_id !== undefined) {
+      const familia = await this.familiasService.findOne(updateArticuloDto.familia_id);
       if (!familia) {
         throw new HttpException(
           'La familia especificada no existe',
@@ -125,7 +125,7 @@ export class ArticulosController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const articulo = this.articulosService.update(
+    const articulo = await this.articulosService.update(
       articuloId,
       updateArticuloDto,
     );
@@ -136,12 +136,12 @@ export class ArticulosController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     const articuloId = parseInt(id, 10);
     if (isNaN(articuloId)) {
       throw new HttpException('ID inválido', HttpStatus.BAD_REQUEST);
     }
-    const eliminado = this.articulosService.remove(articuloId);
+    const eliminado = await this.articulosService.remove(articuloId);
     if (!eliminado) {
       throw new HttpException('Artículo no encontrado', HttpStatus.NOT_FOUND);
     }

@@ -5,52 +5,46 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FamiliasService = void 0;
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
+const familia_entity_1 = require("../../common/entities/familia.entity");
 let FamiliasService = class FamiliasService {
-    familias = [];
-    nextId = 1;
+    familiasRepository;
+    constructor(familiasRepository) {
+        this.familiasRepository = familiasRepository;
+    }
     findAll() {
-        return this.familias;
+        return this.familiasRepository.find();
     }
     findOne(id) {
-        return this.familias.find((familia) => familia.id === id) || null;
+        return this.familiasRepository.findOne({ where: { id } });
     }
     create(createFamiliaDto) {
-        const nuevaFamilia = {
-            id: this.nextId++,
-            name: createFamiliaDto.name,
-            created_at: new Date(),
-            updated_at: new Date(),
-            articulos: [],
-        };
-        this.familias.push(nuevaFamilia);
-        return nuevaFamilia;
+        const nuevaFamilia = this.familiasRepository.create(createFamiliaDto);
+        return this.familiasRepository.save(nuevaFamilia);
     }
-    update(id, updateFamiliaDto) {
-        const indiceFamilia = this.familias.findIndex((familia) => familia.id === id);
-        if (indiceFamilia === -1) {
-            return null;
-        }
-        this.familias[indiceFamilia] = {
-            ...this.familias[indiceFamilia],
-            ...updateFamiliaDto,
-            updated_at: new Date(),
-        };
-        return this.familias[indiceFamilia];
+    async update(id, updateFamiliaDto) {
+        await this.familiasRepository.update(id, updateFamiliaDto);
+        return this.findOne(id);
     }
-    remove(id) {
-        const indiceFamilia = this.familias.findIndex((familia) => familia.id === id);
-        if (indiceFamilia === -1) {
-            return false;
-        }
-        this.familias.splice(indiceFamilia, 1);
-        return true;
+    async remove(id) {
+        const result = await this.familiasRepository.delete(id);
+        return (result.affected ?? 0) > 0;
     }
 };
 exports.FamiliasService = FamiliasService;
 exports.FamiliasService = FamiliasService = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(familia_entity_1.Familia)),
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], FamiliasService);
 //# sourceMappingURL=familias.service.js.map

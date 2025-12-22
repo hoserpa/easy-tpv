@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateArticuloDto = void 0;
 const class_validator_1 = require("class-validator");
 class CreateArticuloDto {
-    family_id;
+    familia_id;
     name;
     price;
 }
@@ -21,7 +21,7 @@ __decorate([
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.Min)(1),
     __metadata("design:type", Number)
-], CreateArticuloDto.prototype, "family_id", void 0);
+], CreateArticuloDto.prototype, "familia_id", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),

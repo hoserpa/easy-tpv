@@ -84,14 +84,14 @@ class ApiService {
     return this.request<Articulo[]>(`/articulos/family/${familyId}`);
   }
 
-  async createArticulo(data: { name: string; price: number; family_id: number }): Promise<Articulo> {
+  async createArticulo(data: { name: string; price: number; familia_id: number }): Promise<Articulo> {
     return this.request<Articulo>('/articulos', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updateArticulo(id: number, data: { name?: string; price?: number; family_id?: number }): Promise<Articulo> {
+  async updateArticulo(id: number, data: { name?: string; price?: number; familia_id?: number }): Promise<Articulo> {
     return this.request<Articulo>(`/articulos/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),

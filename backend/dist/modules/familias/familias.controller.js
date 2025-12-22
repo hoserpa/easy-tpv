@@ -25,27 +25,27 @@ let FamiliasController = class FamiliasController {
         this.familiasService = familiasService;
         this.articulosService = articulosService;
     }
-    create(createFamiliaDto) {
+    async create(createFamiliaDto) {
         if (!createFamiliaDto.name || createFamiliaDto.name.trim().length === 0) {
             throw new common_1.HttpException('El nombre de la familia es obligatorio', common_1.HttpStatus.BAD_REQUEST);
         }
         return this.familiasService.create(createFamiliaDto);
     }
-    findAll() {
+    async findAll() {
         return this.familiasService.findAll();
     }
-    findOne(id) {
+    async findOne(id) {
         const familiaId = parseInt(id, 10);
         if (isNaN(familiaId)) {
             throw new common_1.HttpException('ID inválido', common_1.HttpStatus.BAD_REQUEST);
         }
-        const familia = this.familiasService.findOne(familiaId);
+        const familia = await this.familiasService.findOne(familiaId);
         if (!familia) {
             throw new common_1.HttpException('Familia no encontrada', common_1.HttpStatus.NOT_FOUND);
         }
         return familia;
     }
-    update(id, updateFamiliaDto) {
+    async update(id, updateFamiliaDto) {
         const familiaId = parseInt(id, 10);
         if (isNaN(familiaId)) {
             throw new common_1.HttpException('ID inválido', common_1.HttpStatus.BAD_REQUEST);
@@ -53,22 +53,22 @@ let FamiliasController = class FamiliasController {
         if (updateFamiliaDto.name && updateFamiliaDto.name.trim().length === 0) {
             throw new common_1.HttpException('El nombre de la familia no puede estar vacío', common_1.HttpStatus.BAD_REQUEST);
         }
-        const familia = this.familiasService.update(familiaId, updateFamiliaDto);
+        const familia = await this.familiasService.update(familiaId, updateFamiliaDto);
         if (!familia) {
             throw new common_1.HttpException('Familia no encontrada', common_1.HttpStatus.NOT_FOUND);
         }
         return familia;
     }
-    remove(id) {
+    async remove(id) {
         const familiaId = parseInt(id, 10);
         if (isNaN(familiaId)) {
             throw new common_1.HttpException('ID inválido', common_1.HttpStatus.BAD_REQUEST);
         }
-        const articulosAsociados = this.articulosService.findByFamily(familiaId);
+        const articulosAsociados = await this.articulosService.findByFamily(familiaId);
         if (articulosAsociados.length > 0) {
             throw new common_1.HttpException(`No se puede eliminar esta familia porque tiene ${articulosAsociados.length} artículo(s) asociado(s). Elimine primero los artículos o reasígnelos a otra familia.`, common_1.HttpStatus.CONFLICT);
         }
-        const eliminado = this.familiasService.remove(familiaId);
+        const eliminado = await this.familiasService.remove(familiaId);
         if (!eliminado) {
             throw new common_1.HttpException('Familia no encontrada', common_1.HttpStatus.NOT_FOUND);
         }
@@ -81,20 +81,20 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_familia_dto_1.CreateFamiliaDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], FamiliasController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], FamiliasController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], FamiliasController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
@@ -102,14 +102,14 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, update_familia_dto_1.UpdateFamiliaDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], FamiliasController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], FamiliasController.prototype, "remove", null);
 exports.FamiliasController = FamiliasController = __decorate([
     (0, common_1.Controller)('familias'),

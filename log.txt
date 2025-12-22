@@ -1,18 +1,60 @@
-[HMR] connected
-3forward-logs-shared.ts:95 showCrudView cambió a: false
-forward-logs-shared.ts:95 [Fast Refresh] rebuilding
-forward-logs-shared.ts:95 [Fast Refresh] done in 126ms
-forward-logs-shared.ts:95 isEditing cambió a: false
-forward-logs-shared.ts:95 showCrudView cambió a: true
-forward-logs-shared.ts:95 isEditing cambió a: false
-forward-logs-shared.ts:95 [Fast Refresh] rebuilding
-forward-logs-shared.ts:95 [Fast Refresh] done in 112ms
-forward-logs-shared.ts:95 isEditing cambió a: true
-forward-logs-shared.ts:95 showCrudView cambió a: false
-forward-logs-shared.ts:95 isEditing cambió a: false
-forward-logs-shared.ts:95 showCrudView cambió a: true
-forward-logs-shared.ts:95 isEditing cambió a: false
-forward-logs-shared.ts:95 [Fast Refresh] rebuilding
-forward-logs-shared.ts:95 [Fast Refresh] done in 106ms
-forward-logs-shared.ts:95 isEditing cambió a: true
-forward-logs-shared.ts:95 showCrudView cambió a: false
+[Nest] 11836  - 22/12/2025, 15:03:28   ERROR [ExceptionsHandler] QueryFailedError: null value in column "familia_id" of relation "articulos" violates not-null constraint
+    at PostgresQueryRunner.query (C:\Users\jr_ik\Proyectos\easy-tpv\backend\node_modules\typeorm\driver\src\driver\postgres\PostgresQueryRunner.ts:325:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async InsertQueryBuilder.execute (C:\Users\jr_ik\Proyectos\easy-tpv\backend\node_modules\typeorm\query-builder\src\query-builder\InsertQueryBuilder.ts:164:33)
+    at async SubjectExecutor.executeInsertOperations (C:\Users\jr_ik\Proyectos\easy-tpv\backend\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:435:42)
+    at async SubjectExecutor.execute (C:\Users\jr_ik\Proyectos\easy-tpv\backend\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:137:9)
+    at async EntityPersistExecutor.execute (C:\Users\jr_ik\Proyectos\easy-tpv\backend\node_modules\typeorm\persistence\src\persistence\EntityPersistExecutor.ts:182:21)
+    at async C:\Users\jr_ik\Proyectos\easy-tpv\backend\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+    at async C:\Users\jr_ik\Proyectos\easy-tpv\backend\node_modules\@nestjs\core\router\router-proxy.js:9:17 {
+  query: 'INSERT INTO "articulos"("familia_id", "name", "price", "created_at", "updated_at") VALUES (DEFAULT, $1, $2, DEFAULT, DEFAULT) RETURNING "id", "price", "created_at", "updated_at"',
+  parameters: [
+    'Cafe',
+    1.2
+  ],
+  driverError: error: null value in column "familia_id" of relation "articulos" violates not-null constraint
+      at C:\Users\jr_ik\Proyectos\easy-tpv\backend\node_modules\pg\lib\client.js:545:17
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async PostgresQueryRunner.query (C:\Users\jr_ik\Proyectos\easy-tpv\backend\node_modules\typeorm\driver\src\driver\postgres\PostgresQueryRunner.ts:254:25)
+      at async InsertQueryBuilder.execute (C:\Users\jr_ik\Proyectos\easy-tpv\backend\node_modules\typeorm\query-builder\src\query-builder\InsertQueryBuilder.ts:164:33)
+      at async SubjectExecutor.executeInsertOperations (C:\Users\jr_ik\Proyectos\easy-tpv\backend\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:435:42)
+      at async SubjectExecutor.execute (C:\Users\jr_ik\Proyectos\easy-tpv\backend\node_modules\typeorm\persistence\src\persistence\SubjectExecutor.ts:137:9)
+      at async EntityPersistExecutor.execute (C:\Users\jr_ik\Proyectos\easy-tpv\backend\node_modules\typeorm\persistence\src\persistence\EntityPersistExecutor.ts:182:21)
+      at async C:\Users\jr_ik\Proyectos\easy-tpv\backend\node_modules\@nestjs\core\router\router-execution-context.js:46:28       
+      at async C:\Users\jr_ik\Proyectos\easy-tpv\backend\node_modules\@nestjs\core\router\router-proxy.js:9:17 {
+    length: 281,
+    severity: 'ERROR',
+    code: '23502',
+    detail: 'Failing row contains (4, null, Cafe, 1.20, 2025-12-22 14:03:28.420768, 2025-12-22 14:03:28.420768).',
+    hint: undefined,
+    position: undefined,
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: 'public',
+    table: 'articulos',
+    column: 'familia_id',
+    dataType: undefined,
+    constraint: undefined,
+    file: 'execMain.c',
+    line: '2032',
+    routine: 'ExecConstraints'
+  },
+  length: 281,
+  severity: 'ERROR',
+  code: '23502',
+  detail: 'Failing row contains (4, null, Cafe, 1.20, 2025-12-22 14:03:28.420768, 2025-12-22 14:03:28.420768).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'articulos',
+  column: 'familia_id',
+  dataType: undefined,
+  constraint: undefined,
+  file: 'execMain.c',
+  line: '2032',
+  routine: 'ExecConstraints'
+}
