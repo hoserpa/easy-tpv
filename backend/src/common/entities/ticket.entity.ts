@@ -3,25 +3,25 @@ import { TicketLine } from './ticket-line.entity';
 
 @Entity('tickets')
 export class Ticket {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'int', unsigned: true })
   id: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00 })
+  @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00, name: 'subtotal' })
   subtotal: number;
 
-  @Column({ type: 'enum', enum: ['fixed', 'percent'], nullable: true })
+  @Column({ type: 'enum', enum: ['fixed', 'percent'], nullable: true, name: 'discount_type' })
   discount_type: 'fixed' | 'percent' | null;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true, nullable: true })
+  @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true, nullable: true, name: 'discount_value' })
   discount_value: number | null;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00 })
+  @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00, name: 'total' })
   total: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
 
   @OneToMany(() => TicketLine, ticketLine => ticketLine.ticket)

@@ -32,7 +32,9 @@ class ApiService {
       const response = await fetch(url, config);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('API error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
       
       return await response.json();
@@ -102,6 +104,28 @@ class ApiService {
     return this.request<void>(`/articulos/${id}`, {
       method: 'DELETE',
     });
+  }
+
+  // Tickets
+  async createTicket(data: { lines: Array<{ articulo_id: number; qty: number; unit_price: number; discount_type?: 'fixed' | 'percent' | null; discount_value?: number | null }>; discount_type?: 'fixed' | 'percent' | null; discount_value?: number | null }): Promise<any> {
+    try {
+      // Ahora vamos directamente al endpoint real (con tipo any)
+      return this.request<any>('/tickets', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    } catch (error) {
+      console.error('API Error creating ticket:', error);
+      throw error;
+    }
+  }
+
+  async getTickets(): Promise<any[]> {
+    return this.request<any[]>('/tickets');
+  }
+
+  async getTicket(id: number): Promise<any> {
+    return this.request<any>(`/tickets/${id}`);
   }
 }
 

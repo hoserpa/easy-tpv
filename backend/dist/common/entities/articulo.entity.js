@@ -25,7 +25,7 @@ let Articulo = class Articulo {
 };
 exports.Articulo = Articulo;
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)({ type: 'int', unsigned: true }),
     __metadata("design:type", Number)
 ], Articulo.prototype, "id", void 0);
 __decorate([
@@ -33,19 +33,19 @@ __decorate([
     __metadata("design:type", Number)
 ], Articulo.prototype, "familia_id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 150 }),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 150, name: 'name' }),
     __metadata("design:type", String)
 ], Articulo.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00 }),
+    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00, name: 'price' }),
     __metadata("design:type", Number)
 ], Articulo.prototype, "price", void 0);
 __decorate([
-    (0, typeorm_1.CreateDateColumn)(),
+    (0, typeorm_1.CreateDateColumn)({ name: 'created_at' }),
     __metadata("design:type", Date)
 ], Articulo.prototype, "created_at", void 0);
 __decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
+    (0, typeorm_1.UpdateDateColumn)({ name: 'updated_at' }),
     __metadata("design:type", Date)
 ], Articulo.prototype, "updated_at", void 0);
 __decorate([

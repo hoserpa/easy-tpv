@@ -1,5 +1,5 @@
 export declare class CreateTicketLineDto {
-    item_id: number;
+    articulo_id: number;
     qty: number;
     unit_price: number;
     discount_type?: 'fixed' | 'percent' | null;

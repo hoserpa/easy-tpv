@@ -542,11 +542,42 @@ export default function Home() {
 
             <div className="flex gap-3">
               <button
-                onClick={() => {
-                  // Simulación de cobro - solo visual
-                  cancelarTicket();
-                  setMostrarModalCobro(false);
-                  setDineroRecibido('');
+                onClick={async () => {
+                  try {
+                    // Preparar datos del ticket para la API
+                    const linesData = lineasTicket.map(linea => ({
+                      articulo_id: Number(linea.articulo.id),
+                      qty: Number(linea.cantidad),
+                      unit_price: Number(parseFloat(String(linea.precioUnitario))),
+                      discount_type: linea.descuentoTipo || null,
+                      discount_value: linea.descuentoValor ? Number(linea.descuentoValor) : null
+                    }));
+
+                    const ticketData = {
+                      lines: linesData,
+                      discount_type: null, // Descuento a nivel de ticket (por ahora null)
+                      discount_value: null
+                    };
+
+                    console.log('Enviando ticket:', JSON.stringify(ticketData, null, 2));
+
+                    // Enviar a la API
+                    const response = await apiService.createTicket(ticketData);
+                    console.log('Ticket guardado:', response);
+
+                    // Éxito: cerrar modal y limpiar
+                    alert('Ticket guardado correctamente');
+                    cancelarTicket();
+                    setMostrarModalCobro(false);
+                    setDineroRecibido('');
+                  } catch (error) {
+                    console.error('Error guardando ticket:', error);
+                    console.error('Detalle del error:', JSON.stringify(error, null, 2));
+                    
+                    // Extraer mensaje de error del backend
+                    const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+                    alert(`Error al guardar el ticket: ${errorMessage}`);
+                  }
                 }}
                 disabled={dineroRecibido && parseFloat(dineroRecibido) < calcularTotal()}
                 className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-600 text-white font-bold py-3 rounded-lg transition-colors"

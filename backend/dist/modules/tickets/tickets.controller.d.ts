@@ -1,14 +1,17 @@
 import { TicketsService } from './tickets.service';
-import { CreateTicketDto } from '../../common/dto/create-ticket.dto';
 export declare class TicketsController {
     private readonly ticketsService;
     constructor(ticketsService: TicketsService);
-    create(createTicketDto: CreateTicketDto): {
+    test(data: any): Promise<{
+        message: string;
+        data: any;
+    }>;
+    create(createTicketDto: any): Promise<{
         ticket: import("../../common/entities/ticket.entity").Ticket;
         lines: import("../../common/entities/ticket-line.entity").TicketLine[];
-    };
-    findAll(): import("../../common/entities/ticket.entity").Ticket[];
-    findOne(id: string): {
+    }>;
+    findAll(): Promise<import("../../common/entities/ticket.entity").Ticket[]>;
+    findOne(id: string): Promise<{
         lines: import("../../common/entities/ticket-line.entity").TicketLine[];
         id: number;
         subtotal: number;
@@ -18,6 +21,6 @@ export declare class TicketsController {
         created_at: Date;
         updated_at: Date;
         ticketLines: import("../../common/entities/ticket-line.entity").TicketLine[];
-    };
-    findTicketLines(id: string): import("../../common/entities/ticket-line.entity").TicketLine[];
+    }>;
+    findTicketLines(id: string): Promise<import("../../common/entities/ticket-line.entity").TicketLine[]>;
 }

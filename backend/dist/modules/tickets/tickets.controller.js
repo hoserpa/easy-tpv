@@ -15,68 +15,76 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TicketsController = void 0;
 const common_1 = require("@nestjs/common");
 const tickets_service_1 = require("./tickets.service");
-const create_ticket_dto_1 = require("../../common/dto/create-ticket.dto");
 let TicketsController = class TicketsController {
     ticketsService;
     constructor(ticketsService) {
         this.ticketsService = ticketsService;
     }
-    create(createTicketDto) {
+    async test(data) {
+        console.log('Test endpoint received:', JSON.stringify(data, null, 2));
+        return { message: 'Test received', data };
+    }
+    async create(createTicketDto) {
+        console.log('Received ticket data:', JSON.stringify(createTicketDto, null, 2));
         if (!createTicketDto.lines || createTicketDto.lines.length === 0) {
             throw new common_1.HttpException('El ticket debe tener al menos una línea', common_1.HttpStatus.BAD_REQUEST);
         }
         for (const line of createTicketDto.lines) {
-            if (!line.item_id || line.item_id <= 0) {
+            if (!line.articulo_id || line.articulo_id <= 0) {
+                console.error('Invalid articulo_id:', line.articulo_id);
                 throw new common_1.HttpException('ID de artículo inválido en línea', common_1.HttpStatus.BAD_REQUEST);
             }
             if (!line.qty || line.qty <= 0) {
+                console.error('Invalid qty:', line.qty);
                 throw new common_1.HttpException('Cantidad inválida en línea', common_1.HttpStatus.BAD_REQUEST);
             }
             if (line.unit_price < 0) {
+                console.error('Invalid unit_price:', line.unit_price);
                 throw new common_1.HttpException('Precio unitario inválido en línea', common_1.HttpStatus.BAD_REQUEST);
             }
             if (line.discount_type &&
                 !['fixed', 'percent'].includes(line.discount_type)) {
+                console.error('Invalid discount_type:', line.discount_type);
                 throw new common_1.HttpException('Tipo de descuento inválido en línea', common_1.HttpStatus.BAD_REQUEST);
             }
             if (line.discount_value !== null && line.discount_value !== undefined && line.discount_value < 0) {
+                console.error('Invalid discount_value:', line.discount_value);
                 throw new common_1.HttpException('Valor de descuento inválido en línea', common_1.HttpStatus.BAD_REQUEST);
             }
         }
-        if (createTicketDto.discount_type &&
-            !['fixed', 'percent'].includes(createTicketDto.discount_type)) {
-            throw new common_1.HttpException('Tipo de descuento inválido', common_1.HttpStatus.BAD_REQUEST);
+        try {
+            const result = await this.ticketsService.create(createTicketDto);
+            console.log('Ticket created successfully:', result);
+            return result;
         }
-        if (createTicketDto.discount_value !== null &&
-            createTicketDto.discount_value !== undefined &&
-            createTicketDto.discount_value < 0) {
-            throw new common_1.HttpException('Valor de descuento inválido', common_1.HttpStatus.BAD_REQUEST);
+        catch (error) {
+            console.error('Error creating ticket:', error);
+            throw error;
         }
-        return this.ticketsService.create(createTicketDto);
     }
-    findAll() {
+    async findAll() {
         return this.ticketsService.findAll();
     }
-    findOne(id) {
+    async findOne(id) {
         const ticketId = parseInt(id, 10);
         if (isNaN(ticketId)) {
             throw new common_1.HttpException('ID inválido', common_1.HttpStatus.BAD_REQUEST);
         }
-        const ticket = this.ticketsService.findOne(ticketId);
+        const ticket = await this.ticketsService.findOne(ticketId);
         if (!ticket) {
             throw new common_1.HttpException('Ticket no encontrado', common_1.HttpStatus.NOT_FOUND);
         }
         return {
             ...ticket,
-            lines: this.ticketsService.findTicketLines(ticketId),
+            lines: await this.ticketsService.findTicketLines(ticketId),
         };
     }
-    findTicketLines(id) {
+    async findTicketLines(id) {
         const ticketId = parseInt(id, 10);
         if (isNaN(ticketId)) {
             throw new common_1.HttpException('ID inválido', common_1.HttpStatus.BAD_REQUEST);
         }
-        const ticket = this.ticketsService.findOne(ticketId);
+        const ticket = await this.ticketsService.findOne(ticketId);
         if (!ticket) {
             throw new common_1.HttpException('Ticket no encontrado', common_1.HttpStatus.NOT_FOUND);
         }
@@ -85,31 +93,38 @@ let TicketsController = class TicketsController {
 };
 exports.TicketsController = TicketsController;
 __decorate([
+    (0, common_1.Post)('test'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TicketsController.prototype, "test", null);
+__decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_ticket_dto_1.CreateTicketDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
 ], TicketsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], TicketsController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], TicketsController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Get)(':id/lines'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], TicketsController.prototype, "findTicketLines", null);
 exports.TicketsController = TicketsController = __decorate([
     (0, common_1.Controller)('tickets'),

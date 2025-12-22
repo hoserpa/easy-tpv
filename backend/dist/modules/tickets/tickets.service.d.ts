@@ -1,18 +1,18 @@
+import { Repository } from 'typeorm';
 import { Ticket } from '../../common/entities/ticket.entity';
 import { TicketLine } from '../../common/entities/ticket-line.entity';
 import { CreateTicketDto } from '../../common/dto/create-ticket.dto';
 export declare class TicketsService {
-    private tickets;
-    private ticketLines;
-    private nextTicketId;
-    private nextLineId;
+    private readonly ticketsRepository;
+    private readonly ticketLinesRepository;
+    constructor(ticketsRepository: Repository<Ticket>, ticketLinesRepository: Repository<TicketLine>);
     private calcularTotalLinea;
     private calcularTicketTotal;
-    findAll(): Ticket[];
-    findOne(id: number): Ticket | null;
-    findTicketLines(ticketId: number): TicketLine[];
-    create(createTicketDto: CreateTicketDto): {
+    findAll(): Promise<Ticket[]>;
+    findOne(id: number): Promise<Ticket | null>;
+    findTicketLines(ticketId: number): Promise<TicketLine[]>;
+    create(createTicketDto: CreateTicketDto): Promise<{
         ticket: Ticket;
         lines: TicketLine[];
-    };
+    }>;
 }

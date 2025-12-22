@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Ticket } from '../../common/entities/ticket.entity';
 import { TicketLine } from '../../common/entities/ticket-line.entity';
 import { CreateTicketDto } from '../../common/dto/create-ticket.dto';
@@ -6,10 +8,12 @@ import { CreateTicketLineDto } from '../../common/dto/create-ticket-line.dto';
 
 @Injectable()
 export class TicketsService {
-  private tickets: Ticket[] = [];
-  private ticketLines: TicketLine[] = [];
-  private nextTicketId = 1;
-  private nextLineId = 1;
+  constructor(
+    @InjectRepository(Ticket)
+    private readonly ticketsRepository: Repository<Ticket>,
+    @InjectRepository(TicketLine)
+    private readonly ticketLinesRepository: Repository<TicketLine>,
+  ) {}
 
   private calcularTotalLinea(line: CreateTicketLineDto): number {
     const subtotal = line.qty * line.unit_price;
@@ -58,22 +62,28 @@ export class TicketsService {
     return subtotal;
   }
 
-  findAll(): Ticket[] {
-    return this.tickets;
+  findAll(): Promise<Ticket[]> {
+    return this.ticketsRepository.find({ relations: ['ticketLines'] });
   }
 
-  findOne(id: number): Ticket | null {
-    return this.tickets.find((ticket) => ticket.id === id) || null;
+  findOne(id: number): Promise<Ticket | null> {
+    return this.ticketsRepository.findOne({ 
+      where: { id }, 
+      relations: ['ticketLines'] 
+    });
   }
 
-  findTicketLines(ticketId: number): TicketLine[] {
-    return this.ticketLines.filter((line) => line.ticket_id === ticketId);
+  findTicketLines(ticketId: number): Promise<TicketLine[]> {
+    return this.ticketLinesRepository.find({ 
+      where: { ticket_id: ticketId },
+      relations: ['ticket', 'articulo']
+    });
   }
 
-  create(createTicketDto: CreateTicketDto): {
+  async create(createTicketDto: CreateTicketDto): Promise<{
     ticket: Ticket;
     lines: TicketLine[];
-  } {
+  }> {
     if (!createTicketDto.lines || createTicketDto.lines.length === 0) {
       throw new Error('El ticket debe tener al menos una línea');
     }
@@ -88,39 +98,31 @@ export class TicketsService {
       createTicketDto.discount_value,
     );
 
-    const nuevoTicket: Ticket = {
-      id: this.nextTicketId++,
+    const nuevoTicket = this.ticketsRepository.create({
       subtotal,
       discount_type: createTicketDto.discount_type || null,
       discount_value: createTicketDto.discount_value || null,
       total,
-      created_at: new Date(),
-      updated_at: new Date(),
-      ticketLines: [],
-    };
+    });
 
-    this.tickets.push(nuevoTicket);
+    const ticketGuardado = await this.ticketsRepository.save(nuevoTicket);
 
-    const nuevasLineas: TicketLine[] = createTicketDto.lines.map((lineDto) => {
+    const nuevasLineas: TicketLine[] = [];
+    for (const lineDto of createTicketDto.lines) {
       const lineTotal = this.calcularTotalLinea(lineDto);
-      const linea: TicketLine = {
-        id: this.nextLineId++,
-        ticket_id: nuevoTicket.id,
-        item_id: lineDto.item_id,
+      const nuevaLinea = this.ticketLinesRepository.create({
+        ticket_id: ticketGuardado.id,
+        articulo_id: lineDto.articulo_id,
         qty: lineDto.qty,
         unit_price: lineDto.unit_price,
         discount_type: lineDto.discount_type || null,
         discount_value: lineDto.discount_value || null,
         total: lineTotal,
-        created_at: new Date(),
-        updated_at: new Date(),
-        ticket: nuevoTicket,
-        articulo: {} as any,
-      };
-      this.ticketLines.push(linea);
-      return linea;
-    });
+      });
+      const lineaGuardada = await this.ticketLinesRepository.save(nuevaLinea);
+      nuevasLineas.push(lineaGuardada);
+    }
 
-    return { ticket: nuevoTicket, lines: nuevasLineas };
+    return { ticket: ticketGuardado, lines: nuevasLineas };
   }
 }

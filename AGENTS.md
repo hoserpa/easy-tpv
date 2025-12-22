@@ -169,22 +169,22 @@ No es un ERP completo, sino un TPV ligero y rápido.
 
 ## Estructura de la base de datos
 
-> families
+> familias
 >
 > - id: INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
 > - name: VARCHAR(100) NOT NULL UNIQUE
 > - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 > - updated_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
-> items
+> articulos
 >
 > - id: INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
-> - family_id: INT UNSIGNED NOT NULL
+> - familia_id: INT UNSIGNED NOT NULL
 > - name: VARCHAR(150) NOT NULL
 > - price: DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0.00
 > - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 > - updated_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-> - FOREIGN KEY (family_id) REFERENCES families(id) ON DELETE CASCADE
+> - FOREIGN KEY (familia_id) REFERENCES familias(id) ON DELETE CASCADE
 
 > tickets
 >
@@ -196,11 +196,11 @@ No es un ERP completo, sino un TPV ligero y rápido.
 > - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 > - updated_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
-> ticket_lines
+> tickets_lineas
 >
 > - id: INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
 > - ticket_id: INT UNSIGNED NOT NULL
-> - item_id: INT UNSIGNED NOT NULL
+> - articulo_id: INT UNSIGNED NOT NULL
 > - qty: INT UNSIGNED NOT NULL DEFAULT 1
 > - unit_price: DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0.00
 > - discount_type: ENUM('fixed', 'percent') NULL
@@ -209,4 +209,4 @@ No es un ERP completo, sino un TPV ligero y rápido.
 > - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 > - updated_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 > - FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE
-> - FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE RESTRICT
+> - FOREIGN KEY (articulo_id) REFERENCES articulos(id) ON DELETE RESTRICT

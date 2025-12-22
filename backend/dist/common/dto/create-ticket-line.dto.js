@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateTicketLineDto = void 0;
 class CreateTicketLineDto {
-    item_id;
+    articulo_id;
     qty;
     unit_price;
     discount_type;

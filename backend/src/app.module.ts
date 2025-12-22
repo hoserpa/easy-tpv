@@ -7,6 +7,7 @@ import { FamiliasModule } from './modules/familias/familias.module';
 import { ArticulosModule } from './modules/articulos/articulos.module';
 import { TicketsModule } from './modules/tickets/tickets.module';
 import { databaseConfig } from './config/database.config';
+import { ValidationPipe } from '@nestjs/common';
 
 @Module({
   imports: [
@@ -20,6 +21,8 @@ import { databaseConfig } from './config/database.config';
     TicketsModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+  ],
 })
 export class AppModule {}

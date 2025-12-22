@@ -21,19 +21,19 @@ let Familia = class Familia {
 };
 exports.Familia = Familia;
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)({ type: 'int', unsigned: true }),
     __metadata("design:type", Number)
 ], Familia.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 100, unique: true }),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100, unique: true, name: 'name' }),
     __metadata("design:type", String)
 ], Familia.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.CreateDateColumn)(),
+    (0, typeorm_1.CreateDateColumn)({ name: 'created_at' }),
     __metadata("design:type", Date)
 ], Familia.prototype, "created_at", void 0);
 __decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
+    (0, typeorm_1.UpdateDateColumn)({ name: 'updated_at' }),
     __metadata("design:type", Date)
 ], Familia.prototype, "updated_at", void 0);
 __decorate([

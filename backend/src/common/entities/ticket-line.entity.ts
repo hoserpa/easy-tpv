@@ -2,36 +2,36 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { Ticket } from './ticket.entity';
 import { Articulo } from './articulo.entity';
 
-@Entity('ticket_lineas')
+@Entity('tickets_lineas')
 export class TicketLine {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'int', unsigned: true })
   id: number;
 
-  @Column({ type: 'int', unsigned: true })
+  @Column({ type: 'int', unsigned: true, name: 'ticket_id' })
   ticket_id: number;
 
-  @Column({ type: 'int', unsigned: true })
-  item_id: number;
+  @Column({ type: 'int', unsigned: true, name: 'articulo_id' })
+  articulo_id: number;
 
-  @Column({ type: 'int', unsigned: true, default: 1 })
+  @Column({ type: 'int', unsigned: true, default: 1, name: 'qty' })
   qty: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00 })
+  @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00, name: 'unit_price' })
   unit_price: number;
 
-  @Column({ type: 'enum', enum: ['fixed', 'percent'], nullable: true })
+  @Column({ type: 'enum', enum: ['fixed', 'percent'], nullable: true, name: 'discount_type' })
   discount_type: 'fixed' | 'percent' | null;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true, nullable: true })
+  @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true, nullable: true, name: 'discount_value' })
   discount_value: number | null;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00 })
+  @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00, name: 'total' })
   total: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
 
   @ManyToOne(() => Ticket, ticket => ticket.ticketLines, { onDelete: 'CASCADE' })
@@ -39,6 +39,6 @@ export class TicketLine {
   ticket: Ticket;
 
   @ManyToOne(() => Articulo, articulo => articulo.ticketLines, { onDelete: 'RESTRICT' })
-  @JoinColumn({ name: 'item_id' })
+  @JoinColumn({ name: 'articulo_id' })
   articulo: Articulo;
 }

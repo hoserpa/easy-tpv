@@ -3,7 +3,7 @@ import { Articulo } from './articulo.entity';
 export declare class TicketLine {
     id: number;
     ticket_id: number;
-    item_id: number;
+    articulo_id: number;
     qty: number;
     unit_price: number;
     discount_type: 'fixed' | 'percent' | null;

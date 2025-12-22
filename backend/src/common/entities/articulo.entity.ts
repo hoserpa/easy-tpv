@@ -4,22 +4,22 @@ import { TicketLine } from './ticket-line.entity';
 
 @Entity('articulos')
 export class Articulo {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'int', unsigned: true })
   id: number;
 
   @Column({ name: 'familia_id', type: 'int', unsigned: true })
   familia_id: number;
 
-  @Column({ type: 'varchar', length: 150 })
+  @Column({ type: 'varchar', length: 150, name: 'name' })
   name: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00 })
+  @Column({ type: 'decimal', precision: 10, scale: 2, unsigned: true, default: 0.00, name: 'price' })
   price: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
 
   @ManyToOne(() => Familia, familia => familia.articulos)
