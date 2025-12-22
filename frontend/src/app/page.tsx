@@ -34,7 +34,7 @@ export default function Home() {
   const [lineaSeleccionada, setLineaSeleccionada] = useState<number | null>(null);
   const [cantidadArticulo, setCantidadArticulo] = useState(1);
   const [precioUnitario, setPrecioUnitario] = useState('');
-  const [modoEdicion, setModoEdicion] = useState<'precio' | 'cantidad' | null>(null);
+  const [modoEdicion, setModoEdicion] = useState<'precio' | 'cantidad' | 'dtoFijo' | 'dtoPorcentaje' | null>(null);
   const [dineroRecibido, setDineroRecibido] = useState('');
   const [familias, setFamilias] = useState<Familia[]>([]);
   const [articulos, setArticulos] = useState<Articulo[]>([]);
@@ -140,6 +140,26 @@ export default function Home() {
               ...linea,
               cantidad: nuevaCantidad,
               total: nuevaCantidad * linea.precioUnitario
+            };
+          } else if (modoEdicion === 'dtoFijo') {
+            const dtoValor = parseFloat(nuevoValor) || 0;
+            const totalSinDto = linea.precioUnitario * linea.cantidad;
+            const nuevoTotal = Math.max(0, totalSinDto - dtoValor);
+            return {
+              ...linea,
+              descuentoTipo: 'fixed',
+              descuentoValor: dtoValor,
+              total: nuevoTotal
+            };
+          } else if (modoEdicion === 'dtoPorcentaje') {
+            const dtoValor = parseFloat(nuevoValor) || 0;
+            const totalSinDto = linea.precioUnitario * linea.cantidad;
+            const nuevoTotal = Math.max(0, totalSinDto - (totalSinDto * dtoValor / 100));
+            return {
+              ...linea,
+              descuentoTipo: 'percent',
+              descuentoValor: dtoValor,
+              total: nuevoTotal
             };
           }
         }
@@ -376,13 +396,13 @@ export default function Home() {
                 <button onClick={() => agregarDigito('7')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">7</button>
                 <button onClick={() => agregarDigito('8')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">8</button>
                 <button onClick={() => agregarDigito('9')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">9</button>
-                <button onClick={aplicarDescuentoPorcentaje} disabled={!lineaSeleccionada} className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Dto%</button>
+                <button onClick={() => {setModoEdicion('dtoPorcentaje'); limpiarCalculadora();}} disabled={!lineaSeleccionada} className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Dto%</button>
                 
                 {/* Fila 2 */}
                 <button onClick={() => agregarDigito('4')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">4</button>
                 <button onClick={() => agregarDigito('5')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">5</button>
                 <button onClick={() => agregarDigito('6')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">6</button>
-                <button onClick={aplicarDescuentoFijo} disabled={!lineaSeleccionada} className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Dto€</button>
+                <button onClick={() => {setModoEdicion('dtoFijo'); limpiarCalculadora();}} disabled={!lineaSeleccionada} className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Dto€</button>
                 
                 {/* Fila 3 */}
                 <button onClick={() => agregarDigito('1')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">1</button>
