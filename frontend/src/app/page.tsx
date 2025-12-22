@@ -39,7 +39,7 @@ export default function Home() {
   const [articulos, setArticulos] = useState<Articulo[]>([]);
 
   const agregarArticulo = (articulo: Articulo) => {
-    const precioFinal = parseFloat(precioUnitario) || articulo.price;
+    const precioFinal = articulo.price;
     const indiceExistente = lineasTicket.findIndex(
       linea => linea.articulo.id === articulo.id && linea.precioUnitario === precioFinal
     );
@@ -80,16 +80,51 @@ export default function Home() {
   };
 
   const agregarDigito = (digito: string) => {
+    let nuevoValor;
     if (valorCalculadora === '0') {
-      setValorCalculadora(digito);
+      nuevoValor = digito;
     } else {
-      setValorCalculadora(valorCalculadora + digito);
+      nuevoValor = valorCalculadora + digito;
+    }
+    setValorCalculadora(nuevoValor);
+    
+    // Actualizar precio del artículo seleccionado en tiempo real
+    if (lineaSeleccionada !== null) {
+      const nuevoPrecio = parseFloat(nuevoValor) || 0;
+      const lineasActualizadas = lineasTicket.map(linea => {
+        if (linea.id === lineaSeleccionada) {
+          return {
+            ...linea,
+            precioUnitario: nuevoPrecio,
+            total: nuevoPrecio * linea.cantidad
+          };
+        }
+        return linea;
+      });
+      setLineasTicket(lineasActualizadas);
     }
   };
 
   const agregarPunto = () => {
     if (!valorCalculadora.includes('.')) {
-      setValorCalculadora(valorCalculadora + '.');
+      const nuevoValor = valorCalculadora + '.';
+      setValorCalculadora(nuevoValor);
+      
+      // Actualizar precio del artículo seleccionado en tiempo real
+      if (lineaSeleccionada !== null) {
+        const nuevoPrecio = parseFloat(nuevoValor) || 0;
+        const lineasActualizadas = lineasTicket.map(linea => {
+          if (linea.id === lineaSeleccionada) {
+            return {
+              ...linea,
+              precioUnitario: nuevoPrecio,
+              total: nuevoPrecio * linea.cantidad
+            };
+          }
+          return linea;
+        });
+        setLineasTicket(lineasActualizadas);
+      }
     }
   };
 
@@ -297,25 +332,25 @@ export default function Home() {
                 <button onClick={() => agregarDigito('7')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">7</button>
                 <button onClick={() => agregarDigito('8')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">8</button>
                 <button onClick={() => agregarDigito('9')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">9</button>
-                <button onClick={aplicarDescuentoPorcentaje} className="bg-orange-500 hover:bg-orange-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Dto%</button>
+                <button onClick={aplicarDescuentoPorcentaje} disabled={!lineaSeleccionada} className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Dto%</button>
                 
                 {/* Fila 2 */}
                 <button onClick={() => agregarDigito('4')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">4</button>
                 <button onClick={() => agregarDigito('5')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">5</button>
                 <button onClick={() => agregarDigito('6')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">6</button>
-                <button onClick={aplicarDescuentoFijo} className="bg-orange-500 hover:bg-orange-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Dto€</button>
+                <button onClick={aplicarDescuentoFijo} disabled={!lineaSeleccionada} className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Dto€</button>
                 
                 {/* Fila 3 */}
                 <button onClick={() => agregarDigito('1')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">1</button>
                 <button onClick={() => agregarDigito('2')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">2</button>
                 <button onClick={() => agregarDigito('3')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">3</button>
-                <button onClick={mostrarCantidad} className="bg-purple-500 hover:bg-purple-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Can</button>
+                <button onClick={mostrarCantidad} disabled={!lineaSeleccionada} className="bg-purple-500 hover:bg-purple-600 disabled:bg-gray-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Can</button>
                 
                 {/* Fila 4 */}
                 <button onClick={() => agregarDigito('0')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">0</button>
                 <button onClick={agregarPunto} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">.</button>
                 <button onClick={limpiarCalculadora} className="bg-red-500 hover:bg-red-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">C</button>
-                <button onClick={() => setPrecioUnitario(valorCalculadora)} className="bg-purple-500 hover:bg-purple-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Prec</button>
+                <button onClick={() => {setPrecioUnitario(valorCalculadora); limpiarCalculadora();}} disabled={!lineaSeleccionada} className="bg-purple-500 hover:bg-purple-600 disabled:bg-gray-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Prec</button>
               </div>
             </div>
           </div>
@@ -359,7 +394,7 @@ export default function Home() {
                     onDoubleClick={() => mostrarPrecioUnitario(articulo)}
                     className="bg-slate-700 border-2 border-slate-600 hover:border-blue-400 hover:bg-slate-600 font-medium py-4 px-3 rounded-lg text-center transition-all text-gray-300"
                   >
-                    <div className="text-sm">{articulo.name}</div>
+                    <div className="text-sm font-bold">{articulo.name}</div>
                     <div className="text-lg font-bold text-blue-400">{articulo.price.toFixed(2)}€</div>
                   </button>
                 ))
@@ -373,6 +408,8 @@ export default function Home() {
       <ConfigModal 
         isOpen={isConfigOpen} 
         onClose={() => setIsConfigOpen(false)} 
+        esTemaOscuro={true}
+        setEsTemaOscuro={() => {}}
       />
 
       {/* Modal de Cobro */}
