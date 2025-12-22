@@ -170,6 +170,7 @@ function CrudContent({ entityType }: CrudContentProps) {
   const [loading, setLoading] = useState(false);
 
   const items = entityType === 'familias' ? familias : articulos;
+  const canCreateArticulos = entityType === 'articulos' && familias.length > 0;
 
 
 
@@ -198,8 +199,15 @@ function CrudContent({ entityType }: CrudContentProps) {
   };
 
   const handleCreate = () => {
+    // Verificar si hay familias disponibles al crear un artículo
+    if (entityType === 'articulos' && familias.length === 0) {
+      alert('Debes crear al menos una familia antes de poder crear artículos');
+      return;
+    }
+    
     setEditingItem(null);
-    setFormData(entityType === 'familias' ? { name: '' } : { name: '', price: 0, family_id: 1 });
+    const defaultFamilyId = familias.length > 0 ? familias[0].id : 1;
+    setFormData(entityType === 'familias' ? { name: '' } : { name: '', price: 0, family_id: defaultFamilyId });
     setIsEditing(true);
   };
 
@@ -210,6 +218,16 @@ function CrudContent({ entityType }: CrudContentProps) {
   };
 
   const handleDelete = async (id: number) => {
+    if (entityType === 'familias') {
+      // Verificar si hay artículos asociados a esta familia
+      const articulosAsociados = articulos.filter(articulo => articulo.family_id === id);
+      
+      if (articulosAsociados.length > 0) {
+        alert(`No se puede eliminar esta familia porque tiene ${articulosAsociados.length} artículo(s) asociado(s).\n\nElimina primero los artículos o reasígnalos a otra familia.`);
+        return;
+      }
+    }
+
     if (confirm('¿Estás seguro de eliminar este elemento?')) {
       try {
         if (entityType === 'familias') {
@@ -219,7 +237,12 @@ function CrudContent({ entityType }: CrudContentProps) {
           await apiService.deleteArticulo(id);
           setArticulos(articulos.filter(item => item.id !== id));
         }
-
+        // Notificar al componente principal con retraso
+        setTimeout(() => {
+          if (onDataUpdate) {
+            onDataUpdate();
+          }
+        }, 50);
       } catch (error) {
         console.error('Error deleting item:', error);
         alert('Error al eliminar el elemento');
@@ -324,12 +347,17 @@ function CrudContent({ entityType }: CrudContentProps) {
                   value={formData.family_id || ''}
                   onChange={(e) => setFormData({ ...formData, family_id: parseInt(e.target.value) })}
                   className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled={familias.length === 0}
                 >
-                  {familias.map(familia => (
-                    <option key={familia.id} value={familia.id}>
-                      {familia.name}
-                    </option>
-                  ))}
+                  {familias.length === 0 ? (
+                    <option value="">No hay familias disponibles</option>
+                  ) : (
+                    familias.map(familia => (
+                      <option key={familia.id} value={familia.id}>
+                        {familia.name}
+                      </option>
+                    ))
+                  )}
                 </select>
               </div>
             </>
@@ -362,9 +390,17 @@ function CrudContent({ entityType }: CrudContentProps) {
         </h3>
         <button
           onClick={handleCreate}
-          className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+          disabled={entityType === 'articulos' && familias.length === 0}
+          className={`${entityType === 'articulos' && familias.length === 0 
+            ? 'bg-gray-400 text-gray-300 cursor-not-allowed' 
+            : 'bg-green-500 hover:bg-green-600 text-white'} font-semibold py-2 px-4 rounded-lg transition-colors`}
         >
           ➕ Crear {entityType === 'familias' ? 'Familia' : 'Artículo'}
+          {entityType === 'articulos' && familias.length === 0 && (
+            <span className="block text-xs mt-1">
+              (Crea primero una familia)
+            </span>
+          )}
         </button>
       </div>
 
@@ -399,7 +435,13 @@ function CrudContent({ entityType }: CrudContentProps) {
                       </button>
                       <button
                         onClick={() => handleDelete(item.id)}
-                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                        className={`${articulos.filter(a => a.family_id === item.id).length > 0 
+                          ? 'bg-gray-400 text-gray-300 cursor-not-allowed' 
+                          : 'bg-red-500 hover:bg-red-600 text-white'} px-3 py-1 rounded text-sm transition-colors`}
+                        disabled={articulos.filter(a => a.family_id === item.id).length > 0}
+                        title={articulos.filter(a => a.family_id === item.id).length > 0 
+                          ? `Hay ${articulos.filter(a => a.family_id === item.id).length} artículos asociados` 
+                          : 'Eliminar familia'}
                       >
                         🗑️ Eliminar
                       </button>
