@@ -13,12 +13,13 @@ const articulo_entity_1 = require("../../common/entities/articulo.entity");
 const familia_entity_1 = require("../../common/entities/familia.entity");
 const articulos_controller_1 = require("./articulos.controller");
 const articulos_service_1 = require("./articulos.service");
+const familias_module_1 = require("../familias/familias.module");
 let ArticulosModule = class ArticulosModule {
 };
 exports.ArticulosModule = ArticulosModule;
 exports.ArticulosModule = ArticulosModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([articulo_entity_1.Articulo, familia_entity_1.Familia])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([articulo_entity_1.Articulo, familia_entity_1.Familia]), (0, common_1.forwardRef)(() => familias_module_1.FamiliasModule)],
         controllers: [articulos_controller_1.ArticulosController],
         providers: [articulos_service_1.ArticulosService],
         exports: [articulos_service_1.ArticulosService],

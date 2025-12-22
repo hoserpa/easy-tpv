@@ -12,12 +12,13 @@ const typeorm_1 = require("@nestjs/typeorm");
 const familia_entity_1 = require("../../common/entities/familia.entity");
 const familias_controller_1 = require("./familias.controller");
 const familias_service_1 = require("./familias.service");
+const articulos_module_1 = require("../articulos/articulos.module");
 let FamiliasModule = class FamiliasModule {
 };
 exports.FamiliasModule = FamiliasModule;
 exports.FamiliasModule = FamiliasModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([familia_entity_1.Familia])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([familia_entity_1.Familia]), (0, common_1.forwardRef)(() => articulos_module_1.ArticulosModule)],
         controllers: [familias_controller_1.FamiliasController],
         providers: [familias_service_1.FamiliasService],
         exports: [familias_service_1.FamiliasService],

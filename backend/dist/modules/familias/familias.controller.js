@@ -17,10 +17,13 @@ const common_1 = require("@nestjs/common");
 const familias_service_1 = require("./familias.service");
 const create_familia_dto_1 = require("../../common/dto/create-familia.dto");
 const update_familia_dto_1 = require("../../common/dto/update-familia.dto");
+const articulos_service_1 = require("../articulos/articulos.service");
 let FamiliasController = class FamiliasController {
     familiasService;
-    constructor(familiasService) {
+    articulosService;
+    constructor(familiasService, articulosService) {
         this.familiasService = familiasService;
+        this.articulosService = articulosService;
     }
     create(createFamiliaDto) {
         if (!createFamiliaDto.name || createFamiliaDto.name.trim().length === 0) {
@@ -60,6 +63,10 @@ let FamiliasController = class FamiliasController {
         const familiaId = parseInt(id, 10);
         if (isNaN(familiaId)) {
             throw new common_1.HttpException('ID inválido', common_1.HttpStatus.BAD_REQUEST);
+        }
+        const articulosAsociados = this.articulosService.findByFamily(familiaId);
+        if (articulosAsociados.length > 0) {
+            throw new common_1.HttpException(`No se puede eliminar esta familia porque tiene ${articulosAsociados.length} artículo(s) asociado(s). Elimine primero los artículos o reasígnelos a otra familia.`, common_1.HttpStatus.CONFLICT);
         }
         const eliminado = this.familiasService.remove(familiaId);
         if (!eliminado) {
@@ -106,6 +113,8 @@ __decorate([
 ], FamiliasController.prototype, "remove", null);
 exports.FamiliasController = FamiliasController = __decorate([
     (0, common_1.Controller)('familias'),
-    __metadata("design:paramtypes", [familias_service_1.FamiliasService])
+    __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => articulos_service_1.ArticulosService))),
+    __metadata("design:paramtypes", [familias_service_1.FamiliasService,
+        articulos_service_1.ArticulosService])
 ], FamiliasController);
 //# sourceMappingURL=familias.controller.js.map

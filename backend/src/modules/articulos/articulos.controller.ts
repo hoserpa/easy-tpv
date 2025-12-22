@@ -8,14 +8,21 @@ import {
   Delete,
   HttpException,
   HttpStatus,
+  forwardRef,
+  Inject,
 } from '@nestjs/common';
 import { ArticulosService } from './articulos.service';
 import { CreateArticuloDto } from '../../common/dto/create-articulo.dto';
 import { UpdateArticuloDto } from '../../common/dto/update-articulo.dto';
+import { FamiliasService } from '../familias/familias.service';
 
 @Controller('articulos')
 export class ArticulosController {
-  constructor(private readonly articulosService: ArticulosService) {}
+  constructor(
+    private readonly articulosService: ArticulosService,
+    @Inject(forwardRef(() => FamiliasService))
+    private readonly familiasService: FamiliasService,
+  ) {}
 
   @Post()
   create(@Body() createArticuloDto: CreateArticuloDto) {
@@ -37,6 +44,16 @@ export class ArticulosController {
         HttpStatus.BAD_REQUEST,
       );
     }
+    
+    // Verificar que la familia exista
+    const familia = this.familiasService.findOne(createArticuloDto.family_id);
+    if (!familia) {
+      throw new HttpException(
+        'La familia especificada no existe',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    
     return this.articulosService.create(createArticuloDto);
   }
 
@@ -90,6 +107,17 @@ export class ArticulosController {
         'El ID de la familia es inválido',
         HttpStatus.BAD_REQUEST,
       );
+    }
+    
+    // Verificar que la nueva familia exista (si se está actualizando)
+    if (updateArticuloDto.family_id !== undefined) {
+      const familia = this.familiasService.findOne(updateArticuloDto.family_id);
+      if (!familia) {
+        throw new HttpException(
+          'La familia especificada no existe',
+          HttpStatus.NOT_FOUND,
+        );
+      }
     }
     if (updateArticuloDto.price !== undefined && updateArticuloDto.price < 0) {
       throw new HttpException(

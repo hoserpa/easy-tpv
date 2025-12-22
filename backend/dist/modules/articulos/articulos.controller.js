@@ -17,10 +17,13 @@ const common_1 = require("@nestjs/common");
 const articulos_service_1 = require("./articulos.service");
 const create_articulo_dto_1 = require("../../common/dto/create-articulo.dto");
 const update_articulo_dto_1 = require("../../common/dto/update-articulo.dto");
+const familias_service_1 = require("../familias/familias.service");
 let ArticulosController = class ArticulosController {
     articulosService;
-    constructor(articulosService) {
+    familiasService;
+    constructor(articulosService, familiasService) {
         this.articulosService = articulosService;
+        this.familiasService = familiasService;
     }
     create(createArticuloDto) {
         if (!createArticuloDto.name || createArticuloDto.name.trim().length === 0) {
@@ -31,6 +34,10 @@ let ArticulosController = class ArticulosController {
         }
         if (createArticuloDto.price < 0) {
             throw new common_1.HttpException('El precio no puede ser negativo', common_1.HttpStatus.BAD_REQUEST);
+        }
+        const familia = this.familiasService.findOne(createArticuloDto.family_id);
+        if (!familia) {
+            throw new common_1.HttpException('La familia especificada no existe', common_1.HttpStatus.NOT_FOUND);
         }
         return this.articulosService.create(createArticuloDto);
     }
@@ -66,6 +73,12 @@ let ArticulosController = class ArticulosController {
         if (updateArticuloDto.family_id !== undefined &&
             updateArticuloDto.family_id <= 0) {
             throw new common_1.HttpException('El ID de la familia es inválido', common_1.HttpStatus.BAD_REQUEST);
+        }
+        if (updateArticuloDto.family_id !== undefined) {
+            const familia = this.familiasService.findOne(updateArticuloDto.family_id);
+            if (!familia) {
+                throw new common_1.HttpException('La familia especificada no existe', common_1.HttpStatus.NOT_FOUND);
+            }
         }
         if (updateArticuloDto.price !== undefined && updateArticuloDto.price < 0) {
             throw new common_1.HttpException('El precio no puede ser negativo', common_1.HttpStatus.BAD_REQUEST);
@@ -133,6 +146,8 @@ __decorate([
 ], ArticulosController.prototype, "remove", null);
 exports.ArticulosController = ArticulosController = __decorate([
     (0, common_1.Controller)('articulos'),
-    __metadata("design:paramtypes", [articulos_service_1.ArticulosService])
+    __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => familias_service_1.FamiliasService))),
+    __metadata("design:paramtypes", [articulos_service_1.ArticulosService,
+        familias_service_1.FamiliasService])
 ], ArticulosController);
 //# sourceMappingURL=articulos.controller.js.map

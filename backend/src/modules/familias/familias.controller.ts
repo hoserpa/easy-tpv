@@ -8,14 +8,21 @@ import {
   Delete,
   HttpException,
   HttpStatus,
+  forwardRef,
+  Inject,
 } from '@nestjs/common';
 import { FamiliasService } from './familias.service';
 import { CreateFamiliaDto } from '../../common/dto/create-familia.dto';
 import { UpdateFamiliaDto } from '../../common/dto/update-familia.dto';
+import { ArticulosService } from '../articulos/articulos.service';
 
 @Controller('familias')
 export class FamiliasController {
-  constructor(private readonly familiasService: FamiliasService) {}
+  constructor(
+    private readonly familiasService: FamiliasService,
+    @Inject(forwardRef(() => ArticulosService))
+    private readonly articulosService: ArticulosService,
+  ) {}
 
   @Post()
   create(@Body() createFamiliaDto: CreateFamiliaDto) {
@@ -71,6 +78,16 @@ export class FamiliasController {
     if (isNaN(familiaId)) {
       throw new HttpException('ID inválido', HttpStatus.BAD_REQUEST);
     }
+
+    // Verificar si hay artículos asociados a esta familia
+    const articulosAsociados = this.articulosService.findByFamily(familiaId);
+    if (articulosAsociados.length > 0) {
+      throw new HttpException(
+        `No se puede eliminar esta familia porque tiene ${articulosAsociados.length} artículo(s) asociado(s). Elimine primero los artículos o reasígnelos a otra familia.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
     const eliminado = this.familiasService.remove(familiaId);
     if (!eliminado) {
       throw new HttpException('Familia no encontrada', HttpStatus.NOT_FOUND);
