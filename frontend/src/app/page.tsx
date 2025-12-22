@@ -34,6 +34,7 @@ export default function Home() {
   const [lineaSeleccionada, setLineaSeleccionada] = useState<number | null>(null);
   const [cantidadArticulo, setCantidadArticulo] = useState(1);
   const [precioUnitario, setPrecioUnitario] = useState('');
+  const [modoEdicion, setModoEdicion] = useState<'precio' | 'cantidad' | null>(null);
   const [dineroRecibido, setDineroRecibido] = useState('');
   const [familias, setFamilias] = useState<Familia[]>([]);
   const [articulos, setArticulos] = useState<Articulo[]>([]);
@@ -79,18 +80,9 @@ export default function Home() {
     setValorCalculadora('0');
   };
 
-  const agregarDigito = (digito: string) => {
-    let nuevoValor;
-    if (valorCalculadora === '0') {
-      nuevoValor = digito;
-    } else {
-      nuevoValor = valorCalculadora + digito;
-    }
-    setValorCalculadora(nuevoValor);
-    
-    // Actualizar precio del artículo seleccionado en tiempo real
+  const actualizarPrecioArticulo = () => {
     if (lineaSeleccionada !== null) {
-      const nuevoPrecio = parseFloat(nuevoValor) || 0;
+      const nuevoPrecio = parseFloat(valorCalculadora) || 0;
       const lineasActualizadas = lineasTicket.map(linea => {
         if (linea.id === lineaSeleccionada) {
           return {
@@ -105,13 +97,65 @@ export default function Home() {
     }
   };
 
+  const actualizarCantidadArticulo = () => {
+    if (lineaSeleccionada !== null) {
+      const nuevaCantidad = parseInt(valorCalculadora) || 1;
+      const lineasActualizadas = lineasTicket.map(linea => {
+        if (linea.id === lineaSeleccionada) {
+          return {
+            ...linea,
+            cantidad: nuevaCantidad,
+            total: nuevaCantidad * linea.precioUnitario
+          };
+        }
+        return linea;
+      });
+      setLineasTicket(lineasActualizadas);
+    }
+  };
+
+  const agregarDigito = (digito: string) => {
+    let nuevoValor;
+    if (valorCalculadora === '0') {
+      nuevoValor = digito;
+    } else {
+      nuevoValor = valorCalculadora + digito;
+    }
+    setValorCalculadora(nuevoValor);
+    
+    // Actualizar artículo seleccionado en tiempo real según el modo
+    if (lineaSeleccionada !== null && modoEdicion) {
+      const lineasActualizadas = lineasTicket.map(linea => {
+        if (linea.id === lineaSeleccionada) {
+          if (modoEdicion === 'precio') {
+            const nuevoPrecio = parseFloat(nuevoValor) || 0;
+            return {
+              ...linea,
+              precioUnitario: nuevoPrecio,
+              total: nuevoPrecio * linea.cantidad
+            };
+          } else if (modoEdicion === 'cantidad') {
+            const nuevaCantidad = parseInt(nuevoValor) || 1;
+            return {
+              ...linea,
+              cantidad: nuevaCantidad,
+              total: nuevaCantidad * linea.precioUnitario
+            };
+          }
+        }
+        return linea;
+      });
+      setLineasTicket(lineasActualizadas);
+    }
+  };
+
   const agregarPunto = () => {
     if (!valorCalculadora.includes('.')) {
       const nuevoValor = valorCalculadora + '.';
       setValorCalculadora(nuevoValor);
       
-      // Actualizar precio del artículo seleccionado en tiempo real
-      if (lineaSeleccionada !== null) {
+      // Actualizar precio del artículo seleccionado en tiempo real (solo para precio)
+      if (lineaSeleccionada !== null && modoEdicion === 'precio') {
         const nuevoPrecio = parseFloat(nuevoValor) || 0;
         const lineasActualizadas = lineasTicket.map(linea => {
           if (linea.id === lineaSeleccionada) {
@@ -344,13 +388,13 @@ export default function Home() {
                 <button onClick={() => agregarDigito('1')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">1</button>
                 <button onClick={() => agregarDigito('2')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">2</button>
                 <button onClick={() => agregarDigito('3')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">3</button>
-                <button onClick={mostrarCantidad} disabled={!lineaSeleccionada} className="bg-purple-500 hover:bg-purple-600 disabled:bg-gray-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Can</button>
+                <button onClick={() => {setModoEdicion('cantidad'); limpiarCalculadora();}} disabled={!lineaSeleccionada} className="bg-purple-500 hover:bg-purple-600 disabled:bg-gray-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Can</button>
                 
                 {/* Fila 4 */}
                 <button onClick={() => agregarDigito('0')} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">0</button>
                 <button onClick={agregarPunto} className="bg-blue-500 hover:bg-blue-600 text-white font-bold rounded text-lg transition-colors flex items-center justify-center h-full">.</button>
                 <button onClick={limpiarCalculadora} className="bg-red-500 hover:bg-red-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">C</button>
-                <button onClick={() => {setPrecioUnitario(valorCalculadora); limpiarCalculadora();}} disabled={!lineaSeleccionada} className="bg-purple-500 hover:bg-purple-600 disabled:bg-gray-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Prec</button>
+                <button onClick={() => {setModoEdicion('precio'); limpiarCalculadora();}} disabled={!lineaSeleccionada} className="bg-purple-500 hover:bg-purple-600 disabled:bg-gray-600 text-white font-bold rounded text-sm transition-colors flex items-center justify-center h-full">Prec</button>
               </div>
             </div>
           </div>
