@@ -121,6 +121,15 @@ export default function Home() {
     } else {
       nuevoValor = valorCalculadora + digito;
     }
+    
+    // Limitar a 2 decimales para modos de descuento y precio
+    if ((modoEdicion === 'dtoFijo' || modoEdicion === 'dtoPorcentaje' || modoEdicion === 'precio') && nuevoValor.includes('.')) {
+      const partes = nuevoValor.split('.');
+      if (partes[1] && partes[1].length > 2) {
+        return; // No agregar más dígitos si ya hay 2 decimales
+      }
+    }
+    
     setValorCalculadora(nuevoValor);
     
     // Actualizar artículo seleccionado en tiempo real según el modo
@@ -170,20 +179,32 @@ export default function Home() {
   };
 
   const agregarPunto = () => {
-    if (!valorCalculadora.includes('.')) {
+    // Permitir punto decimal solo para modos que lo necesiten
+    if (!valorCalculadora.includes('.') && (modoEdicion === 'dtoFijo' || modoEdicion === 'dtoPorcentaje' || modoEdicion === 'precio')) {
       const nuevoValor = valorCalculadora + '.';
       setValorCalculadora(nuevoValor);
       
       // Actualizar precio del artículo seleccionado en tiempo real (solo para precio)
-      if (lineaSeleccionada !== null && modoEdicion === 'precio') {
+      if (lineaSeleccionada !== null && (modoEdicion === 'precio' || modoEdicion === 'dtoFijo')) {
         const nuevoPrecio = parseFloat(nuevoValor) || 0;
         const lineasActualizadas = lineasTicket.map(linea => {
           if (linea.id === lineaSeleccionada) {
-            return {
-              ...linea,
-              precioUnitario: nuevoPrecio,
-              total: nuevoPrecio * linea.cantidad
-            };
+            if (modoEdicion === 'precio') {
+              return {
+                ...linea,
+                precioUnitario: nuevoPrecio,
+                total: nuevoPrecio * linea.cantidad
+              };
+            } else if (modoEdicion === 'dtoFijo') {
+              const totalSinDto = linea.precioUnitario * linea.cantidad;
+              const nuevoTotal = Math.max(0, totalSinDto - nuevoPrecio);
+              return {
+                ...linea,
+                descuentoTipo: 'fixed',
+                descuentoValor: nuevoPrecio,
+                total: nuevoTotal
+              };
+            }
           }
           return linea;
         });
