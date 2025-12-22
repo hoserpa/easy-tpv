@@ -426,30 +426,116 @@ export default function Home() {
       {/* Modal de Cobro */}
       {mostrarModalCobro && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-96`}>
-            <h2 className={`text-2xl font-bold mb-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Cobrar</h2>
-            <div className="mb-4">
-              <div className={`text-lg ${esTemaOscuro ? 'text-white' : 'text-gray-700'} mb-2`}>Total a pagar:</div>
-              <div className="text-3xl font-bold text-yellow-400">{calcularTotal().toFixed(2)}€</div>
-            </div>
-            <div className="mb-4">
-              <label className={`block ${esTemaOscuro ? 'text-white' : 'text-gray-700'} mb-2`}>Dinero recibido:</label>
-              <input
-                type="number"
-                value={dineroRecibido}
-                onChange={(e) => setDineroRecibido(e.target.value)}
-                className={`w-full p-3 ${esTemaOscuro ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-800'} border rounded-lg`}
-                placeholder="0.00"
-              />
-            </div>
-            {dineroRecibido && (
-              <div className="mb-4">
-                <div className={`text-lg ${esTemaOscuro ? 'text-white' : 'text-gray-700'} mb-2`}>Vueltas:</div>
-                <div className="text-2xl font-bold text-green-400">
-                  {Math.max(0, calcularVueltas()).toFixed(2)}€
-                </div>
+          <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-[600px] max-h-[80vh] overflow-y-auto`}>
+            <h2 className={`text-2xl font-bold mb-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Resumen del Ticket</h2>
+            
+            {/* Resumen de artículos */}
+            <div className={`mb-6 p-4 rounded-lg ${esTemaOscuro ? 'bg-slate-700' : 'bg-gray-50'}`}>
+              <div className="space-y-2">
+                {lineasTicket.map((linea) => (
+                  <div key={linea.id} className="flex justify-between items-center">
+                    <div className="flex-1">
+                      <div className={`font-medium ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+                        {linea.cantidad} × {linea.articulo.name}
+                      </div>
+                      <div className={`text-sm ${esTemaOscuro ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {linea.precioUnitario.toFixed(2)}€/ud
+                        {linea.descuentoTipo && (
+                          <span className="text-orange-400 ml-2">
+                            -{linea.descuentoValor}{linea.descuentoTipo === 'percent' ? '%' : '€'} dto
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className={`font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+                      {linea.total.toFixed(2)}€
+                    </div>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
+
+            {/* Resumen de totales */}
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between">
+                <span className={`${esTemaOscuro ? 'text-gray-400' : 'text-gray-600'}`}>Subtotal:</span>
+                <span className={`font-medium ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+                  {lineasTicket.reduce((total, linea) => {
+                    const subtotal = linea.precioUnitario * linea.cantidad;
+                    return total + subtotal;
+                  }, 0).toFixed(2)}€
+                </span>
+              </div>
+              
+              <div className="flex justify-between">
+                <span className={`${esTemaOscuro ? 'text-gray-400' : 'text-gray-600'}`}>Descuentos:</span>
+                <span className={`font-medium text-orange-400`}>
+                  -{lineasTicket.reduce((total, linea) => {
+                    if (linea.descuentoTipo) {
+                      const subtotal = linea.precioUnitario * linea.cantidad;
+                      if (linea.descuentoTipo === 'fixed') {
+                        return total + linea.descuentoValor;
+                      } else {
+                        return total + (subtotal * linea.descuentoValor / 100);
+                      }
+                    }
+                    return total;
+                  }, 0).toFixed(2)}€
+                </span>
+              </div>
+              
+              <div className={`flex justify-between text-xl font-bold pt-3 border-t ${esTemaOscuro ? 'border-slate-600 text-white' : 'border-gray-300 text-gray-800'}`}>
+                <span>Total:</span>
+                <span className="text-yellow-400">{calcularTotal().toFixed(2)}€</span>
+              </div>
+            </div>
+
+            {/* Formulario de cobro */}
+            <div className="mb-6">
+              <div className="mb-4">
+                <div className={`text-lg ${esTemaOscuro ? 'text-white' : 'text-gray-700'} mb-2`}>Total a pagar:</div>
+                <div className="text-3xl font-bold text-yellow-400">{calcularTotal().toFixed(2)}€</div>
+              </div>
+              
+              <div className="mb-4">
+                <label className={`block ${esTemaOscuro ? 'text-white' : 'text-gray-700'} mb-2`}>Dinero recibido:</label>
+                <div className="grid grid-cols-2 gap-3">
+                  {[5, 10, 20, 50].map((billete) => (
+                    <button
+                      key={billete}
+                      onClick={() => setDineroRecibido(billete.toString())}
+                      className={`p-4 rounded-lg font-bold text-lg transition-colors ${
+                        dineroRecibido === billete.toString()
+                          ? 'bg-blue-600 text-white'
+                          : esTemaOscuro 
+                            ? 'bg-slate-700 hover:bg-slate-600 text-white border-2 border-slate-600'
+                            : 'bg-gray-100 hover:bg-gray-200 text-gray-800 border-2 border-gray-300'
+                      }`}
+                    >
+                      {billete}€
+                    </button>
+                  ))}
+                </div>
+                {dineroRecibido && (
+                  <div className={`mt-3 p-3 rounded-lg ${esTemaOscuro ? 'bg-slate-700' : 'bg-gray-100'}`}>
+                    <div className={`text-sm ${esTemaOscuro ? 'text-gray-400' : 'text-gray-600'} mb-1`}>Recibido:</div>
+                    <div className={`text-xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+                      {dineroRecibido}€
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {dineroRecibido && (
+                <div className="mb-4">
+                  <div className={`text-lg ${esTemaOscuro ? 'text-white' : 'text-gray-700'} mb-2`}>Vueltas:</div>
+                  <div className="text-2xl font-bold text-green-400">
+                    {Math.max(0, calcularVueltas()).toFixed(2)}€
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="flex gap-3">
               <button
                 onClick={() => {
@@ -458,7 +544,7 @@ export default function Home() {
                   setMostrarModalCobro(false);
                   setDineroRecibido('');
                 }}
-                disabled={!dineroRecibido || parseFloat(dineroRecibido) < calcularTotal()}
+                disabled={dineroRecibido && parseFloat(dineroRecibido) < calcularTotal()}
                 className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-600 text-white font-bold py-3 rounded-lg transition-colors"
               >
                 Cobrar
