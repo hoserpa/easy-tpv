@@ -1,0 +1,21 @@
+setShowBillingView is not defined
+src/components/ConfigModal.tsx (43:5) @ handleOpenBilling
+
+
+  41 |
+  42 |   const handleOpenBilling = () => {
+> 43 |     setShowBillingView(true);
+     |     ^
+  44 |   };
+  45 |
+  46 |   if (!isOpen) return null;
+Call Stack
+13
+
+Show 9 ignore-listed frame(s)
+handleOpenBilling
+src/components/ConfigModal.tsx (43:5)
+button
+<anonymous>
+ConfigModal
+src/components/ConfigModal.tsx (100:13)

@@ -19,6 +19,7 @@ interface SelectOption {
 export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOscuro }: ConfigModalProps) {
   const [selectedOption, setSelectedOption] = useState<string>('familias');
   const [showCrudView, setShowCrudView] = useState(false);
+  const [showBillingView, setShowBillingView] = useState(false);
 
 
 
@@ -37,79 +38,20 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
 
   const handleBackToMenu = () => {
     setShowCrudView(false);
+    setShowBillingView(false);
+  };
+
+  const handleOpenBilling = () => {
+    setShowBillingView(true);
   };
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      {!showCrudView ? (
-        // Vista del menú de configuración
-        <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-md`}>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Configuración</h2>
-            <button
-              onClick={onClose}
-              className={`${esTemaOscuro ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-800'} text-2xl font-bold`}
-            >
-              ×
-            </button>
-          </div>
+  if (!isOpen) return null;
 
-          {/* Slider de Tema */}
-          <div className="mb-6 flex justify-end">
-            <div className={`w-32 p-2 ${esTemaOscuro ? 'bg-slate-700' : 'bg-gray-200'} rounded-lg`}>
-              <div className="flex items-center justify-between">
-                {esTemaOscuro ? (
-                  <span className="text-blue-400 text-lg">🌙</span>
-                ) : (
-                  <span className="text-yellow-500 text-lg">☀️</span>
-                )}
-                
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    className="sr-only peer" 
-                    checked={!esTemaOscuro}
-                    onChange={() => setEsTemaOscuro(!esTemaOscuro)}
-                  />
-                  <div className={`w-10 h-5 ${esTemaOscuro ? 'bg-gray-600' : 'bg-gray-300'} peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-400`}></div>
-                </label>
-                
-                {esTemaOscuro ? (
-                  <span className="text-yellow-400 text-lg">☀️</span>
-                ) : (
-                  <span className="text-indigo-600 text-lg">🌙</span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <button
-              onClick={handleOpenCrud}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors text-left"
-            >
-              📝 Gestión de Datos
-            </button>
-            
-            <button
-              disabled
-              className="w-full bg-gray-600 text-gray-400 font-semibold py-3 px-4 rounded-lg text-left cursor-not-allowed"
-            >
-              ⚙️ Configuración General (Próximamente)
-            </button>
-            
-            <button
-              disabled
-              className="w-full bg-gray-600 text-gray-400 font-semibold py-3 px-4 rounded-lg text-left cursor-not-allowed"
-            >
-              🖨️ Impresoras (Próximamente)
-            </button>
-          </div>
-        </div>
-      ) : (
-        // Vista del CRUD
+  if (showCrudView) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col`}>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold text-white">Gestión de Datos</h2>
@@ -128,7 +70,6 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
               </button>
             </div>
           </div>
-
           <div className="mb-6">
             <label className={`block text-sm font-medium ${esTemaOscuro ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
               Seleccionar entidad:
@@ -145,12 +86,113 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
               ))}
             </select>
           </div>
-
           <div className={`flex-1 overflow-y-auto rounded-lg p-4 ${esTemaOscuro ? 'bg-slate-900' : 'bg-gray-50'}`}>
             <CrudContent entityType={selectedOption} />
           </div>
         </div>
-      )}
+      </div>
+    );
+  }
+
+  if (showBillingView) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col`}>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold text-white">Facturación</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={handleBackToMenu}
+                className={`${esTemaOscuro ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-300 hover:bg-gray-400'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
+              >
+                ← Volver
+              </button>
+              <button
+                onClick={onClose}
+                className={`${esTemaOscuro ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
+              >
+                ×
+              </button>
+            </div>
+          </div>
+          <div className={`flex-1 overflow-y-auto rounded-lg p-4 ${esTemaOscuro ? 'bg-slate-900' : 'bg-gray-50'}`}>
+            {/* Vista vacía por ahora */}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-md`}>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Configuración</h2>
+          <button
+            onClick={onClose}
+            className={`${esTemaOscuro ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-800'} text-2xl font-bold`}
+          >
+            ×
+          </button>
+        </div>
+        {/* Slider de Tema */}
+        <div className="mb-6 flex justify-end">
+          <div className={`w-32 p-2 ${esTemaOscuro ? 'bg-slate-700' : 'bg-gray-200'} rounded-lg`}>
+            <div className="flex items-center justify-between">
+              {esTemaOscuro ? (
+                <span className="text-blue-400 text-lg">🌙</span>
+              ) : (
+                <span className="text-yellow-500 text-lg">☀️</span>
+              )}
+              
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  className="sr-only peer" 
+                  checked={!esTemaOscuro}
+                  onChange={() => setEsTemaOscuro(!esTemaOscuro)}
+                />
+                <div className={`w-10 h-5 ${esTemaOscuro ? 'bg-gray-600' : 'bg-gray-300'} peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-400`}></div>
+              </label>
+              
+              {esTemaOscuro ? (
+                <span className="text-yellow-400 text-lg">☀️</span>
+              ) : (
+                <span className="text-indigo-600 text-lg">🌙</span>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="space-y-4">
+          <button
+            onClick={handleOpenCrud}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors text-left"
+          >
+            📝 Gestión de Datos
+          </button>
+
+          <button
+            onClick={handleOpenBilling}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors text-left"
+          >
+            💼 Facturación
+          </button>
+          
+          <button
+            disabled
+            className="w-full bg-gray-600 text-gray-400 font-semibold py-3 px-4 rounded-lg text-left cursor-not-allowed"
+          >
+            ⚙️ Configuración General (Próximamente)
+          </button>
+          
+          <button
+            disabled
+            className="w-full bg-gray-600 text-gray-400 font-semibold py-3 px-4 rounded-lg text-left cursor-not-allowed"
+          >
+            🖨️ Impresoras (Próximamente)
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
