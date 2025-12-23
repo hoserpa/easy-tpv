@@ -22,12 +22,6 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
   const [showBillingView, setShowBillingView] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<number | null>(null);
 
-
-
-
-
-
-
   const options: SelectOption[] = [
     { value: 'familias', label: 'Familias' },
     { value: 'articulos', label: 'Artículos' }
@@ -238,8 +232,8 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
           {/* Panel completo del ticket con diseño mejorado */}
           <div className={`rounded-xl shadow-2xl p-6 ${
             esTemaOscuro 
-              ? 'bg-gradient-to-br from-slate-700 to-slate-800 border border-slate-600' 
-              : 'bg-gradient-to-br from-white to-gray-50 border border-gray-200'
+              ? 'bg-linear-to-br from-slate-700 to-slate-800 border border-slate-600' 
+              : 'bg-linear-to-br from-white to-gray-50 border border-gray-200'
           }`}>
             {/* Encabezado del ticket con icono y diseño visual */}
             <div className={`mb-6 pb-4 border-b ${esTemaOscuro ? 'border-slate-600' : 'border-gray-200'}`}>
@@ -326,7 +320,7 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
             {/* Resumen con diseño visual */}
             <div className="space-y-3">
               {/* Línea separadora visual */}
-              <div className={`h-px ${esTemaOscuro ? 'bg-gradient-to-r from-transparent via-slate-500 to-transparent' : 'bg-gradient-to-r from-transparent via-gray-300 to-transparent'}`}></div>
+              <div className={`h-px ${esTemaOscuro ? 'bg-linear-to-r from-transparent via-slate-500 to-transparent' : 'bg-linear-to-r from-transparent via-gray-300 to-transparent'}`}></div>
               
               {/* Subtotal */}
               <div className="flex justify-between items-center py-2">
@@ -361,8 +355,8 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
               {/* Total destacado */}
               <div className={`rounded-lg p-4 mt-4 ${
                 esTemaOscuro 
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-700' 
-                  : 'bg-gradient-to-r from-blue-500 to-blue-600'
+                  ? 'bg-linear-to-r from-blue-600 to-blue-700' 
+                  : 'bg-linear-to-r from-blue-500 to-blue-600'
               }`}>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-3">
@@ -413,7 +407,7 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
                   checked={!esTemaOscuro}
                   onChange={() => setEsTemaOscuro(!esTemaOscuro)}
                 />
-                <div className={`w-10 h-5 ${esTemaOscuro ? 'bg-gray-600' : 'bg-gray-300'} peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-400`}></div>
+                <div className={`w-10 h-5 ${esTemaOscuro ? 'bg-gray-600' : 'bg-gray-300'} peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-px after:left-px after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-400`}></div>
               </label>
               
               {esTemaOscuro ? (
@@ -667,6 +661,7 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
       }
     } catch (error) {
       // Error loading data
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
@@ -716,15 +711,10 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
         } else {
           await apiService.deleteArticulo(id);
           setArticulos(articulos.filter(item => item.id !== id));
-        }
-        // Notificar al componente principal con retraso
-        setTimeout(() => {
-          if (onDataUpdate) {
-            onDataUpdate();
-          }
-        }, 50);
+        }        
       } catch (error) {
         alert('Error al eliminar el elemento');
+        console.error('Error deleting item:', error);
       }
     }
   };
@@ -766,6 +756,7 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
       setFormData({});
     } catch (error) {
       alert('Error al guardar el elemento');
+      console.error('Error saving item:', error);
     }
   };
 
@@ -898,7 +889,6 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
         <table className={`w-full ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
           <thead>
             <tr className={`border-b ${esTemaOscuro ? 'border-slate-600' : 'border-gray-200'}`}>
-              <th className="text-left py-3 px-4">ID</th>
               <th className="text-left py-3 px-4">Nombre</th>
               {entityType === 'articulos' && (
                 <>
@@ -913,7 +903,6 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
               {entityType === 'familias' ? 
                 familias.map((item) => (
                   <tr key={item.id} className={`border-b ${esTemaOscuro ? 'border-slate-700 hover:bg-slate-700' : 'border-gray-200 hover:bg-gray-100'}`}>
-                    <td className="py-3 px-4">{item.id}</td>
                     <td className={`py-3 px-4 font-medium ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>{item.name}</td>
                   <td className="py-3 px-4">
                     <div className="flex gap-2">
@@ -941,7 +930,6 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
               )) :
               articulos.map((item) => (
                 <tr key={item.id} className={`border-b ${esTemaOscuro ? 'border-slate-700 hover:bg-slate-700' : 'border-gray-200 hover:bg-gray-100'}`}>
-                  <td className="py-3 px-4">{item.id}</td>
                   <td className={`py-3 px-4 font-medium ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>{item.name}</td>
                   <td className={`py-3 px-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>{parseFloat(String(item.price)).toFixed(2)}€</td>
                   <td className={`py-3 px-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>

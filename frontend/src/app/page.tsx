@@ -44,10 +44,12 @@ export default function Home() {
         apiService.getFamilias(),
         apiService.getArticulos()
       ]);
-      setFamilias(familiasData);
+      const sortedFamilias = [...familiasData].sort((a, b) => a.id - b.id);
+      setFamilias(sortedFamilias);
       setArticulos(articulosData);
     } catch (error) {
       // Error loading data
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
@@ -430,7 +432,7 @@ export default function Home() {
       {/* Modal de Cobro */}
       {mostrarModalCobro && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-[600px] max-h-[80vh] overflow-y-auto`}>
+          <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-150 max-h-[80vh] overflow-y-auto`}>
             <h2 className={`text-2xl font-bold mb-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Resumen del Ticket</h2>
             
             {/* Resumen de artículos */}
@@ -613,7 +615,7 @@ export default function Home() {
                     alert(`Error al guardar el ticket: ${errorMessage}`);
                   }
                 }}
-                disabled={dineroRecibido && parseFloat(dineroRecibido) < calcularTotal()}
+                disabled={!dineroRecibido || parseFloat(dineroRecibido) < calcularTotal()}
                 className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-600 text-white font-bold py-3 rounded-lg transition-colors"
               >
                 Cobrar
