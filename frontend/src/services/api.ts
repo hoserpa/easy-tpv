@@ -144,8 +144,8 @@ class ApiService {
     return this.request<Ticket[]>('/tickets');
   }
 
-  async getTicket(id: number): Promise<Ticket> {
-    return this.request<Ticket>(`/tickets/${id}`);
+  async getTicket(id: number): Promise<{ ticket: Ticket; lines: TicketLine[] }> {
+    return this.request<{ ticket: Ticket; lines: TicketLine[] }>(`/tickets/${id}`);
   }
 }
 

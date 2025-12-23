@@ -103,9 +103,10 @@ export class TicketsController {
     if (!ticket) {
       throw new HttpException('Ticket no encontrado', HttpStatus.NOT_FOUND);
     }
+    const lines = await this.ticketsService.findTicketLines(ticketId);
     return {
-      ...ticket,
-      lines: await this.ticketsService.findTicketLines(ticketId),
+      ticket,
+      lines,
     };
   }
 

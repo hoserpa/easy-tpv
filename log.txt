@@ -1,9 +1,21 @@
-Datos del frontend: {lineasTicket: Array(2), linesData: Array(2), subtotalTicket: 6.5, totalTicket: 4, totalDescuentoTicket: 2.5, …}
-page.tsx:605 Valores enviados al backend: {lines: Array(2), subtotal: 6.5, discount_type: 'percent', discount_value: 38.46153846153847, total: 4}
+Cannot read properties of undefined (reading 'id')
+src/components/ConfigModal.tsx (194:87) @ TicketDetailModal
 
-Backend - Datos recibidos: { discount_type: 'percent', discount_value: 38.46153846153847 }
-Backend - Cálculos: {
-  subtotal: 6.5,
-  total: 2.4615384615384612,
-  descuentoCalculado: 4.038461538461538
-}
+
+  192 |         <div className="flex justify-between items-center mb-6">
+  193 |           <div>
+> 194 |             <h2 className="text-2xl font-bold text-white">Detalle del Ticket #{ticket.id}</h2>
+      |                                                                                       ^
+  195 |             <p className="text-gray-300">
+  196 |               {new Date(ticket.created_at).toLocaleDateString('es-ES', {
+  197 |                 day: '2-digit',
+Call Stack
+15
+
+Show 12 ignore-listed frame(s)
+TicketDetailModal
+src/components/ConfigModal.tsx (194:87)
+ConfigModal
+src/components/ConfigModal.tsx (108:14)
+Home
+src/app/page.tsx (420:7)

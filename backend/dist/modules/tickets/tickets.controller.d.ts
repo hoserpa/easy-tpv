@@ -23,15 +23,8 @@ export declare class TicketsController {
     }>;
     findAll(): Promise<import("../../common/entities/ticket.entity").Ticket[]>;
     findOne(id: string): Promise<{
+        ticket: import("../../common/entities/ticket.entity").Ticket;
         lines: import("../../common/entities/ticket-line.entity").TicketLine[];
-        id: number;
-        subtotal: number;
-        discount_type: "fixed" | "percent" | null;
-        discount_value: number | null;
-        total: number;
-        created_at: Date;
-        updated_at: Date;
-        ticketLines: import("../../common/entities/ticket-line.entity").TicketLine[];
     }>;
     findTicketLines(id: string): Promise<import("../../common/entities/ticket-line.entity").TicketLine[]>;
 }

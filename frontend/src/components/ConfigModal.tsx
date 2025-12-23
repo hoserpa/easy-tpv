@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { apiService, Familia, Articulo, Ticket } from '../services/api';
+import { apiService, Familia, Articulo, Ticket, TicketLine } from '../services/api';
 
 interface ConfigModalProps {
   isOpen: boolean;
@@ -20,6 +20,7 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
   const [selectedOption, setSelectedOption] = useState<string>('familias');
   const [showCrudView, setShowCrudView] = useState(false);
   const [showBillingView, setShowBillingView] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState<number | null>(null);
 
 
 
@@ -43,6 +44,14 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
 
   const handleOpenBilling = () => {
     setShowBillingView(true);
+  };
+
+  const handleViewTicketDetail = (ticketId: number) => {
+    setSelectedTicket(ticketId);
+  };
+
+  const handleCloseTicketDetail = () => {
+    setSelectedTicket(null);
   };
 
   if (!isOpen) return null;
@@ -95,6 +104,10 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
   }
 
   if (showBillingView) {
+    if (selectedTicket !== null) {
+      return <TicketDetailModal ticketId={selectedTicket} onClose={handleCloseTicketDetail} esTemaOscuro={esTemaOscuro} onBack={() => setSelectedTicket(null)} />;
+    }
+    
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col`}>
@@ -116,12 +129,199 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
             </div>
           </div>
           <div className={`flex-1 overflow-y-auto rounded-lg p-4 ${esTemaOscuro ? 'bg-slate-900' : 'bg-gray-50'}`}>
-            <BillingViewContent />
+            <BillingViewContent onViewTicket={handleViewTicketDetail} />
           </div>
+        </div>
+      </div>
+  );
+}
+
+interface TicketDetailModalProps {
+  ticketId: number;
+  onClose: () => void;
+  onBack: () => void;
+  esTemaOscuro: boolean;
+}
+
+function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDetailModalProps) {
+  const [ticketData, setTicketData] = useState<{ ticket: Ticket; lines: TicketLine[] } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [articulos, setArticulos] = useState<Articulo[]>([]);
+
+  useEffect(() => {
+    const loadTicketDetail = async () => {
+      setLoading(true);
+      try {
+        const [ticketDetail, articulosData] = await Promise.all([
+          apiService.getTicket(ticketId),
+          apiService.getArticulos()
+        ]);
+        setTicketData(ticketDetail);
+        setArticulos(articulosData);
+      } catch (error) {
+        console.error('Error loading ticket detail:', error);
+        alert('Error al cargar los detalles del ticket');
+        onBack();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTicketDetail();
+  }, [ticketId, onBack]);
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-8`}>
+          <div className="text-white">Cargando detalles del ticket...</div>
         </div>
       </div>
     );
   }
+
+  if (!ticketData || !ticketData.ticket) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-8`}>
+          <div className="text-white">No se pudo cargar el ticket</div>
+          <button
+            onClick={onBack}
+            className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+          >
+            Volver
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const { ticket, lines } = ticketData;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col`}>
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-white">Detalle del Ticket #{ticket.id}</h2>
+            <p className="text-gray-300">
+              {new Date(ticket.created_at).toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={onBack}
+              className={`${esTemaOscuro ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-300 hover:bg-gray-400'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
+            >
+              ← Volver
+            </button>
+            <button
+              onClick={onClose}
+              className={`${esTemaOscuro ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+
+        <div className={`flex-1 overflow-y-auto rounded-lg p-4 ${esTemaOscuro ? 'bg-slate-900' : 'bg-gray-50'}`}>
+          {/* Panel completo del ticket */}
+          <div className="p-4 bg-slate-700 rounded-lg">
+            {/* Encabezado del ticket */}
+            <div className="mb-4 pb-3 border-b border-slate-600">
+              <h3 className="text-lg font-semibold text-white mb-2">Ticket #{ticket.id}</h3>
+              <p className="text-gray-300 text-sm">
+                {new Date(ticket.created_at).toLocaleDateString('es-ES', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </p>
+            </div>
+
+            {/* Líneas del ticket */}
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-white mb-3">Artículos</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-white">
+                  <thead>
+                    <tr className="border-b border-slate-600">
+                      <th className="text-center py-2 px-3 w-20">Cant.</th>
+                      <th className="text-left py-2 px-3">Artículo</th>
+                      <th className="text-right py-2 px-3 w-28">P. Unitario</th>
+                      <th className="text-right py-2 px-3 w-24">Descuento</th>
+                      <th className="text-right py-2 px-3 w-28">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {lines.map((line) => {
+                      const articulo = articulos.find(a => a.id === line.articulo_id);
+                      return (
+                        <tr key={line.id} className="border-b border-slate-700 hover:bg-slate-700">
+                          <td className="text-center py-2 px-3 w-20">{line.qty}</td>
+                          <td className="text-left py-2 px-3 font-medium">
+                            {articulo?.name || `Artículo ID: ${line.articulo_id}`}
+                          </td>
+                          <td className="text-right py-2 px-3 w-28">{parseFloat(String(line.unit_price)).toFixed(2)}€</td>
+                          <td className="text-right py-2 px-3 w-24">
+                            {line.discount_type && line.discount_value ? (
+                              line.discount_type === 'fixed' 
+                                ? `-${parseFloat(String(line.discount_value)).toFixed(2)}€`
+                                : `-${parseFloat(String(line.discount_value))}%`
+                            ) : (
+                              '-'
+                            )}
+                          </td>
+                          <td className="text-right py-2 px-3 font-semibold w-28">{parseFloat(String(line.total)).toFixed(2)}€</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Subtotal y descuento */}
+            <div className="mb-3 space-y-1">
+              <div className="flex justify-between text-white">
+                <span className="text-gray-300">Subtotal:</span>
+                <span>{parseFloat(String(ticket.subtotal)).toFixed(2)}€</span>
+              </div>
+              <div className="flex justify-between text-white">
+                <span className="text-gray-300">Descuento:</span>
+                <span>
+                  {ticket.discount_type && ticket.discount_value ? (
+                    ticket.discount_type === 'fixed' 
+                      ? `-${parseFloat(String(ticket.discount_value)).toFixed(2)}€`
+                      : `-${parseFloat(String(ticket.discount_value))}%`
+                  ) : (
+                    '-'
+                  )}
+                </span>
+              </div>
+            </div>
+
+            {/* Total final */}
+            <div className="pt-3 border-t border-slate-600">
+              <div className="flex justify-between text-white">
+                <span className="text-lg font-semibold">Total:</span>
+                <span className="text-lg font-bold">{parseFloat(String(ticket.total)).toFixed(2)}€</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -197,7 +397,7 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
   );
 }
 
-function BillingViewContent() {
+function BillingViewContent({ onViewTicket }: { onViewTicket: (ticketId: number) => void }) {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState('');
@@ -244,10 +444,7 @@ function BillingViewContent() {
     setEndDate('');
   };
 
-  const handleViewTicket = () => {
-    // Sin funcionalidad por ahora
-    alert('Funcionalidad de detalle del ticket pendiente');
-  };
+
 
   if (loading) {
     return (
@@ -335,7 +532,7 @@ function BillingViewContent() {
                 <td className="py-3 px-4 font-semibold">{parseFloat(String(ticket.total)).toFixed(2)}€</td>
                 <td className="py-3 px-4">
                   <button
-                    onClick={() => handleViewTicket()}
+                    onClick={() => onViewTicket(ticket.id)}
                     className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
                   >
                     👁️ Ver detalle

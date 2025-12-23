@@ -67,9 +67,10 @@ let TicketsController = class TicketsController {
         if (!ticket) {
             throw new common_1.HttpException('Ticket no encontrado', common_1.HttpStatus.NOT_FOUND);
         }
+        const lines = await this.ticketsService.findTicketLines(ticketId);
         return {
-            ...ticket,
-            lines: await this.ticketsService.findTicketLines(ticketId),
+            ticket,
+            lines,
         };
     }
     async findTicketLines(id) {
