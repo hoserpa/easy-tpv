@@ -479,6 +479,15 @@ function BillingViewContent({ onViewTicket, esTemaOscuro }: { onViewTicket: (tic
     }
   }, []);
 
+  // Inicializar fechas con el día actual
+  useEffect(() => {
+    const today = new Date();
+    const todayString = today.toISOString().split('T')[0];
+    
+    setStartDate(todayString);
+    setEndDate(todayString);
+  }, []);
+
   useEffect(() => {
     loadTickets();
   }, [loadTickets]);
