@@ -86,7 +86,11 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
             <select
               value={selectedOption}
               onChange={(e) => setSelectedOption(e.target.value)}
-              className={`w-full ${esTemaOscuro ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300 text-gray-800'} border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              className={`w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                esTemaOscuro 
+                  ? 'bg-slate-700 border-slate-600 text-white' 
+                  : 'bg-white border-gray-300 text-gray-800'
+              }`}
             >
               {options.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -573,7 +577,7 @@ function BillingViewContent({ onViewTicket, esTemaOscuro }: { onViewTicket: (tic
                 <th className="text-left py-3 px-4">Subtotal</th>
                 <th className="text-left py-3 px-4">Descuento</th>
                 <th className="text-left py-3 px-4">Total</th>
-              <th className={`text-left py-3 px-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Acciones</th>
+              <th className="text-left py-3 px-4">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -782,12 +786,16 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
             <label className={`block text-sm font-medium mb-1 ${esTemaOscuro ? 'text-gray-300' : 'text-gray-700'}`}>
               Nombre:
             </label>
-            <input
-              type="text"
-              value={formData.name || ''}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+              <input
+                type="text"
+                value={formData.name || ''}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className={`w-full rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  esTemaOscuro 
+                    ? 'bg-slate-700 border border-slate-600 text-white' 
+                    : 'bg-white border border-gray-300 text-gray-800'
+                }`}
+              />
           </div>
 
           {entityType === 'articulos' && (
@@ -801,7 +809,11 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
                   step="0.01"
                   value={formData.price || ''}
                   onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-                  className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    esTemaOscuro 
+                      ? 'bg-slate-700 border border-slate-600 text-white' 
+                      : 'bg-white border border-gray-300 text-gray-800'
+                  }`}
                 />
               </div>
               <div>
@@ -811,7 +823,11 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
                 <select
                   value={formData.familia_id || ''}
                   onChange={(e) => setFormData({ ...formData, familia_id: parseInt(e.target.value) })}
-                  className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    esTemaOscuro 
+                      ? 'bg-slate-700 border border-slate-600 text-white' 
+                      : 'bg-white border border-gray-300 text-gray-800'
+                  }`}
                   disabled={familias.length === 0}
                 >
                   {familias.length === 0 ? (
@@ -870,26 +886,26 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-white">
+        <table className={`w-full ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
           <thead>
-            <tr className="border-b border-slate-600">
-              <th className={`text-left py-3 px-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>ID</th>
-              <th className={`text-left py-3 px-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Nombre</th>
+            <tr className={`border-b ${esTemaOscuro ? 'border-slate-600' : 'border-gray-200'}`}>
+              <th className="text-left py-3 px-4">ID</th>
+              <th className="text-left py-3 px-4">Nombre</th>
               {entityType === 'articulos' && (
                 <>
-                  <th className={`text-left py-3 px-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Precio</th>
-                  <th className={`text-left py-3 px-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Familia</th>
+                  <th className="text-left py-3 px-4">Precio</th>
+                  <th className="text-left py-3 px-4">Familia</th>
                 </>
               )}
               <th className="text-left py-3 px-4">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {entityType === 'familias' ? 
-              familias.map((item) => (
-                <tr key={item.id} className="border-b border-slate-700 hover:bg-slate-700">
-                  <td className="py-3 px-4">{item.id}</td>
-                  <td className="py-3 px-4 font-medium">{item.name}</td>
+              {entityType === 'familias' ? 
+                familias.map((item) => (
+                  <tr key={item.id} className={`border-b ${esTemaOscuro ? 'border-slate-700 hover:bg-slate-700' : 'border-gray-200 hover:bg-gray-100'}`}>
+                    <td className="py-3 px-4">{item.id}</td>
+                    <td className={`py-3 px-4 font-medium ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>{item.name}</td>
                   <td className="py-3 px-4">
                     <div className="flex gap-2">
                       <button
@@ -915,11 +931,11 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
                 </tr>
               )) :
               articulos.map((item) => (
-                <tr key={item.id} className="border-b border-slate-700 hover:bg-slate-700">
+                <tr key={item.id} className={`border-b ${esTemaOscuro ? 'border-slate-700 hover:bg-slate-700' : 'border-gray-200 hover:bg-gray-100'}`}>
                   <td className="py-3 px-4">{item.id}</td>
-                  <td className="py-3 px-4 font-medium">{item.name}</td>
-                  <td className="py-3 px-4">{parseFloat(String(item.price)).toFixed(2)}€</td>
-                  <td className="py-3 px-4">
+                  <td className={`py-3 px-4 font-medium ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>{item.name}</td>
+                  <td className={`py-3 px-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>{parseFloat(String(item.price)).toFixed(2)}€</td>
+                  <td className={`py-3 px-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
                     {familias.find(f => f.id === item.familia_id)?.name || `ID: ${item.familia_id}`}
                   </td>
                   <td className="py-3 px-4">
