@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { apiService, Familia, Articulo } from '../services/api';
+import { apiService, Familia, Articulo, Ticket } from '../services/api';
 
 interface ConfigModalProps {
   isOpen: boolean;
@@ -116,7 +116,7 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
             </div>
           </div>
           <div className={`flex-1 overflow-y-auto rounded-lg p-4 ${esTemaOscuro ? 'bg-slate-900' : 'bg-gray-50'}`}>
-            {/* Vista vacía por ahora */}
+            <BillingViewContent />
           </div>
         </div>
       </div>
@@ -192,6 +192,111 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
             🖨️ Impresoras (Próximamente)
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function BillingViewContent() {
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Cargar tickets desde la API
+  const loadTickets = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await apiService.getTickets();
+      setTickets(data);
+    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      // Error loading tickets
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadTickets();
+  }, [loadTickets]);
+
+  const handleViewTicket = () => {
+    // Sin funcionalidad por ahora
+    alert('Funcionalidad de detalle del ticket pendiente');
+  };
+
+  if (loading) {
+    return (
+      <div className="text-center py-8">
+        <div className="text-gray-400">Cargando tickets...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold text-white">Tickets</h3>
+        <button
+          onClick={loadTickets}
+          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+        >
+          🔄 Recargar
+        </button>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-white">
+          <thead>
+            <tr className="border-b border-slate-600">
+              <th className="text-left py-3 px-4">ID</th>
+              <th className="text-left py-3 px-4">Fecha</th>
+              <th className="text-left py-3 px-4">Subtotal</th>
+              <th className="text-left py-3 px-4">Descuento</th>
+              <th className="text-left py-3 px-4">Total</th>
+              <th className="text-left py-3 px-4">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tickets.map((ticket) => (
+              <tr key={ticket.id} className="border-b border-slate-700 hover:bg-slate-700">
+                <td className="py-3 px-4">{ticket.id}</td>
+                <td className="py-3 px-4">
+                  {new Date(ticket.created_at).toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </td>
+                <td className="py-3 px-4">{parseFloat(String(ticket.subtotal)).toFixed(2)}€</td>
+                <td className="py-3 px-4">
+                  {ticket.discount_type && ticket.discount_value ? (
+                    ticket.discount_type === 'fixed' 
+                      ? `-${parseFloat(String(ticket.discount_value)).toFixed(2)}€`
+                      : `-${parseFloat(String(ticket.discount_value))}%`
+                  ) : (
+                    '-'
+                  )}
+                </td>
+                <td className="py-3 px-4 font-semibold">{parseFloat(String(ticket.total)).toFixed(2)}€</td>
+                <td className="py-3 px-4">
+                  <button
+                    onClick={() => handleViewTicket()}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                  >
+                    👁️ Ver detalle
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {tickets.length === 0 && (
+          <div className="text-center py-8 text-gray-400">
+            No hay tickets registrados
+          </div>
+        )}
       </div>
     </div>
   );

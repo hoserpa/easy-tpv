@@ -16,7 +16,7 @@ export interface Articulo {
   updated_at?: string;
 }
 
-interface Ticket {
+export interface Ticket {
   id: number;
   subtotal: number;
   discount_type: 'fixed' | 'percent' | null;
@@ -26,7 +26,7 @@ interface Ticket {
   updated_at: string;
 }
 
-interface TicketLine {
+export interface TicketLine {
   id: number;
   ticket_id: number;
   articulo_id: number;
