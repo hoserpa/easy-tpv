@@ -200,12 +200,16 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
 function BillingViewContent() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(false);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [allTickets, setAllTickets] = useState<Ticket[]>([]);
 
   // Cargar tickets desde la API
   const loadTickets = useCallback(async () => {
     setLoading(true);
     try {
       const data = await apiService.getTickets();
+      setAllTickets(data);
       setTickets(data);
     } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
       // Error loading tickets
@@ -217,6 +221,28 @@ function BillingViewContent() {
   useEffect(() => {
     loadTickets();
   }, [loadTickets]);
+
+  // Filtrar tickets por fechas
+  useEffect(() => {
+    if (!startDate && !endDate) {
+      setTickets(allTickets);
+      return;
+    }
+
+    const filtered = allTickets.filter(ticket => {
+      const ticketDate = new Date(ticket.created_at);
+      const start = startDate ? new Date(startDate + 'T00:00:00') : new Date('1900-01-01');
+      const end = endDate ? new Date(endDate + 'T23:59:59') : new Date('2100-12-31');
+      return ticketDate >= start && ticketDate <= end;
+    });
+
+    setTickets(filtered);
+  }, [startDate, endDate, allTickets]);
+
+  const handleClearFilters = () => {
+    setStartDate('');
+    setEndDate('');
+  };
 
   const handleViewTicket = () => {
     // Sin funcionalidad por ahora
@@ -233,21 +259,50 @@ function BillingViewContent() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
+      <div className="mb-4">
         <h3 className="text-xl font-bold text-white">Tickets</h3>
-        <button
-          onClick={loadTickets}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-        >
-          🔄 Recargar
-        </button>
+      </div>
+
+      {/* Filtros de fecha */}
+      <div className="mb-6 p-4 bg-slate-700 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Fecha inicio:
+            </label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="w-full bg-slate-600 border border-slate-500 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Fecha fin:
+            </label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="w-full bg-slate-600 border border-slate-500 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="flex items-end">
+            <button
+              onClick={handleClearFilters}
+              className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+            >
+              🗑️ Limpiar filtros
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full text-white">
           <thead>
             <tr className="border-b border-slate-600">
-              <th className="text-left py-3 px-4">ID</th>
               <th className="text-left py-3 px-4">Fecha</th>
               <th className="text-left py-3 px-4">Subtotal</th>
               <th className="text-left py-3 px-4">Descuento</th>
@@ -258,7 +313,6 @@ function BillingViewContent() {
           <tbody>
             {tickets.map((ticket) => (
               <tr key={ticket.id} className="border-b border-slate-700 hover:bg-slate-700">
-                <td className="py-3 px-4">{ticket.id}</td>
                 <td className="py-3 px-4">
                   {new Date(ticket.created_at).toLocaleDateString('es-ES', {
                     day: '2-digit',
