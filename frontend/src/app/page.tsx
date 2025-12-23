@@ -553,20 +553,57 @@ export default function Home() {
                       discount_value: linea.descuentoValor ? Number(linea.descuentoValor) : null
                     }));
 
+                    // Calcular subtotal del ticket (suma de subtotales sin descuentos)
+                    const subtotalTicket = linesData.reduce((total, linea) => {
+                      return total + (linea.qty * linea.unit_price);
+                    }, 0);
+
+                    // Calcular total del ticket usando la misma lógica que el modal de cobro
+                    const totalTicket = calcularTotal();
+
+                    // Calcular descuento total del ticket
+                    const totalDescuentoTicket = subtotalTicket - totalTicket;
+
+                    // Determinar tipo de descuento del ticket según las líneas
+                    let ticketDiscountType: 'fixed' | 'percent' | null = null;
+                    let discountValueForBackend: number | null = null;
+
+                    if (totalDescuentoTicket > 0) {
+                      const discountedLines = lineasTicket.filter(linea => linea.descuentoTipo && linea.descuentoValor);
+                      const allFixed = discountedLines.every(linea => linea.descuentoTipo === 'fixed');
+                      
+                      if (allFixed) {
+                        // Si todos los descuentos son fijos, enviar como 'fixed' con valor en euros
+                        ticketDiscountType = 'fixed';
+                        discountValueForBackend = totalDescuentoTicket;
+                      } else {
+                        // Si hay porcentajes o mezcla, enviar como 'percent' con el porcentaje sobre el subtotal
+                        ticketDiscountType = 'percent';
+                        discountValueForBackend = (totalDescuentoTicket / subtotalTicket) * 100;
+                      }
+                    }
+
                     const ticketData = {
                       lines: linesData,
-                      discount_type: null, // Descuento a nivel de ticket (por ahora null)
-                      discount_value: null
+                      subtotal: subtotalTicket,
+                      discount_type: ticketDiscountType,
+                      discount_value: discountValueForBackend,
+                      total: totalTicket
                     };
 
 
 
-                    // Enviar a la API
-                    const response = await apiService.createTicket(ticketData);
 
+
+                    // Enviar a la API
+                    await apiService.createTicket(ticketData);
 
                     // Éxito: cerrar modal y limpiar
-                    alert('Ticket guardado correctamente');
+                    let mensajeExito = 'Ticket guardado correctamente';
+                    if (totalDescuentoTicket > 0) {
+                      mensajeExito += `\n\nDescuento total aplicado: ${totalDescuentoTicket.toFixed(2)}€`;
+                    }
+                    alert(mensajeExito);
                     cancelarTicket();
                     setMostrarModalCobro(false);
                     setDineroRecibido('');

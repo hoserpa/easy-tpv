@@ -15,6 +15,10 @@ export class TicketsService {
     private readonly ticketLinesRepository: Repository<TicketLine>,
   ) {}
 
+  private calcularSubtotalSinDescuentos(lines: CreateTicketLineDto[]): number {
+    return lines.reduce((total, line) => total + line.qty * line.unit_price, 0);
+  }
+
   private calcularTotalLinea(line: CreateTicketLineDto): number {
     const subtotal = line.qty * line.unit_price;
 
@@ -42,24 +46,21 @@ export class TicketsService {
     discountType?: 'fixed' | 'percent' | null,
     discountValue?: number | null,
   ): number {
-    const subtotal = lines.reduce(
+    // Para el ticket, el total es simplemente la suma de los totales de las líneas
+    // Las líneas ya tienen sus descuentos aplicados individualmente
+    const totalConDescuentosDeLineas = lines.reduce(
       (total, line) => total + this.calcularTotalLinea(line),
       0,
     );
 
+    // Si no hay descuento a nivel de ticket, devolver el total de líneas
     if (!discountType || !discountValue || discountValue <= 0) {
-      return subtotal;
+      return totalConDescuentosDeLineas;
     }
 
-    if (discountType === 'fixed') {
-      return Math.max(0, subtotal - discountValue);
-    }
-
-    if (discountType === 'percent') {
-      return Math.max(0, subtotal - (subtotal * discountValue) / 100);
-    }
-
-    return subtotal;
+    // NOTA: Los descuentos del ticket ya están representados en los valores que envía el frontend
+    // Por lo tanto, no aplicar descuentos adicionales aquí
+    return totalConDescuentosDeLineas;
   }
 
   findAll(): Promise<Ticket[]> {
@@ -88,15 +89,15 @@ export class TicketsService {
       throw new Error('El ticket debe tener al menos una línea');
     }
 
-    const subtotal = createTicketDto.lines.reduce(
-      (total, line) => total + this.calcularTotalLinea(line),
-      0,
-    );
-    const total = this.calcularTicketTotal(
+    const subtotal = this.calcularSubtotalSinDescuentos(createTicketDto.lines);
+    // Usar el total enviado por el frontend, ya que incluye todos los cálculos correctos
+    const total = createTicketDto.total || this.calcularTicketTotal(
       createTicketDto.lines,
       createTicketDto.discount_type,
       createTicketDto.discount_value,
     );
+
+
 
     const nuevoTicket = this.ticketsRepository.create({
       subtotal,

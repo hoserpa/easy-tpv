@@ -6,6 +6,7 @@ export declare class TicketsService {
     private readonly ticketsRepository;
     private readonly ticketLinesRepository;
     constructor(ticketsRepository: Repository<Ticket>, ticketLinesRepository: Repository<TicketLine>);
+    private calcularSubtotalSinDescuentos;
     private calcularTotalLinea;
     private calcularTicketTotal;
     findAll(): Promise<Ticket[]>;

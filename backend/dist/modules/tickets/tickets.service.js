@@ -25,6 +25,9 @@ let TicketsService = class TicketsService {
         this.ticketsRepository = ticketsRepository;
         this.ticketLinesRepository = ticketLinesRepository;
     }
+    calcularSubtotalSinDescuentos(lines) {
+        return lines.reduce((total, line) => total + line.qty * line.unit_price, 0);
+    }
     calcularTotalLinea(line) {
         const subtotal = line.qty * line.unit_price;
         if (!line.discount_type ||
@@ -41,17 +44,11 @@ let TicketsService = class TicketsService {
         return subtotal;
     }
     calcularTicketTotal(lines, discountType, discountValue) {
-        const subtotal = lines.reduce((total, line) => total + this.calcularTotalLinea(line), 0);
+        const totalConDescuentosDeLineas = lines.reduce((total, line) => total + this.calcularTotalLinea(line), 0);
         if (!discountType || !discountValue || discountValue <= 0) {
-            return subtotal;
+            return totalConDescuentosDeLineas;
         }
-        if (discountType === 'fixed') {
-            return Math.max(0, subtotal - discountValue);
-        }
-        if (discountType === 'percent') {
-            return Math.max(0, subtotal - (subtotal * discountValue) / 100);
-        }
-        return subtotal;
+        return totalConDescuentosDeLineas;
     }
     findAll() {
         return this.ticketsRepository.find({ relations: ['ticketLines'] });
@@ -72,8 +69,8 @@ let TicketsService = class TicketsService {
         if (!createTicketDto.lines || createTicketDto.lines.length === 0) {
             throw new Error('El ticket debe tener al menos una línea');
         }
-        const subtotal = createTicketDto.lines.reduce((total, line) => total + this.calcularTotalLinea(line), 0);
-        const total = this.calcularTicketTotal(createTicketDto.lines, createTicketDto.discount_type, createTicketDto.discount_value);
+        const subtotal = this.calcularSubtotalSinDescuentos(createTicketDto.lines);
+        const total = createTicketDto.total || this.calcularTicketTotal(createTicketDto.lines, createTicketDto.discount_type, createTicketDto.discount_value);
         const nuevoTicket = this.ticketsRepository.create({
             subtotal,
             discount_type: createTicketDto.discount_type || null,

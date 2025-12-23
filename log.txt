@@ -1,21 +1,9 @@
-setShowBillingView is not defined
-src/components/ConfigModal.tsx (43:5) @ handleOpenBilling
+Datos del frontend: {lineasTicket: Array(2), linesData: Array(2), subtotalTicket: 6.5, totalTicket: 4, totalDescuentoTicket: 2.5, …}
+page.tsx:605 Valores enviados al backend: {lines: Array(2), subtotal: 6.5, discount_type: 'percent', discount_value: 38.46153846153847, total: 4}
 
-
-  41 |
-  42 |   const handleOpenBilling = () => {
-> 43 |     setShowBillingView(true);
-     |     ^
-  44 |   };
-  45 |
-  46 |   if (!isOpen) return null;
-Call Stack
-13
-
-Show 9 ignore-listed frame(s)
-handleOpenBilling
-src/components/ConfigModal.tsx (43:5)
-button
-<anonymous>
-ConfigModal
-src/components/ConfigModal.tsx (100:13)
+Backend - Datos recibidos: { discount_type: 'percent', discount_value: 38.46153846153847 }
+Backend - Cálculos: {
+  subtotal: 6.5,
+  total: 2.4615384615384612,
+  descuentoCalculado: 4.038461538461538
+}

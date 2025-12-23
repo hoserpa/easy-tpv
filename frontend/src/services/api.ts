@@ -128,7 +128,7 @@ class ApiService {
   }
 
   // Tickets
-  async createTicket(data: { lines: Array<{ articulo_id: number; qty: number; unit_price: number; discount_type?: 'fixed' | 'percent' | null; discount_value?: number | null }>; discount_type?: 'fixed' | 'percent' | null; discount_value?: number | null }): Promise<{ ticket: Ticket; lines: TicketLine[] }> {
+  async createTicket(data: { lines: Array<{ articulo_id: number; qty: number; unit_price: number; discount_type?: 'fixed' | 'percent' | null; discount_value?: number | null }>; subtotal: number; discount_type?: 'fixed' | 'percent' | null; discount_value?: number | null; total: number }): Promise<{ ticket: Ticket; lines: TicketLine[] }> {
     try {
       // Ahora vamos directamente al endpoint real
       return this.request<{ ticket: Ticket; lines: TicketLine[] }>('/tickets', {
