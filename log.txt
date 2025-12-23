@@ -1,21 +1,21 @@
-Cannot read properties of undefined (reading 'id')
-src/components/ConfigModal.tsx (194:87) @ TicketDetailModal
+esTemaOscuro is not defined
+src/components/ConfigModal.tsx (854:60) @ CrudContent
 
 
-  192 |         <div className="flex justify-between items-center mb-6">
-  193 |           <div>
-> 194 |             <h2 className="text-2xl font-bold text-white">Detalle del Ticket #{ticket.id}</h2>
-      |                                                                                       ^
-  195 |             <p className="text-gray-300">
-  196 |               {new Date(ticket.created_at).toLocaleDateString('es-ES', {
-  197 |                 day: '2-digit',
+  852 |         <div>
+  853 |           <div className="flex justify-between items-center mb-4">
+> 854 |             <h3 className={`text-xl font-bold capitalize ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+      |                                                            ^
+  855 |               {entityType}
+  856 |             </h3>
+  857 |         <button
 Call Stack
-15
+17
 
-Show 12 ignore-listed frame(s)
-TicketDetailModal
-src/components/ConfigModal.tsx (194:87)
+Show 14 ignore-listed frame(s)
+CrudContent
+src/components/ConfigModal.tsx (854:60)
 ConfigModal
-src/components/ConfigModal.tsx (108:14)
+src/components/ConfigModal.tsx (99:13)
 Home
 src/app/page.tsx (420:7)

@@ -63,7 +63,7 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col`}>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-white">Gestión de Datos</h2>
+            <h2 className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Gestión de Datos</h2>
             <div className="flex gap-2">
               <button
                 onClick={handleBackToMenu}
@@ -96,7 +96,7 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
             </select>
           </div>
           <div className={`flex-1 overflow-y-auto rounded-lg p-4 ${esTemaOscuro ? 'bg-slate-900' : 'bg-gray-50'}`}>
-            <CrudContent entityType={selectedOption} />
+            <CrudContent entityType={selectedOption} esTemaOscuro={esTemaOscuro} />
           </div>
         </div>
       </div>
@@ -112,7 +112,7 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col`}>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-white">Facturación</h2>
+            <h2 className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Facturación</h2>
             <div className="flex gap-2">
               <button
                 onClick={handleBackToMenu}
@@ -129,7 +129,7 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
             </div>
           </div>
           <div className={`flex-1 overflow-y-auto rounded-lg p-4 ${esTemaOscuro ? 'bg-slate-900' : 'bg-gray-50'}`}>
-            <BillingViewContent onViewTicket={handleViewTicketDetail} />
+            <BillingViewContent onViewTicket={handleViewTicketDetail} esTemaOscuro={esTemaOscuro} />
           </div>
         </div>
       </div>
@@ -174,7 +174,7 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-8`}>
-          <div className="text-white">Cargando detalles del ticket...</div>
+          <div className={esTemaOscuro ? 'text-white' : 'text-gray-800'}>Cargando detalles del ticket...</div>
         </div>
       </div>
     );
@@ -184,7 +184,7 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-8`}>
-          <div className="text-white">No se pudo cargar el ticket</div>
+          <div className={esTemaOscuro ? 'text-white' : 'text-gray-800'}>No se pudo cargar el ticket</div>
           <button
             onClick={onBack}
             className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
@@ -203,8 +203,8 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
       <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col`}>
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-white">Detalle del Ticket #{ticket.id}</h2>
-            <p className="text-gray-300">
+            <h2 className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Detalle del Ticket #{ticket.id}</h2>
+            <p className={esTemaOscuro ? 'text-gray-300' : 'text-gray-600'}>
               {new Date(ticket.created_at).toLocaleDateString('es-ES', {
                 day: '2-digit',
                 month: '2-digit',
@@ -231,89 +231,146 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
         </div>
 
         <div className={`flex-1 overflow-y-auto rounded-lg p-4 ${esTemaOscuro ? 'bg-slate-900' : 'bg-gray-50'}`}>
-          {/* Panel completo del ticket */}
-          <div className="p-4 bg-slate-700 rounded-lg">
-            {/* Encabezado del ticket */}
-            <div className="mb-4 pb-3 border-b border-slate-600">
-              <h3 className="text-lg font-semibold text-white mb-2">Ticket #{ticket.id}</h3>
-              <p className="text-gray-300 text-sm">
-                {new Date(ticket.created_at).toLocaleDateString('es-ES', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
+          {/* Panel completo del ticket con diseño mejorado */}
+          <div className={`rounded-xl shadow-2xl p-6 ${
+            esTemaOscuro 
+              ? 'bg-gradient-to-br from-slate-700 to-slate-800 border border-slate-600' 
+              : 'bg-gradient-to-br from-white to-gray-50 border border-gray-200'
+          }`}>
+            {/* Encabezado del ticket con icono y diseño visual */}
+            <div className={`mb-6 pb-4 border-b ${esTemaOscuro ? 'border-slate-600' : 'border-gray-200'}`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center`}>
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className={`text-xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Ticket #{ticket.id}</h3>
+                    <p className={`text-sm flex items-center mt-1 ${esTemaOscuro ? 'text-gray-300' : 'text-gray-600'}`}>
+                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {new Date(ticket.created_at).toLocaleDateString('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className={`text-3xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>{parseFloat(String(ticket.total)).toFixed(2)}€</div>
+                  <div className={`text-xs uppercase tracking-wider ${esTemaOscuro ? 'text-gray-400' : 'text-gray-500'}`}>Total</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Líneas del ticket con diseño de cards */}
+            <div className="mb-6">
+              <h3 className={`text-lg font-semibold mb-4 flex items-center ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+                <svg className="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                Artículos ({lines.length})
+              </h3>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {lines.map((line) => {
+                  const articulo = articulos.find(a => a.id === line.articulo_id);
+                  return (
+                    <div key={line.id} className={`rounded-lg p-3 transition-all duration-200 border ${
+                      esTemaOscuro 
+                        ? 'bg-slate-600 bg-opacity-50 hover:bg-slate-600 border-slate-500' 
+                        : 'bg-gray-100 hover:bg-gray-200 border-gray-300'
+                    }`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3 flex-1">
+                          <div className="w-10 h-10 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <span className="text-blue-300 font-semibold">{line.qty}</span>
+                          </div>
+                          <div className="flex-1">
+                            <div className={`font-medium ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+                              {articulo?.name || `Artículo ID: ${line.articulo_id}`}
+                            </div>
+                            <div className={`text-sm ${esTemaOscuro ? 'text-gray-400' : 'text-gray-600'}`}>
+                              {parseFloat(String(line.unit_price)).toFixed(2)}€ 
+                              {line.discount_type && line.discount_value && (
+                                <span className="ml-2 text-red-400">
+                                  -{line.discount_type === 'fixed' 
+                                    ? `${parseFloat(String(line.discount_value)).toFixed(2)}€`
+                                    : `${parseFloat(String(line.discount_value))}%`}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className={`font-bold text-lg ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+                            {parseFloat(String(line.total)).toFixed(2)}€
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
                 })}
-              </p>
-            </div>
-
-            {/* Líneas del ticket */}
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold text-white mb-3">Artículos</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full text-white">
-                  <thead>
-                    <tr className="border-b border-slate-600">
-                      <th className="text-center py-2 px-3 w-20">Cant.</th>
-                      <th className="text-left py-2 px-3">Artículo</th>
-                      <th className="text-right py-2 px-3 w-28">P. Unitario</th>
-                      <th className="text-right py-2 px-3 w-24">Descuento</th>
-                      <th className="text-right py-2 px-3 w-28">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {lines.map((line) => {
-                      const articulo = articulos.find(a => a.id === line.articulo_id);
-                      return (
-                        <tr key={line.id} className="border-b border-slate-700 hover:bg-slate-700">
-                          <td className="text-center py-2 px-3 w-20">{line.qty}</td>
-                          <td className="text-left py-2 px-3 font-medium">
-                            {articulo?.name || `Artículo ID: ${line.articulo_id}`}
-                          </td>
-                          <td className="text-right py-2 px-3 w-28">{parseFloat(String(line.unit_price)).toFixed(2)}€</td>
-                          <td className="text-right py-2 px-3 w-24">
-                            {line.discount_type && line.discount_value ? (
-                              line.discount_type === 'fixed' 
-                                ? `-${parseFloat(String(line.discount_value)).toFixed(2)}€`
-                                : `-${parseFloat(String(line.discount_value))}%`
-                            ) : (
-                              '-'
-                            )}
-                          </td>
-                          <td className="text-right py-2 px-3 font-semibold w-28">{parseFloat(String(line.total)).toFixed(2)}€</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
               </div>
             </div>
 
-            {/* Subtotal y descuento */}
-            <div className="mb-3 space-y-1">
-              <div className="flex justify-between text-white">
-                <span className="text-gray-300">Subtotal:</span>
-                <span>{parseFloat(String(ticket.subtotal)).toFixed(2)}€</span>
-              </div>
-              <div className="flex justify-between text-white">
-                <span className="text-gray-300">Descuento:</span>
-                <span>
-                  {ticket.discount_type && ticket.discount_value ? (
-                    ticket.discount_type === 'fixed' 
-                      ? `-${parseFloat(String(ticket.discount_value)).toFixed(2)}€`
-                      : `-${parseFloat(String(ticket.discount_value))}%`
-                  ) : (
-                    '-'
-                  )}
+            {/* Resumen con diseño visual */}
+            <div className="space-y-3">
+              {/* Línea separadora visual */}
+              <div className={`h-px ${esTemaOscuro ? 'bg-gradient-to-r from-transparent via-slate-500 to-transparent' : 'bg-gradient-to-r from-transparent via-gray-300 to-transparent'}`}></div>
+              
+              {/* Subtotal */}
+              <div className="flex justify-between items-center py-2">
+                <div className="flex items-center space-x-2">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  <span className={esTemaOscuro ? 'text-gray-300' : 'text-gray-600'}>Subtotal:</span>
+                </div>
+                <span className={`font-medium ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+                  {parseFloat(String(ticket.subtotal)).toFixed(2)}€
                 </span>
               </div>
-            </div>
 
-            {/* Total final */}
-            <div className="pt-3 border-t border-slate-600">
-              <div className="flex justify-between text-white">
-                <span className="text-lg font-semibold">Total:</span>
-                <span className="text-lg font-bold">{parseFloat(String(ticket.total)).toFixed(2)}€</span>
+              {/* Descuento */}
+              {(ticket.discount_type && ticket.discount_value) && (
+                <div className="flex justify-between items-center py-2">
+                  <div className="flex items-center space-x-2">
+                    <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-red-400">Descuento:</span>
+                  </div>
+                  <span className="text-red-400 font-medium">
+                    {ticket.discount_type === 'fixed' 
+                      ? `-${parseFloat(String(ticket.discount_value)).toFixed(2)}€`
+                      : `-${parseFloat(String(ticket.discount_value))}%`}
+                  </span>
+                </div>
+              )}
+
+              {/* Total destacado */}
+              <div className={`rounded-lg p-4 mt-4 ${
+                esTemaOscuro 
+                  ? 'bg-gradient-to-r from-blue-600 to-blue-700' 
+                  : 'bg-gradient-to-r from-blue-500 to-blue-600'
+              }`}>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg">
+                      <span className="text-blue-900 font-bold text-lg">€</span>
+                    </div>
+                    <span className="text-white font-bold text-lg">Total a pagar</span>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-white">{parseFloat(String(ticket.total)).toFixed(2)}€</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -397,7 +454,7 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
   );
 }
 
-function BillingViewContent({ onViewTicket }: { onViewTicket: (ticketId: number) => void }) {
+function BillingViewContent({ onViewTicket, esTemaOscuro }: { onViewTicket: (ticketId: number) => void; esTemaOscuro: boolean }) {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState('');
@@ -455,111 +512,124 @@ function BillingViewContent({ onViewTicket }: { onViewTicket: (ticketId: number)
   }
 
   return (
-    <div>
-      <div className="mb-4">
-        <h3 className="text-xl font-bold text-white">Tickets</h3>
-      </div>
+      <div>
+        <div className="mb-4">
+          <h3 className={`text-xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Tickets</h3>
+        </div>
 
-      {/* Filtros de fecha */}
-      <div className="mb-6 p-4 bg-slate-700 rounded-lg">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Fecha inicio:
-            </label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="w-full bg-slate-600 border border-slate-500 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Fecha fin:
-            </label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="w-full bg-slate-600 border border-slate-500 text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div className="flex items-end">
-            <button
-              onClick={handleClearFilters}
-              className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-            >
-              🗑️ Limpiar filtros
-            </button>
+        {/* Filtros de fecha */}
+        <div className={`mb-6 p-4 rounded-lg ${esTemaOscuro ? 'bg-slate-700' : 'bg-gray-100 border border-gray-200'}`}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className={`block text-sm font-medium mb-1 ${esTemaOscuro ? 'text-gray-300' : 'text-gray-700'}`}>
+                Fecha inicio:
+              </label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className={`w-full rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  esTemaOscuro 
+                    ? 'bg-slate-600 border border-slate-500 text-white' 
+                    : 'bg-white border border-gray-300 text-gray-800'
+                }`}
+              />
+            </div>
+            <div>
+              <label className={`block text-sm font-medium mb-1 ${esTemaOscuro ? 'text-gray-300' : 'text-gray-700'}`}>
+                Fecha fin:
+              </label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className={`w-full rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  esTemaOscuro 
+                    ? 'bg-slate-600 border border-slate-500 text-white' 
+                    : 'bg-white border border-gray-300 text-gray-800'
+                }`}
+              />
+            </div>
+            <div className="flex items-end">
+              <button
+                onClick={handleClearFilters}
+                className={`w-full font-semibold py-2 px-4 rounded-lg transition-colors ${
+                  esTemaOscuro
+                    ? 'bg-gray-500 hover:bg-gray-600 text-white'
+                    : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                }`}
+              >
+                🗑️ Limpiar filtros
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-white">
-          <thead>
-            <tr className="border-b border-slate-600">
-              <th className="text-left py-3 px-4">Fecha</th>
-              <th className="text-left py-3 px-4">Subtotal</th>
-              <th className="text-left py-3 px-4">Descuento</th>
-              <th className="text-left py-3 px-4">Total</th>
-              <th className="text-left py-3 px-4">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tickets.map((ticket) => (
-              <tr key={ticket.id} className="border-b border-slate-700 hover:bg-slate-700">
-                <td className="py-3 px-4">
-                  {new Date(ticket.created_at).toLocaleDateString('es-ES', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </td>
-                <td className="py-3 px-4">{parseFloat(String(ticket.subtotal)).toFixed(2)}€</td>
-                <td className="py-3 px-4">
-                  {ticket.discount_type && ticket.discount_value ? (
-                    ticket.discount_type === 'fixed' 
-                      ? `-${parseFloat(String(ticket.discount_value)).toFixed(2)}€`
-                      : `-${parseFloat(String(ticket.discount_value))}%`
-                  ) : (
-                    '-'
-                  )}
-                </td>
-                <td className="py-3 px-4 font-semibold">{parseFloat(String(ticket.total)).toFixed(2)}€</td>
-                <td className="py-3 px-4">
-                  <button
-                    onClick={() => onViewTicket(ticket.id)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                  >
-                    👁️ Ver detalle
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className={`w-full ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+            <thead>
+              <tr className={`border-b ${esTemaOscuro ? 'border-slate-600' : 'border-gray-200'}`}>
+                <th className="text-left py-3 px-4">Fecha</th>
+                <th className="text-left py-3 px-4">Subtotal</th>
+                <th className="text-left py-3 px-4">Descuento</th>
+                <th className="text-left py-3 px-4">Total</th>
+              <th className={`text-left py-3 px-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {tickets.map((ticket) => (
+                <tr key={ticket.id} className={`border-b ${esTemaOscuro ? 'border-slate-700 hover:bg-slate-700' : 'border-gray-200 hover:bg-gray-100'}`}>
+                  <td className="py-3 px-4">
+                    {new Date(ticket.created_at).toLocaleDateString('es-ES', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </td>
+                  <td className="py-3 px-4">{parseFloat(String(ticket.subtotal)).toFixed(2)}€</td>
+                  <td className="py-3 px-4">
+                    {ticket.discount_type && ticket.discount_value ? (
+                      ticket.discount_type === 'fixed' 
+                        ? `-${parseFloat(String(ticket.discount_value)).toFixed(2)}€`
+                        : `-${parseFloat(String(ticket.discount_value))}%`
+                    ) : (
+                      '-'
+                    )}
+                  </td>
+                  <td className="py-3 px-4 font-semibold">{parseFloat(String(ticket.total)).toFixed(2)}€</td>
+                  <td className="py-3 px-4">
+                    <button
+                      onClick={() => onViewTicket(ticket.id)}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                    >
+                      👁️ Ver detalle
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-        {tickets.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
-            No hay tickets registrados
-          </div>
-        )}
+          {tickets.length === 0 && (
+            <div className={`text-center py-8 ${esTemaOscuro ? 'text-gray-400' : 'text-gray-500'}`}>
+              No hay tickets registrados
+            </div>
+          )}
+        </div>
       </div>
-    </div>
   );
 }
 
 interface CrudContentProps {
   entityType: string;
+  esTemaOscuro: boolean;
 }
 
 type CrudItem = Familia | Articulo;
 
-function CrudContent({ entityType }: CrudContentProps) {
+function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
   const [familias, setFamilias] = useState<Familia[]>([]);
   const [articulos, setArticulos] = useState<Articulo[]>([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -693,23 +763,23 @@ function CrudContent({ entityType }: CrudContentProps) {
   };
 
   if (loading) {
-    return (
-      <div className="bg-slate-800 rounded-lg p-6 flex items-center justify-center">
-        <div className="text-white">Cargando...</div>
-      </div>
-    );
+      return (
+        <div className={`rounded-lg p-6 flex items-center justify-center ${esTemaOscuro ? 'bg-slate-800' : 'bg-gray-100'}`}>
+          <div className={esTemaOscuro ? 'text-white' : 'text-gray-800'}>Cargando...</div>
+        </div>
+      );
   }
 
   if (isEditing) {
-    return (
-      <div className="bg-slate-800 rounded-lg p-6 max-w-md mx-auto">
-        <h3 className="text-xl font-bold text-white mb-4">
+      return (
+        <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-gray-100'} rounded-lg p-6 max-w-md mx-auto`}>
+          <h3 className={`text-xl font-bold mb-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
           {editingItem ? 'Editar' : 'Crear'} {entityType === 'familias' ? 'Familia' : 'Artículo'}
         </h3>
         
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className={`block text-sm font-medium mb-1 ${esTemaOscuro ? 'text-gray-300' : 'text-gray-700'}`}>
               Nombre:
             </label>
             <input
@@ -723,7 +793,7 @@ function CrudContent({ entityType }: CrudContentProps) {
           {entityType === 'articulos' && (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className={`block text-sm font-medium mb-1 ${esTemaOscuro ? 'text-gray-300' : 'text-gray-700'}`}>
                   Precio:
                 </label>
                 <input
@@ -735,7 +805,7 @@ function CrudContent({ entityType }: CrudContentProps) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className={`block text-sm font-medium mb-1 ${esTemaOscuro ? 'text-gray-300' : 'text-gray-700'}`}>
                   Familia:
                 </label>
                 <select
@@ -777,12 +847,12 @@ function CrudContent({ entityType }: CrudContentProps) {
     );
   }
 
-  return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-white capitalize">
-          {entityType}
-        </h3>
+      return (
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className={`text-xl font-bold capitalize ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+              {entityType}
+            </h3>
         <button
           onClick={handleCreate}
           disabled={entityType === 'articulos' && familias.length === 0}
@@ -803,12 +873,12 @@ function CrudContent({ entityType }: CrudContentProps) {
         <table className="w-full text-white">
           <thead>
             <tr className="border-b border-slate-600">
-              <th className="text-left py-3 px-4">ID</th>
-              <th className="text-left py-3 px-4">Nombre</th>
+              <th className={`text-left py-3 px-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>ID</th>
+              <th className={`text-left py-3 px-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Nombre</th>
               {entityType === 'articulos' && (
                 <>
-                  <th className="text-left py-3 px-4">Precio</th>
-                  <th className="text-left py-3 px-4">Familia</th>
+                  <th className={`text-left py-3 px-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Precio</th>
+                  <th className={`text-left py-3 px-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Familia</th>
                 </>
               )}
               <th className="text-left py-3 px-4">Acciones</th>
@@ -875,7 +945,7 @@ function CrudContent({ entityType }: CrudContentProps) {
         </table>
 
         {items.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
+          <div className={`text-center py-8 ${esTemaOscuro ? 'text-gray-400' : 'text-gray-500'}`}>
             No hay {entityType} registrados
           </div>
         )}
