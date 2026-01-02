@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { apiService, Familia, Articulo, Ticket, TicketLine } from '../services/api';
 import { useToast } from '../hooks/useToast';
 import { getApiErrorMessage } from '../utils/errorUtils';
+import ConfirmDialog from './ConfirmDialog';
 
 interface ConfigModalProps {
   isOpen: boolean;
@@ -627,9 +628,9 @@ function BillingViewContent({ onViewTicket, esTemaOscuro }: { onViewTicket: (tic
             <div className={`text-center py-8 ${esTemaOscuro ? 'text-gray-400' : 'text-gray-500'}`}>
               No hay tickets registrados
             </div>
-          )}
-        </div>
+        )}
       </div>
+    </div>
   );
 }
 
@@ -647,6 +648,8 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
   const [editingItem, setEditingItem] = useState<CrudItem | null>(null);
   const [formData, setFormData] = useState<Record<string, string | number>>({});
   const [loading, setLoading] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
   const { success, error, warning } = useToast();
 
   const items = entityType === 'familias' ? familias : articulos;
@@ -708,23 +711,36 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
       }
     }
 
-    if (confirm('¿Estás seguro de eliminar este elemento?')) {
-      try {
-        if (entityType === 'familias') {
-          await apiService.deleteFamilia(id);
-          setFamilias(prevFamilias => prevFamilias.filter(item => item.id !== id));
-          success('Familia eliminada correctamente');
-        } else {
-          await apiService.deleteArticulo(id);
-          setArticulos(prevArticulos => prevArticulos.filter(item => item.id !== id));
-          success('Artículo eliminado correctamente');
-        }        
-      } catch (err) {
-        const errorMessage = getApiErrorMessage(err);
-        error(`Error al eliminar el ${entityType === 'familias' ? 'familia' : 'artículo'}: ${errorMessage}`);
-        console.error('Error deleting item:', err);
-      }
+    setItemToDelete(id);
+    setShowConfirmDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+
+    try {
+      if (entityType === 'familias') {
+        await apiService.deleteFamilia(itemToDelete);
+        setFamilias(prevFamilias => prevFamilias.filter(item => item.id !== itemToDelete));
+        success('Familia eliminada correctamente');
+      } else {
+        await apiService.deleteArticulo(itemToDelete);
+        setArticulos(prevArticulos => prevArticulos.filter(item => item.id !== itemToDelete));
+        success('Artículo eliminado correctamente');
+      }        
+    } catch (err) {
+      const errorMessage = getApiErrorMessage(err);
+      error(`Error al eliminar el ${entityType === 'familias' ? 'familia' : 'artículo'}: ${errorMessage}`);
+      console.error('Error deleting item:', err);
+    } finally {
+      setShowConfirmDialog(false);
+      setItemToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowConfirmDialog(false);
+    setItemToDelete(null);
   };
 
   const handleSave = async () => {
@@ -973,6 +989,18 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
           </div>
         )}
       </div>
+
+      {/* Diálogo de confirmación */}
+      <ConfirmDialog
+        isOpen={showConfirmDialog}
+        title={`¿Eliminar ${entityType === 'familias' ? 'familia' : 'artículo'}?`}
+        message={`Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar este ${entityType === 'familias' ? 'familia' : 'artículo'}?`}
+        confirmText="Sí, eliminar"
+        cancelText="Cancelar"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        esTemaOscuro={esTemaOscuro}
+      />
     </div>
   );
 }
