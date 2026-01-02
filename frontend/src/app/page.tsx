@@ -716,7 +716,6 @@ export default function Home() {
                     error(`Error al guardar el ticket: ${errorMessage}`);
                   }
                 }}
-                disabled={!dineroRecibido || parseFloat(dineroRecibido) < calcularTotal()}
                 className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-600 text-white font-bold py-3 rounded-lg transition-colors"
               >
                 Cobrar
