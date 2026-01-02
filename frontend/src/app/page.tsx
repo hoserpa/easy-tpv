@@ -5,6 +5,7 @@ import ConfigModal from '../components/ConfigModal';
 import { apiService, Familia, Articulo } from '../services/api';
 import { useToast } from '../hooks/useToast';
 import { getApiErrorMessage } from '../utils/errorUtils';
+import Skeleton, { CardSkeleton } from '../components/Skeleton';
 
 
 
@@ -236,8 +237,90 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className={`flex items-center justify-center h-screen ${esTemaOscuro ? 'bg-slate-800' : 'bg-gray-100'}`}>
-        <div className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Cargando datos...</div>
+      <div className={`flex flex-col h-screen ${esTemaOscuro ? 'bg-slate-800' : 'bg-gray-100'}`}>
+        {/* Panel superior */}
+        <div className={`${esTemaOscuro ? 'bg-slate-900 border-slate-600' : 'bg-white border-gray-300'} border-b p-4`}>
+          <div className="flex justify-between items-center">
+            <Skeleton height="h-8" width="w-16" />
+            <div className="flex gap-3">
+              <Skeleton height="h-12" width="w-32" />
+              <Skeleton height="h-12" width="w-12" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex flex-1">
+          {/* Panel izquierdo: Resumen del ticket y calculadora */}
+          <div className={`w-1/3 ${esTemaOscuro ? 'bg-slate-900 border-slate-600' : 'bg-white border-gray-300'} border-r flex flex-col`}>
+            {/* Resumen del ticket */}
+            <div className={`flex-1 p-4 ${esTemaOscuro ? 'border-slate-600' : 'border-gray-200'} border-b flex flex-col`}>
+              <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-gray-50'} rounded-lg p-4 flex-1 flex flex-col`}>
+                <Skeleton height="h-7" width="w-20" className="mb-4" />
+                <div className="flex-1 space-y-3 mb-4">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <div key={index} className={`rounded-lg p-3 flex items-center justify-between ${esTemaOscuro ? 'bg-slate-700' : 'bg-gray-200'}`}>
+                      <div className="flex-1">
+                        <Skeleton height="h-4" width="w-32" />
+                        <Skeleton height="h-3" width="w-20" className="mt-1" />
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Skeleton height="h-6" width="w-16" />
+                        <Skeleton variant="circular" height="h-6" width="w-6" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Resumen de totales */}
+                <div className={`p-3 rounded-lg ${esTemaOscuro ? 'bg-slate-700' : 'bg-gray-200'}`}>
+                  <div className="flex justify-between mb-2">
+                    <Skeleton height="h-4" width="w-16" />
+                    <Skeleton height="h-5" width="w-20" />
+                  </div>
+                  <div className="flex justify-between">
+                    <Skeleton height="h-5" width="w-12" />
+                    <Skeleton height="h-6" width="w-24" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Calculadora */}
+            <div className={`p-4 ${esTemaOscuro ? 'bg-slate-900' : 'bg-white'}`}>
+              <div className="mb-3">
+                <Skeleton height="h-10" width="w-full" />
+              </div>
+              <div className="grid grid-cols-4 gap-2 h-40">
+                {Array.from({ length: 16 }).map((_, index) => (
+                  <Skeleton key={index} height="h-full" className="rounded" />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Panel derecho: Familias y artículos */}
+          <div className={`w-2/3 ${esTemaOscuro ? 'bg-slate-900' : 'bg-white'} flex flex-col`}>
+            {/* Familias */}
+            <div className={`h-1/2 p-4 ${esTemaOscuro ? 'border-slate-600' : 'border-gray-300'} border-b`}>
+              <Skeleton height="h-7" width="w-24" className="mb-4" />
+              <div className="grid grid-cols-3 gap-3">
+                {Array.from({ length: 9 }).map((_, index) => (
+                  <CardSkeleton key={index} height="h-20" />
+                ))}
+              </div>
+            </div>
+
+            {/* Artículos */}
+            <div className="h-1/2 p-4">
+              <Skeleton height="h-7" width="w-28" className="mb-4" />
+              <div className="grid grid-cols-4 gap-3">
+                {Array.from({ length: 12 }).map((_, index) => (
+                  <CardSkeleton key={index} height="h-20" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -378,48 +461,63 @@ export default function Home() {
           {/* Familias */}
           <div className={`h-1/2 p-4 ${esTemaOscuro ? 'border-slate-600' : 'border-gray-300'} border-b`}>
             <h2 className={`text-xl font-bold mb-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Familias</h2>
-            <div className="grid grid-cols-3 gap-3">
-              {familias.map((familia) => (
-                <button
-                  key={familia.id}
-                  onClick={() => setFamiliaSeleccionada(familia)}
-                  className={`font-semibold py-6 px-4 rounded-lg text-center transition-colors ${
-                    familiaSeleccionada?.id === familia.id 
-                      ? 'bg-blue-600 text-white ring-4 ring-blue-400 ring-opacity-50' 
-                      : 'bg-green-500 hover:bg-green-600 text-white'
-                  }`}
-                >
-                  {familia.name}
-                </button>
-              ))}
-            </div>
+            {loading ? (
+              <div className="grid grid-cols-3 gap-3">
+                {Array.from({ length: 9 }).map((_, index) => (
+                  <CardSkeleton key={index} height="h-20" />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-3">
+                {familias.map((familia) => (
+                  <button
+                    key={familia.id}
+                    onClick={() => setFamiliaSeleccionada(familia)}
+                    className={`font-semibold py-6 px-4 rounded-lg text-center transition-colors ${
+                      familiaSeleccionada?.id === familia.id 
+                        ? 'bg-blue-600 text-white ring-4 ring-blue-400 ring-opacity-50' 
+                        : 'bg-green-500 hover:bg-green-600 text-white'
+                    }`}
+                  >
+                    {familia.name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Artículos */}
           <div className="h-1/2 p-4">
             <h2 className={`text-xl font-bold mb-4 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Artículos</h2>
-            <div className="grid grid-cols-3 gap-3">
-              {articulosFiltrados.length === 0 ? (
-                <div className={`col-span-3 text-center ${esTemaOscuro ? 'text-gray-500' : 'text-gray-600'} py-8`}>
-                  Selecciona una familia para ver los artículos
+            {loading ? (
+              <div className="grid grid-cols-4 gap-3">
+                {Array.from({ length: 12 }).map((_, index) => (
+                  <CardSkeleton key={index} height="h-20" />
+                ))}
+              </div>
+            ) : familiaSeleccionada ? (
+              <div className="grid grid-cols-4 gap-3">
+                {articulos
+                  .filter(articulo => articulo.familia_id === familiaSeleccionada.id)
+                  .map((articulo) => (
+                    <button
+                      key={articulo.id}
+                      onClick={() => agregarArticulo(articulo)}
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-6 px-4 rounded-lg text-center transition-colors"
+                    >
+                      <div className="text-lg">{articulo.name}</div>
+                      <div className="text-sm opacity-75">{parseFloat(String(articulo.price)).toFixed(2)}€</div>
+                    </button>
+                  ))}
                 </div>
               ) : (
-                articulosFiltrados.map((articulo) => (
-                  <button
-                    key={articulo.id}
-                    onClick={() => agregarArticulo(articulo)}
-
-                    className={`${esTemaOscuro ? 'bg-slate-700 border-slate-600 hover:border-blue-400 hover:bg-slate-600 text-gray-300' : 'bg-gray-100 border-gray-300 hover:border-blue-400 hover:bg-gray-200 text-gray-700'} border-2 font-medium py-4 px-3 rounded-lg text-center transition-all`}
-                  >
-                    <div className="text-sm font-bold">{articulo.name}</div>
-                     <div className={`text-lg font-bold ${esTemaOscuro ? 'text-blue-400' : 'text-blue-600'}`}>{parseFloat(String(articulo.price)).toFixed(2)}€</div>
-                  </button>
-                ))
+                <div className={`text-center py-8 ${esTemaOscuro ? 'text-gray-400' : 'text-gray-500'}`}>
+                  Selecciona una familia para ver los artículos
+                </div>
               )}
             </div>
           </div>
         </div>
-      </div>
 
       {/* Modal de Configuración */}
       <ConfigModal 

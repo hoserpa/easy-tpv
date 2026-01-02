@@ -5,6 +5,7 @@ import { apiService, Familia, Articulo, Ticket, TicketLine } from '../services/a
 import { useToast } from '../hooks/useToast';
 import { getApiErrorMessage } from '../utils/errorUtils';
 import ConfirmDialog from './ConfirmDialog';
+import Skeleton, { TableSkeleton, ListSkeleton, CardSkeleton } from './Skeleton';
 
 interface ConfigModalProps {
   isOpen: boolean;
@@ -176,8 +177,70 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-8`}>
-          <div className={esTemaOscuro ? 'text-white' : 'text-gray-800'}>Cargando detalles del ticket...</div>
+        <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col`}>
+          <div className="flex justify-between items-center mb-6">
+            <Skeleton height="h-8" width="w-48" />
+            <Skeleton height="h-8" width="w-32" />
+          </div>
+          <div className={`flex-1 overflow-y-auto rounded-lg p-4 ${esTemaOscuro ? 'bg-slate-900' : 'bg-gray-50'}`}>
+            {/* Skeleton del encabezado del ticket */}
+            <div className={`mb-6 pb-4 border-b ${esTemaOscuro ? 'border-slate-600' : 'border-gray-200'}`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full animate-pulse"></div>
+                  <div className="space-y-2">
+                    <Skeleton height="h-6" width="w-32" />
+                    <Skeleton height="h-4" width="w-48" />
+                  </div>
+                </div>
+                <div className="text-right">
+                  <Skeleton height="h-10" width="w-24" />
+                  <Skeleton height="h-3" width="w-16" className="mt-1" />
+                </div>
+              </div>
+            </div>
+
+            {/* Skeleton de las líneas del ticket */}
+            <div className="mb-6">
+              <div className="mb-4">
+                <Skeleton height="h-6" width="w-36" />
+              </div>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div key={index} className={`rounded-lg p-3 border ${esTemaOscuro ? 'border-slate-500' : 'border-gray-300'}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3 flex-1">
+                        <div className="w-10 h-10 bg-gray-300 dark:bg-gray-600 rounded-lg animate-pulse"></div>
+                        <div className="flex-1 space-y-2">
+                          <Skeleton height="h-4" width="w-3/4" />
+                          <Skeleton height="h-3" width="w-1/2" />
+                        </div>
+                      </div>
+                      <Skeleton height="h-6" width="w-16" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Skeleton del resumen */}
+            <div className="space-y-3">
+              <div className={`h-px ${esTemaOscuro ? 'bg-gradient-to-r from-transparent via-slate-500 to-transparent' : 'bg-gradient-to-r from-transparent via-gray-300 to-transparent'}`}></div>
+              <div className="flex justify-between items-center py-2">
+                <Skeleton height="h-4" width="w-24" />
+                <Skeleton height="h-5" width="w-20" />
+              </div>
+              <div className={`rounded-lg p-4 mt-4 ${esTemaOscuro ? 'bg-gradient-to-r from-blue-600 to-blue-700' : 'bg-gradient-to-r from-blue-500 to-blue-600'}`}>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gray-300 dark:bg-gray-400 rounded-full animate-pulse"></div>
+                    <Skeleton height="h-5" width="w-32" />
+                  </div>
+                  <Skeleton height="h-8" width="w-28" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -517,8 +580,32 @@ function BillingViewContent({ onViewTicket, esTemaOscuro }: { onViewTicket: (tic
 
   if (loading) {
     return (
-      <div className="text-center py-8">
-        <div className="text-gray-400">Cargando tickets...</div>
+      <div>
+        <div className="mb-4">
+          <Skeleton height="h-8" width="w-32" />
+        </div>
+
+        {/* Skeleton de filtros de fecha */}
+        <div className={`mb-6 p-4 rounded-lg ${esTemaOscuro ? 'bg-slate-700' : 'bg-gray-100 border border-gray-200'}`}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <Skeleton height="h-4" width="w-24" className="mb-2" />
+              <Skeleton height="h-10" />
+            </div>
+            <div>
+              <Skeleton height="h-4" width="w-20" className="mb-2" />
+              <Skeleton height="h-10" />
+            </div>
+            <div>
+              <Skeleton height="h-10" />
+            </div>
+          </div>
+        </div>
+
+        {/* Skeleton de la tabla */}
+        <div className="overflow-x-auto">
+          <TableSkeleton rows={5} columns={5} />
+        </div>
       </div>
     );
   }
@@ -794,8 +881,22 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
 
   if (loading) {
       return (
-        <div className={`rounded-lg p-6 flex items-center justify-center ${esTemaOscuro ? 'bg-slate-800' : 'bg-gray-100'}`}>
-          <div className={esTemaOscuro ? 'text-white' : 'text-gray-800'}>Cargando...</div>
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <Skeleton height="h-7" width="w-32" />
+            <Skeleton height="h-10" width="w-40" />
+          </div>
+
+          <div className="overflow-x-auto">
+            <ListSkeleton items={entityType === 'familias' ? 5 : 8} />
+          </div>
+
+          {/* Skeleton para empty state */}
+          {Math.random() > 0.5 && (
+            <div className={`text-center py-8 ${esTemaOscuro ? 'text-gray-400' : 'text-gray-500'}`}>
+              <Skeleton height="h-4" width="w-48" className="mx-auto" />
+            </div>
+          )}
         </div>
       );
   }
