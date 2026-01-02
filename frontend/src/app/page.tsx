@@ -3,6 +3,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import ConfigModal from '../components/ConfigModal';
 import { apiService, Familia, Articulo } from '../services/api';
+import { useToast } from '../hooks/useToast';
+import { getApiErrorMessage } from '../utils/errorUtils';
 
 
 
@@ -29,6 +31,7 @@ export default function Home() {
   const [dineroRecibido, setDineroRecibido] = useState('');
   const [esTemaOscuro, setEsTemaOscuro] = useState(true);
   const [familias, setFamilias] = useState<Familia[]>([]);
+  const { success, error } = useToast();
   const [articulos, setArticulos] = useState<Articulo[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -603,16 +606,16 @@ export default function Home() {
                     // Éxito: cerrar modal y limpiar
                     let mensajeExito = 'Ticket guardado correctamente';
                     if (totalDescuentoTicket > 0) {
-                      mensajeExito += `\n\nDescuento total aplicado: ${totalDescuentoTicket.toFixed(2)}€`;
+                      mensajeExito += ` (Descuento: ${totalDescuentoTicket.toFixed(2)}€)`;
                     }
-                    alert(mensajeExito);
+                    success(mensajeExito);
                     cancelarTicket();
                     setMostrarModalCobro(false);
                     setDineroRecibido('');
-                  } catch (error) {
+                  } catch (err) {
                     // Extraer mensaje de error del backend
-                    const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-                    alert(`Error al guardar el ticket: ${errorMessage}`);
+                    const errorMessage = getApiErrorMessage(err);
+                    error(`Error al guardar el ticket: ${errorMessage}`);
                   }
                 }}
                 disabled={!dineroRecibido || parseFloat(dineroRecibido) < calcularTotal()}

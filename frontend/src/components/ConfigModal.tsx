@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { apiService, Familia, Articulo, Ticket, TicketLine } from '../services/api';
+import { useToast } from '../hooks/useToast';
+import { getApiErrorMessage } from '../utils/errorUtils';
 
 interface ConfigModalProps {
   isOpen: boolean;
@@ -145,6 +147,7 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
   const [ticketData, setTicketData] = useState<{ ticket: Ticket; lines: TicketLine[] } | null>(null);
   const [loading, setLoading] = useState(false);
   const [articulos, setArticulos] = useState<Articulo[]>([]);
+  const { error } = useToast();
 
   useEffect(() => {
     const loadTicketDetail = async () => {
@@ -156,9 +159,10 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
         ]);
         setTicketData(ticketDetail);
         setArticulos(articulosData);
-      } catch (error) {
-        console.error('Error loading ticket detail:', error);
-        alert('Error al cargar los detalles del ticket');
+      } catch (err) {
+        console.error('Error loading ticket detail:', err);
+        const errorMessage = getApiErrorMessage(err);
+        error(`Error al cargar los detalles del ticket: ${errorMessage}`);
         onBack();
       } finally {
         setLoading(false);
@@ -643,6 +647,7 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
   const [editingItem, setEditingItem] = useState<CrudItem | null>(null);
   const [formData, setFormData] = useState<Record<string, string | number>>({});
   const [loading, setLoading] = useState(false);
+  const { success, error, warning } = useToast();
 
   const items = entityType === 'familias' ? familias : articulos;
 
@@ -659,9 +664,9 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
         const data = await apiService.getArticulos();
         setArticulos(data);
       }
-    } catch (error) {
+    } catch (err) {
       // Error loading data
-      console.error('Error loading data:', error);
+      console.error('Error loading data:', err);
     } finally {
       setLoading(false);
     }
@@ -676,7 +681,7 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
   const handleCreate = () => {
     // Verificar si hay familias disponibles al crear un artículo
     if (entityType === 'articulos' && familias.length === 0) {
-      alert('Debes crear al menos una familia antes de poder crear artículos');
+      warning('Debes crear al menos una familia antes de poder crear artículos');
       return;
     }
     
@@ -698,7 +703,7 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
       const articulosAsociados = articulos.filter(articulo => articulo.familia_id === id);
       
       if (articulosAsociados.length > 0) {
-        alert(`No se puede eliminar esta familia porque tiene ${articulosAsociados.length} artículo(s) asociado(s).\n\nElimina primero los artículos o reasígnalos a otra familia.`);
+        error(`No se puede eliminar esta familia porque tiene ${articulosAsociados.length} artículo(s) asociado(s). Elimina primero los artículos o reasígnalos a otra familia.`);
         return;
       }
     }
@@ -707,14 +712,17 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
       try {
         if (entityType === 'familias') {
           await apiService.deleteFamilia(id);
-          setFamilias(familias.filter(item => item.id !== id));
+          setFamilias(prevFamilias => prevFamilias.filter(item => item.id !== id));
+          success('Familia eliminada correctamente');
         } else {
           await apiService.deleteArticulo(id);
-          setArticulos(articulos.filter(item => item.id !== id));
+          setArticulos(prevArticulos => prevArticulos.filter(item => item.id !== id));
+          success('Artículo eliminado correctamente');
         }        
-      } catch (error) {
-        alert('Error al eliminar el elemento');
-        console.error('Error deleting item:', error);
+      } catch (err) {
+        const errorMessage = getApiErrorMessage(err);
+        error(`Error al eliminar el ${entityType === 'familias' ? 'familia' : 'artículo'}: ${errorMessage}`);
+        console.error('Error deleting item:', err);
       }
     }
   };
@@ -754,9 +762,11 @@ function CrudContent({ entityType, esTemaOscuro }: CrudContentProps) {
       setIsEditing(false);
       setEditingItem(null);
       setFormData({});
-    } catch (error) {
-      alert('Error al guardar el elemento');
-      console.error('Error saving item:', error);
+      success(`${entityType === 'familias' ? 'Familia' : 'Artículo'} guardado correctamente`);
+    } catch (err) {
+      const errorMessage = getApiErrorMessage(err);
+      error(`Error al guardar el ${entityType === 'familias' ? 'familia' : 'artículo'}: ${errorMessage}`);
+      console.error('Error saving item:', err);
     }
   };
 
