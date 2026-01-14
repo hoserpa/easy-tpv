@@ -15,6 +15,7 @@ const app_service_1 = require("./app.service");
 const familias_module_1 = require("./modules/familias/familias.module");
 const articulos_module_1 = require("./modules/articulos/articulos.module");
 const tickets_module_1 = require("./modules/tickets/tickets.module");
+const datos_empresa_module_1 = require("./modules/datos-empresa/datos-empresa.module");
 const database_config_1 = require("./config/database.config");
 let AppModule = class AppModule {
 };
@@ -30,6 +31,7 @@ exports.AppModule = AppModule = __decorate([
             familias_module_1.FamiliasModule,
             articulos_module_1.ArticulosModule,
             tickets_module_1.TicketsModule,
+            datos_empresa_module_1.DatosEmpresaModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

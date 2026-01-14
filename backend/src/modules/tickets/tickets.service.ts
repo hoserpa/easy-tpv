@@ -91,13 +91,13 @@ export class TicketsService {
 
     const subtotal = this.calcularSubtotalSinDescuentos(createTicketDto.lines);
     // Usar el total enviado por el frontend, ya que incluye todos los cálculos correctos
-    const total = createTicketDto.total || this.calcularTicketTotal(
-      createTicketDto.lines,
-      createTicketDto.discount_type,
-      createTicketDto.discount_value,
-    );
-
-
+    const total =
+      createTicketDto.total ||
+      this.calcularTicketTotal(
+        createTicketDto.lines,
+        createTicketDto.discount_type,
+        createTicketDto.discount_value,
+      );
 
     const nuevoTicket = this.ticketsRepository.create({
       subtotal,

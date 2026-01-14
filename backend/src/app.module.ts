@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { FamiliasModule } from './modules/familias/familias.module';
 import { ArticulosModule } from './modules/articulos/articulos.module';
 import { TicketsModule } from './modules/tickets/tickets.module';
+import { DatosEmpresaModule } from './modules/datos-empresa/datos-empresa.module';
 import { databaseConfig } from './config/database.config';
 
 @Module({
@@ -18,6 +19,7 @@ import { databaseConfig } from './config/database.config';
     FamiliasModule,
     ArticulosModule,
     TicketsModule,
+    DatosEmpresaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

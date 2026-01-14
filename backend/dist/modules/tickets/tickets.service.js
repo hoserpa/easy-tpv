@@ -70,7 +70,8 @@ let TicketsService = class TicketsService {
             throw new Error('El ticket debe tener al menos una línea');
         }
         const subtotal = this.calcularSubtotalSinDescuentos(createTicketDto.lines);
-        const total = createTicketDto.total || this.calcularTicketTotal(createTicketDto.lines, createTicketDto.discount_type, createTicketDto.discount_value);
+        const total = createTicketDto.total ||
+            this.calcularTicketTotal(createTicketDto.lines, createTicketDto.discount_type, createTicketDto.discount_value);
         const nuevoTicket = this.ticketsRepository.create({
             subtotal,
             discount_type: createTicketDto.discount_type || null,
