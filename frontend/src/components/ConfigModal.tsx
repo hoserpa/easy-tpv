@@ -756,8 +756,9 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
 function BillingViewContent({ onViewTicket, esTemaOscuro }: { onViewTicket: (ticketId: number) => void; esTemaOscuro: boolean }) {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(false);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const today = new Date().toISOString().split('T')[0];
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(today);
   const [allTickets, setAllTickets] = useState<Ticket[]>([]);
 
   // Cargar tickets desde la API
@@ -766,21 +767,11 @@ function BillingViewContent({ onViewTicket, esTemaOscuro }: { onViewTicket: (tic
     try {
       const data = await apiService.getTickets();
       setAllTickets(data);
-      setTickets(data);
     } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
       // Error loading tickets
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  // Inicializar fechas con el día actual
-  useEffect(() => {
-    const today = new Date();
-    const todayString = today.toISOString().split('T')[0];
-    
-    setStartDate(todayString);
-    setEndDate(todayString);
   }, []);
 
   useEffect(() => {
