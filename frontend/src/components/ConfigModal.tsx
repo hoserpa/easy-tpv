@@ -152,6 +152,30 @@ function CompanyDataContent({ esTemaOscuro }: { esTemaOscuro: boolean }) {
     phone: '',
     email: ''
   });
+  const [loading, setLoading] = useState(false);
+  const { success, error } = useToast();
+
+  useEffect(() => {
+    loadCompanyData();
+  }, []);
+
+  const loadCompanyData = async () => {
+    try {
+      const data = await apiService.getFirstDatosEmpresa();
+      if (data) {
+        setCompanyData({
+          name: data.name,
+          nif: data.nif,
+          address: data.address,
+          phone: data.phone || '',
+          email: data.email || ''
+        });
+      }
+    } catch (err) {
+      // No hay datos guardados, dejamos el formulario vacío
+      console.log('No hay datos de la empresa guardados:', err);
+    }
+  };
 
   const handleChange = (field: string, value: string) => {
     setCompanyData(prev => ({
@@ -160,10 +184,25 @@ function CompanyDataContent({ esTemaOscuro }: { esTemaOscuro: boolean }) {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Por ahora solo mostramos los datos en consola
-    console.log('Datos de la empresa:', companyData);
+    setLoading(true);
+    
+    try {
+      await apiService.updateOrCreateDatosEmpresa({
+        name: companyData.name,
+        nif: companyData.nif,
+        address: companyData.address,
+        phone: companyData.phone || undefined,
+        email: companyData.email || undefined
+      });
+      success('Datos de la empresa guardados correctamente');
+    } catch (err) {
+      error('Error al guardar los datos de la empresa');
+      console.error('Error saving company data:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -268,12 +307,23 @@ function CompanyDataContent({ esTemaOscuro }: { esTemaOscuro: boolean }) {
           </div>
         </div>
 
-        <div className="flex gap-4 pt-6 border-t border-gray-200 dark:border-slate-600">
+<div className="flex gap-4 pt-6 border-t border-gray-200 dark:border-slate-600">
           <button
             type="submit"
-            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            disabled={loading}
+            className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
-            💾 Guardar Datos
+            {loading ? (
+              <span className="flex items-center justify-center">
+                <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8 8 0 01-16 0" />
+                </svg>
+                Guardando...
+              </span>
+            ) : (
+              '💾 Guardar Datos'
+            )}
           </button>
           <button
             type="button"

@@ -153,8 +153,20 @@ class ApiService {
     return this.request<Ticket[]>('/tickets');
   }
 
-  async getTicket(id: number): Promise<{ ticket: Ticket; lines: TicketLine[] }> {
+async getTicket(id: number): Promise<{ ticket: Ticket; lines: TicketLine[] }> {
     return this.request<{ ticket: Ticket; lines: TicketLine[] }>(`/tickets/${id}`);
+  }
+
+  // Datos de la Empresa
+  async getFirstDatosEmpresa(): Promise<DatosEmpresa> {
+    return this.request<DatosEmpresa>('/datos-empresa/first');
+  }
+
+  async updateOrCreateDatosEmpresa(data: { name?: string; nif?: string; address?: string; phone?: string; email?: string }): Promise<DatosEmpresa> {
+    return this.request<DatosEmpresa>('/datos-empresa/update-or-create', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   }
 }
 

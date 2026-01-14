@@ -47,6 +47,7 @@ export class DatosEmpresaService {
 
   async findFirst(): Promise<DatosEmpresa | null> {
     return await this.datosEmpresaRepository.findOne({
+      where: {},
       order: { id: 'ASC' },
     });
   }
