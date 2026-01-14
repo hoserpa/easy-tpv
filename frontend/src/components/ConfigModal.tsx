@@ -25,6 +25,7 @@ const [selectedOption, setSelectedOption] = useState<string>('familias');
   const [showCrudView, setShowCrudView] = useState(false);
   const [showBillingView, setShowBillingView] = useState(false);
   const [showCompanyDataView, setShowCompanyDataView] = useState(false);
+  const [showPrintersView, setShowPrintersView] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<number | null>(null);
 
   const options: SelectOption[] = [
@@ -36,18 +37,23 @@ const [selectedOption, setSelectedOption] = useState<string>('familias');
     setShowCrudView(true);
   };
 
-const handleBackToMenu = () => {
+ const handleBackToMenu = () => {
     setShowCrudView(false);
     setShowBillingView(false);
     setShowCompanyDataView(false);
+    setShowPrintersView(false);
   };
 
 const handleOpenBilling = () => {
     setShowBillingView(true);
   };
 
-const handleOpenCompanyData = () => {
+ const handleOpenCompanyData = () => {
     setShowCompanyDataView(true);
+  };
+
+  const handleOpenPrinters = () => {
+    setShowPrintersView(true);
   };
 
   const handleViewTicketDetail = (ticketId: number) => {
@@ -365,6 +371,96 @@ if (showCompanyDataView) {
         </div>
         <div className={`flex-1 overflow-y-auto rounded-lg p-4 ${esTemaOscuro ? 'bg-slate-900' : 'bg-gray-50'}`}>
           <CompanyDataContent esTemaOscuro={esTemaOscuro} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PrintersContent({ esTemaOscuro }: { esTemaOscuro: boolean }) {
+  const [selectedPrinter, setSelectedPrinter] = useState<string | null>(null);
+
+  const printers = [
+    { id: 'printer1', name: 'Impresora Ticket Principal' },
+    { id: 'printer2', name: 'Impresora Facturas' },
+    { id: 'printer3', name: 'Impresora Cocina' }
+  ];
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <div className="mb-6">
+        <h3 className={`text-xl font-bold mb-2 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+          Configuración de Impresoras
+        </h3>
+        <p className={esTemaOscuro ? 'text-gray-400' : 'text-gray-600'}>
+          Selecciona la impresora que deseas usar.
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        {printers.map((printer) => (
+          <div
+            key={printer.id}
+            className={`flex items-center justify-between p-4 rounded-lg border-2 transition-colors cursor-pointer ${
+              selectedPrinter === printer.id
+                ? 'border-blue-500 bg-blue-500 bg-opacity-10'
+                : esTemaOscuro
+                ? 'border-slate-600 bg-slate-700 hover:border-slate-500'
+                : 'border-gray-300 bg-white hover:border-gray-400'
+            }`}
+            onClick={() => setSelectedPrinter(printer.id)}
+          >
+            <div className="flex items-center space-x-3">
+              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                selectedPrinter === printer.id
+                  ? 'border-blue-500 bg-blue-500'
+                  : esTemaOscuro
+                  ? 'border-slate-400'
+                  : 'border-gray-400'
+              }`}>
+                {selectedPrinter === printer.id && (
+                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </div>
+              <span className={`font-medium ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+                {printer.name}
+              </span>
+            </div>
+            <span className={`text-sm ${esTemaOscuro ? 'text-gray-400' : 'text-gray-500'}`}>
+              {selectedPrinter === printer.id ? '✓ Seleccionada' : 'Seleccionar'}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+if (showPrintersView) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col`}>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Impresoras</h2>
+          <div className="flex gap-2">
+            <button
+              onClick={handleBackToMenu}
+              className={`${esTemaOscuro ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-300 hover:bg-gray-400'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
+            >
+              ← Volver
+            </button>
+            <button
+              onClick={onClose}
+              className={`${esTemaOscuro ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+        <div className={`flex-1 overflow-y-auto rounded-lg p-4 ${esTemaOscuro ? 'bg-slate-900' : 'bg-gray-50'}`}>
+          <PrintersContent esTemaOscuro={esTemaOscuro} />
         </div>
       </div>
     </div>
@@ -748,12 +844,12 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
             ⚙️ Configuración General (Próximamente)
           </button>
           
-          <button
-            disabled
-            className="w-full bg-gray-600 text-gray-400 font-semibold py-3 px-4 rounded-lg text-left cursor-not-allowed"
-          >
-            🖨️ Impresoras (Próximamente)
-          </button>
+           <button
+             onClick={handleOpenPrinters}
+             className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors text-left"
+           >
+             🖨️ Impresoras
+           </button>
         </div>
       </div>
     </div>
