@@ -21,9 +21,10 @@ interface SelectOption {
 }
 
 export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOscuro }: ConfigModalProps) {
-  const [selectedOption, setSelectedOption] = useState<string>('familias');
+const [selectedOption, setSelectedOption] = useState<string>('familias');
   const [showCrudView, setShowCrudView] = useState(false);
   const [showBillingView, setShowBillingView] = useState(false);
+  const [showCompanyDataView, setShowCompanyDataView] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<number | null>(null);
 
   const options: SelectOption[] = [
@@ -35,13 +36,18 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
     setShowCrudView(true);
   };
 
-  const handleBackToMenu = () => {
+const handleBackToMenu = () => {
     setShowCrudView(false);
     setShowBillingView(false);
+    setShowCompanyDataView(false);
   };
 
-  const handleOpenBilling = () => {
+const handleOpenBilling = () => {
     setShowBillingView(true);
+  };
+
+const handleOpenCompanyData = () => {
+    setShowCompanyDataView(true);
   };
 
   const handleViewTicketDetail = (ticketId: number) => {
@@ -105,7 +111,7 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
     );
   }
 
-  if (showBillingView) {
+if (showBillingView) {
     if (selectedTicket !== null) {
       return <TicketDetailModal ticketId={selectedTicket} onClose={handleCloseTicketDetail} esTemaOscuro={esTemaOscuro} onBack={() => setSelectedTicket(null)} />;
     }
@@ -134,7 +140,184 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
             <BillingViewContent onViewTicket={handleViewTicketDetail} esTemaOscuro={esTemaOscuro} />
           </div>
         </div>
+</div>
+  );
+}
+
+function CompanyDataContent({ esTemaOscuro }: { esTemaOscuro: boolean }) {
+  const [companyData, setCompanyData] = useState({
+    name: '',
+    nif: '',
+    address: '',
+    phone: '',
+    email: ''
+  });
+
+  const handleChange = (field: string, value: string) => {
+    setCompanyData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Por ahora solo mostramos los datos en consola
+    console.log('Datos de la empresa:', companyData);
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <div className="mb-6">
+        <h3 className={`text-xl font-bold mb-2 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+          Información de la Empresa
+        </h3>
+        <p className={`${esTemaOscuro ? 'text-gray-400' : 'text-gray-600'}`}>
+          Configura los datos de tu empresa que aparecerán en los tickets y facturas.
+        </p>
       </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${esTemaOscuro ? 'text-gray-300' : 'text-gray-700'}`}>
+              Nombre de la empresa *
+            </label>
+            <input
+              type="text"
+              value={companyData.name}
+              onChange={(e) => handleChange('name', e.target.value)}
+              className={`w-full rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                esTemaOscuro 
+                  ? 'bg-slate-700 border border-slate-600 text-white' 
+                  : 'bg-white border border-gray-300 text-gray-800'
+              }`}
+              placeholder="Mi Empresa S.L."
+              required
+            />
+          </div>
+
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${esTemaOscuro ? 'text-gray-300' : 'text-gray-700'}`}>
+              NIF / CIF *
+            </label>
+            <input
+              type="text"
+              value={companyData.nif}
+              onChange={(e) => handleChange('nif', e.target.value)}
+              className={`w-full rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                esTemaOscuro 
+                  ? 'bg-slate-700 border border-slate-600 text-white' 
+                  : 'bg-white border border-gray-300 text-gray-800'
+              }`}
+              placeholder="B12345678"
+              required
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className={`block text-sm font-medium mb-2 ${esTemaOscuro ? 'text-gray-300' : 'text-gray-700'}`}>
+              Dirección *
+            </label>
+            <input
+              type="text"
+              value={companyData.address}
+              onChange={(e) => handleChange('address', e.target.value)}
+              className={`w-full rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                esTemaOscuro 
+                  ? 'bg-slate-700 border border-slate-600 text-white' 
+                  : 'bg-white border border-gray-300 text-gray-800'
+              }`}
+              placeholder="Calle Principal, 123 - 28080 Madrid"
+              required
+            />
+          </div>
+
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${esTemaOscuro ? 'text-gray-300' : 'text-gray-700'}`}>
+              Teléfono
+            </label>
+            <input
+              type="tel"
+              value={companyData.phone}
+              onChange={(e) => handleChange('phone', e.target.value)}
+              className={`w-full rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                esTemaOscuro 
+                  ? 'bg-slate-700 border border-slate-600 text-white' 
+                  : 'bg-white border border-gray-300 text-gray-800'
+              }`}
+              placeholder="600123456"
+            />
+          </div>
+
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${esTemaOscuro ? 'text-gray-300' : 'text-gray-700'}`}>
+              Email
+            </label>
+            <input
+              type="email"
+              value={companyData.email}
+              onChange={(e) => handleChange('email', e.target.value)}
+              className={`w-full rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                esTemaOscuro 
+                  ? 'bg-slate-700 border border-slate-600 text-white' 
+                  : 'bg-white border border-gray-300 text-gray-800'
+              }`}
+              placeholder="empresa@ejemplo.com"
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-4 pt-6 border-t border-gray-200 dark:border-slate-600">
+          <button
+            type="submit"
+            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+          >
+            💾 Guardar Datos
+          </button>
+          <button
+            type="button"
+            onClick={() => setCompanyData({ name: '', nif: '', address: '', phone: '', email: '' })}
+            className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+              esTemaOscuro
+                ? 'bg-gray-600 hover:bg-gray-700 text-white'
+                : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+            }`}
+          >
+            🗑️ Limpiar
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+if (showCompanyDataView) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col`}>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Datos de la Empresa</h2>
+          <div className="flex gap-2">
+            <button
+              onClick={handleBackToMenu}
+              className={`${esTemaOscuro ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-300 hover:bg-gray-400'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
+            >
+              ← Volver
+            </button>
+            <button
+              onClick={onClose}
+              className={`${esTemaOscuro ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+        <div className={`flex-1 overflow-y-auto rounded-lg p-4 ${esTemaOscuro ? 'bg-slate-900' : 'bg-gray-50'}`}>
+          <CompanyDataContent esTemaOscuro={esTemaOscuro} />
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -500,7 +683,14 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
           >
             💼 Facturación
           </button>
-          
+
+          <button
+            onClick={handleOpenCompanyData}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors text-left"
+          >
+            🏢 Datos de la Empresa
+          </button>
+
           <button
             disabled
             className="w-full bg-gray-600 text-gray-400 font-semibold py-3 px-4 rounded-lg text-left cursor-not-allowed"

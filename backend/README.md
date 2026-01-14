@@ -8,6 +8,7 @@ Backend que proporciona los servicios necesarios para una aplicación TPV básic
 - Gestión de familias de productos
 - Gestión de artículos
 - Creación y gestión de tickets de venta
+- Gestión de datos de la empresa
 - API REST para consumo del frontend
 
 ## 🛠️ Stack Tecnológico
@@ -28,6 +29,7 @@ src/
 │   │   └── update-*.dto.ts    # DTOs para actualización
 │   └── entities/          # Entidades de base de datos
 │       ├── articulo.entity.ts
+│       ├── datos-empresa.entity.ts
 │       ├── familia.entity.ts
 │       ├── ticket-line.entity.ts
 │       └── ticket.entity.ts
@@ -49,6 +51,11 @@ src/
 │       ├── tickets.module.ts
 │       ├── tickets.service.spec.ts
 │       └── tickets.service.ts
+│   └── datos-empresa/      # Gestión de datos de la empresa
+│       ├── datos-empresa.controller.ts
+│       ├── datos-empresa.module.ts
+│       ├── datos-empresa.service.spec.ts
+│       └── datos-empresa.service.ts
 ├── app.controller.ts      # Controlador principal
 ├── app.module.ts          # Módulo raíz
 ├── app.service.ts         # Servicio principal
@@ -141,6 +148,20 @@ CREATE TABLE tickets_lineas (
 );
 ```
 
+### datos_empresa
+```sql
+CREATE TABLE datos_empresa (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(200) NOT NULL,
+  nif VARCHAR(20) NOT NULL UNIQUE,
+  address VARCHAR(255) NOT NULL,
+  phone VARCHAR(20) NULL,
+  email VARCHAR(255) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+```
+
 ## 🧱 Arquitectura y patrones
 
 ### Módulos
@@ -187,12 +208,20 @@ PUT    /tickets/:id       # Actualizar ticket
 DELETE /tickets/:id       # Eliminar ticket
 ```
 
+### Datos de la Empresa
+```
+GET    /datos-empresa           # Obtener datos de la empresa
+POST   /datos-empresa           # Crear/actualizar datos de la empresa
+PUT    /datos-empresa/:id       # Actualizar datos de la empresa
+DELETE /datos-empresa/:id       # Eliminar datos de la empresa
+```
+
 ## 🎨 Convenciones de código
 
 ### TypeScript
 - Usar tipado estricto siempre
 - Interfaces para objetos, types para uniones/primitivos
-- Nombres en español: `Familia`, `Articulo`, `Ticket`
+- Nombres en español: `Familia`, `Articulo`, `Ticket`, `DatosEmpresa`
 - Decoradores de NestJS con @ símbolo
 
 ### Controladores
