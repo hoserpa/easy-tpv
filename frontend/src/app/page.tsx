@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import ConfigModal from '../components/ConfigModal';
-import { apiService, Familia, Articulo } from '../services/api';
+import { apiService, Familia, Articulo, Ticket, TicketLine } from '../services/api';
 import { useToast } from '../hooks/useToast';
 import { getApiErrorMessage } from '../utils/errorUtils';
 import Skeleton, { CardSkeleton } from '../components/Skeleton';
@@ -34,6 +34,8 @@ export default function Home() {
   const [familias, setFamilias] = useState<Familia[]>([]);
   const [mostrarModalImpresion, setMostrarModalImpresion] = useState(false);
   const [ticketIdCreado, setTicketIdCreado] = useState<number | null>(null);
+  const [ticketData, setTicketData] = useState<{ ticket: Ticket; lines: TicketLine[] } | null>(null);
+  const [loadingTicket, setLoadingTicket] = useState(false);
   const { success, error } = useToast();
   const [articulos, setArticulos] = useState<Articulo[]>([]);
   const [loading, setLoading] = useState(false);
@@ -58,6 +60,24 @@ export default function Home() {
       console.error('Error loading data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (mostrarModalImpresion && ticketIdCreado) {
+      loadTicketData();
+    }
+  }, [mostrarModalImpresion, ticketIdCreado]);
+
+  const loadTicketData = async () => {
+    setLoadingTicket(true);
+    try {
+      const ticketDetail = await apiService.getTicket(ticketIdCreado);
+      setTicketData(ticketDetail);
+    } catch (err) {
+      error('Error al cargar los datos del ticket');
+    } finally {
+      setLoadingTicket(false);
     }
   };
 
@@ -748,6 +768,68 @@ export default function Home() {
                 ¿Deseas imprimir el ticket?
               </p>
             </div>
+
+            {loadingTicket ? (
+              <div className="text-center py-8 mb-6">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
+              </div>
+            ) : ticketData && (
+              <div className="border-2 border-gray-300 bg-white p-4 text-xs font-mono text-black max-w-sm mx-auto mb-6">
+                <div className="text-center mb-3">
+                  <div className="font-bold text-sm">Nombre Empresa</div>
+                  <div>NIF/CIF</div>
+                  <div>Dirección</div>
+                </div>
+                
+                <div className="border-t border-dashed border-gray-400 pt-2 mb-2">
+                  <div className="text-center">Ticket #{ticketData.ticket.id}</div>
+                  <div className="text-center text-gray-600">
+                    {new Date(ticketData.ticket.created_at).toLocaleString('es-ES')}
+                  </div>
+                </div>
+
+                <div className="space-y-1 mb-2">
+                  {ticketData.lines.map((line) => {
+                    const articulo = articulos.find(a => a.id === line.articulo_id);
+                    return (
+                      <div key={line.id} className="flex justify-between">
+                        <div className="flex-1">
+                          <div>{line.qty}x {articulo?.name || 'Artículo'}</div>
+                          <div className="text-gray-600">{parseFloat(String(line.unit_price)).toFixed(2)}€/ud</div>
+                        </div>
+                        <div className="text-right">{parseFloat(String(line.total)).toFixed(2)}€</div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="border-t border-dashed border-gray-400 pt-2">
+                  <div className="flex justify-between">
+                    <span>Subtotal:</span>
+                    <span>{parseFloat(String(ticketData.ticket.subtotal)).toFixed(2)}€</span>
+                  </div>
+                  {ticketData.ticket.discount_type && ticketData.ticket.discount_value && (
+                    <div className="flex justify-between text-gray-600">
+                      <span>Descuento:</span>
+                      <span>
+                        {ticketData.ticket.discount_type === 'fixed' 
+                          ? `-${parseFloat(String(ticketData.ticket.discount_value)).toFixed(2)}€`
+                          : `-${parseFloat(String(ticketData.ticket.discount_value))}%`
+                        }
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex justify-between font-bold text-lg mt-1">
+                    <span>TOTAL:</span>
+                    <span>{parseFloat(String(ticketData.ticket.total)).toFixed(2)}€</span>
+                  </div>
+                </div>
+
+                <div className="text-center mt-3 pt-2 border-t border-dashed border-gray-400">
+                  <div className="font-bold">¡Gracias por su compra!</div>
+                </div>
+              </div>
+            )}
             <div className="flex gap-3">
               <button
                 className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition-colors"
