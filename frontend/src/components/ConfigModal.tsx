@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { apiService, Familia, Articulo, Ticket, TicketLine } from '../services/api';
+import { apiService, Familia, Articulo, Ticket, TicketLine, DatosEmpresa } from '../services/api';
 import { useToast } from '../hooks/useToast';
 import { getApiErrorMessage } from '../utils/errorUtils';
 import ConfirmDialog from './ConfirmDialog';
@@ -382,6 +382,8 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
   const [ticketData, setTicketData] = useState<{ ticket: Ticket; lines: TicketLine[] } | null>(null);
   const [loading, setLoading] = useState(false);
   const [articulos, setArticulos] = useState<Articulo[]>([]);
+  const [mostrarModalImpresion, setMostrarModalImpresion] = useState(false);
+  const [datosEmpresa, setDatosEmpresa] = useState<DatosEmpresa | null>(null);
   const { error } = useToast();
 
   useEffect(() => {
@@ -497,6 +499,16 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
 
   const { ticket, lines } = ticketData;
 
+  const handleOpenPrintModal = async () => {
+    try {
+      const empresaData = await apiService.getFirstDatosEmpresa();
+      setDatosEmpresa(empresaData);
+      setMostrarModalImpresion(true);
+    } catch (err) {
+      error('Error al cargar los datos de la empresa');
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col`}>
@@ -514,6 +526,12 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
             </p>
           </div>
           <div className="flex gap-2">
+            <button
+              onClick={handleOpenPrintModal}
+              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+            >
+              🖨️ Imprimir
+            </button>
             <button
               onClick={onBack}
               className={`${esTemaOscuro ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-300 hover:bg-gray-400'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
@@ -675,6 +693,90 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
           </div>
         </div>
       </div>
+
+      {/* Modal de Impresión */}
+      {mostrarModalImpresion && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
+          <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-96`}>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className={`text-xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+                Vista previa de impresión
+              </h2>
+              <button
+                onClick={() => setMostrarModalImpresion(false)}
+                className={`${esTemaOscuro ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-800'} text-2xl font-bold`}
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="border-2 border-gray-300 bg-white p-4 text-xs font-mono text-black max-w-sm mx-auto mb-4">
+              <div className="text-center mb-3">
+                <div className="font-bold text-sm">{datosEmpresa?.name || 'Nombre Empresa'}</div>
+                <div>{datosEmpresa?.nif || 'NIF/CIF'}</div>
+                <div>{datosEmpresa?.address || 'Dirección'}</div>
+                {datosEmpresa?.phone && <div>Tel: {datosEmpresa.phone}</div>}
+                {datosEmpresa?.email && <div>{datosEmpresa.email}</div>}
+              </div>
+              
+              <div className="border-t border-dashed border-gray-400 pt-2 mb-2">
+                <div className="text-center">Ticket #{ticket.id}</div>
+                <div className="text-center text-gray-600">
+                  {new Date(ticket.created_at).toLocaleString('es-ES')}
+                </div>
+              </div>
+
+              <div className="space-y-1 mb-2">
+                {lines.map((line) => {
+                  const articulo = articulos.find(a => a.id === line.articulo_id);
+                  return (
+                    <div key={line.id} className="flex justify-between">
+                      <div className="flex-1">
+                        <div>{line.qty}x {articulo?.name || 'Artículo'}</div>
+                        <div className="text-gray-600">{parseFloat(String(line.unit_price)).toFixed(2)}€/ud</div>
+                      </div>
+                      <div className="text-right">{parseFloat(String(line.total)).toFixed(2)}€</div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="border-t border-dashed border-gray-400 pt-2">
+                <div className="flex justify-between">
+                  <span>Subtotal:</span>
+                  <span>{parseFloat(String(ticket.subtotal)).toFixed(2)}€</span>
+                </div>
+                {ticket.discount_type && ticket.discount_value && (
+                  <div className="flex justify-between text-gray-600">
+                    <span>Descuento:</span>
+                    <span>
+                      {ticket.discount_type === 'fixed' 
+                        ? `-${parseFloat(String(ticket.discount_value)).toFixed(2)}€`
+                        : `-${parseFloat(String(ticket.discount_value))}%`
+                      }
+                    </span>
+                  </div>
+                )}
+                <div className="flex justify-between font-bold text-lg mt-1">
+                  <span>TOTAL:</span>
+                  <span>{parseFloat(String(ticket.total)).toFixed(2)}€</span>
+                </div>
+              </div>
+
+              <div className="text-center mt-3 pt-2 border-t border-dashed border-gray-400">
+                <div className="font-bold">¡Gracias por su compra!</div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => window.print()}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition-colors"
+            >
+              🖨️ Imprimir
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
