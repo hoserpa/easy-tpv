@@ -32,6 +32,8 @@ export default function Home() {
   const [dineroRecibido, setDineroRecibido] = useState('');
   const [esTemaOscuro, setEsTemaOscuro] = useState(true);
   const [familias, setFamilias] = useState<Familia[]>([]);
+  const [mostrarModalImpresion, setMostrarModalImpresion] = useState(false);
+  const [ticketIdCreado, setTicketIdCreado] = useState<number | null>(null);
   const { success, error } = useToast();
   const [articulos, setArticulos] = useState<Articulo[]>([]);
   const [loading, setLoading] = useState(false);
@@ -674,7 +676,7 @@ export default function Home() {
                     if (totalDescuentoTicket > 0) {
                       const discountedLines = lineasTicket.filter(linea => linea.descuentoTipo && linea.descuentoValor);
                       const allFixed = discountedLines.every(linea => linea.descuentoTipo === 'fixed');
-                      
+                       
                       if (allFixed) {
                         // Si todos los descuentos son fijos, enviar como 'fixed' con valor en euros
                         ticketDiscountType = 'fixed';
@@ -696,19 +698,18 @@ export default function Home() {
 
 
 
-
-
                     // Enviar a la API
-                    await apiService.createTicket(ticketData);
+                    const response = await apiService.createTicket(ticketData);
 
-                    // Éxito: cerrar modal y limpiar
+                    // Éxito: cerrar modal y mostrar modal de impresión
                     let mensajeExito = 'Ticket guardado correctamente';
                     if (totalDescuentoTicket > 0) {
                       mensajeExito += ` (Descuento: ${totalDescuentoTicket.toFixed(2)}€)`;
                     }
                     success(mensajeExito);
-                    cancelarTicket();
+                    setTicketIdCreado(response.ticket.id);
                     setMostrarModalCobro(false);
+                    setMostrarModalImpresion(true);
                     setDineroRecibido('');
                   } catch (err) {
                     // Extraer mensaje de error del backend
@@ -728,6 +729,40 @@ export default function Home() {
                 className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg transition-colors"
               >
                 Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Impresión */}
+      {mostrarModalImpresion && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-96`}>
+            <div className="text-center mb-6">
+              <div className="text-5xl mb-4">✅</div>
+              <h2 className={`text-2xl font-bold mb-2 ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+                Ticket creado correctamente
+              </h2>
+              <p className={esTemaOscuro ? 'text-gray-400' : 'text-gray-600'}>
+                ¿Deseas imprimir el ticket?
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition-colors"
+              >
+                🖨️ Imprimir
+              </button>
+              <button
+                onClick={() => {
+                  setMostrarModalImpresion(false);
+                  cancelarTicket();
+                  setTicketIdCreado(null);
+                }}
+                className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-lg transition-colors"
+              >
+                Cerrar
               </button>
             </div>
           </div>
