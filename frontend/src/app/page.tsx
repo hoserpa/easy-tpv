@@ -762,7 +762,29 @@ export default function Home() {
 
       {/* Modal de Impresión */}
       {mostrarModalImpresion && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <>
+          <style>{`
+            @media print {
+              body * {
+                visibility: hidden;
+              }
+              .print-ticket,
+              .print-ticket * {
+                visibility: visible;
+              }
+              .print-ticket {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 10mm;
+                border: none;
+                box-shadow: none;
+              }
+            }
+          `}</style>
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-96`}>
             <div className="text-center mb-6">
               <div className="text-5xl mb-4">✅</div>
@@ -779,7 +801,7 @@ export default function Home() {
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
               </div>
             ) : ticketData && (
-              <div className="border-2 border-gray-300 bg-white p-4 text-xs font-mono text-black max-w-sm mx-auto mb-6">
+              <div className="border-2 border-gray-300 bg-white p-4 text-xs font-mono text-black max-w-sm mx-auto mb-6 print-ticket">
                 <div className="text-center mb-3">
                   <div className="font-bold text-sm">{datosEmpresa?.name || 'Nombre Empresa'}</div>
                   <div>{datosEmpresa?.nif || 'NIF/CIF'}</div>
@@ -839,6 +861,7 @@ export default function Home() {
             )}
             <div className="flex gap-3">
               <button
+                onClick={() => window.print()}
                 className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition-colors"
               >
                 🖨️ Imprimir
@@ -856,6 +879,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+          </>
       )}
     </div>
   );

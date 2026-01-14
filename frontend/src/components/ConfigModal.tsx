@@ -696,8 +696,30 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
 
       {/* Modal de Impresión */}
       {mostrarModalImpresion && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
-          <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-96`}>
+        <>
+          <style>{`
+            @media print {
+              body * {
+                visibility: hidden;
+              }
+              .print-ticket,
+              .print-ticket * {
+                visibility: visible;
+              }
+              .print-ticket {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 10mm;
+                border: none;
+                box-shadow: none;
+              }
+            }
+          `}</style>
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
+            <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-96`}>
             <div className="flex justify-between items-center mb-4">
               <h2 className={`text-xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
                 Vista previa de impresión
@@ -709,8 +731,8 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
                 ×
               </button>
             </div>
-            
-            <div className="border-2 border-gray-300 bg-white p-4 text-xs font-mono text-black max-w-sm mx-auto mb-4">
+             
+            <div className="border-2 border-gray-300 bg-white p-4 text-xs font-mono text-black max-w-sm mx-auto mb-4 print-ticket">
               <div className="text-center mb-3">
                 <div className="font-bold text-sm">{datosEmpresa?.name || 'Nombre Empresa'}</div>
                 <div>{datosEmpresa?.nif || 'NIF/CIF'}</div>
@@ -776,6 +798,7 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
             </button>
           </div>
         </div>
+          </>
       )}
     </div>
   );
