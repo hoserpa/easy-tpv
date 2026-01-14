@@ -39,6 +39,17 @@ export interface TicketLine {
   updated_at: string;
 }
 
+export interface DatosEmpresa {
+  id: number;
+  name: string;
+  nif: string;
+  address: string;
+  phone: string | null;
+  email: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 class ApiService {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;

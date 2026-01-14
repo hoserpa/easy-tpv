@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import ConfigModal from '../components/ConfigModal';
-import { apiService, Familia, Articulo, Ticket, TicketLine } from '../services/api';
+import { apiService, Familia, Articulo, Ticket, TicketLine, DatosEmpresa } from '../services/api';
 import { useToast } from '../hooks/useToast';
 import { getApiErrorMessage } from '../utils/errorUtils';
 import Skeleton, { CardSkeleton } from '../components/Skeleton';
@@ -36,6 +36,7 @@ export default function Home() {
   const [ticketIdCreado, setTicketIdCreado] = useState<number | null>(null);
   const [ticketData, setTicketData] = useState<{ ticket: Ticket; lines: TicketLine[] } | null>(null);
   const [loadingTicket, setLoadingTicket] = useState(false);
+  const [datosEmpresa, setDatosEmpresa] = useState<DatosEmpresa | null>(null);
   const { success, error } = useToast();
   const [articulos, setArticulos] = useState<Articulo[]>([]);
   const [loading, setLoading] = useState(false);
@@ -72,8 +73,12 @@ export default function Home() {
   const loadTicketData = async () => {
     setLoadingTicket(true);
     try {
-      const ticketDetail = await apiService.getTicket(ticketIdCreado);
+      const [ticketDetail, empresaData] = await Promise.all([
+        apiService.getTicket(ticketIdCreado),
+        apiService.getFirstDatosEmpresa()
+      ]);
       setTicketData(ticketDetail);
+      setDatosEmpresa(empresaData);
     } catch (err) {
       error('Error al cargar los datos del ticket');
     } finally {
@@ -776,9 +781,11 @@ export default function Home() {
             ) : ticketData && (
               <div className="border-2 border-gray-300 bg-white p-4 text-xs font-mono text-black max-w-sm mx-auto mb-6">
                 <div className="text-center mb-3">
-                  <div className="font-bold text-sm">Nombre Empresa</div>
-                  <div>NIF/CIF</div>
-                  <div>Dirección</div>
+                  <div className="font-bold text-sm">{datosEmpresa?.name || 'Nombre Empresa'}</div>
+                  <div>{datosEmpresa?.nif || 'NIF/CIF'}</div>
+                  <div>{datosEmpresa?.address || 'Dirección'}</div>
+                  {datosEmpresa?.phone && <div>Tel: {datosEmpresa.phone}</div>}
+                  {datosEmpresa?.email && <div>{datosEmpresa.email}</div>}
                 </div>
                 
                 <div className="border-t border-dashed border-gray-400 pt-2 mb-2">
