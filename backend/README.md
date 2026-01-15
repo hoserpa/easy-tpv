@@ -16,7 +16,7 @@ Backend que proporciona los servicios necesarios para una aplicación TPV básic
 - **TypeScript** - Tipado estático para mayor robustez
 - **Node.js** - Entorno de ejecución JavaScript
 - **NestJS** - Framework para construir APIs eficientes y escalables
-- **MySQL/MariaDB** - Base de datos relacional
+- **PostgreSQL** - Base de datos relacional
 - **API REST** - Arquitectura de servicios web
 
 ## 📁 Estructura del proyecto
@@ -97,22 +97,22 @@ npm run lint
 ### familias
 ```sql
 CREATE TABLE familias (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL UNIQUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
 ### articulos
 ```sql
 CREATE TABLE articulos (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  familia_id INT UNSIGNED NOT NULL,
+  id SERIAL PRIMARY KEY,
+  familia_id INTEGER NOT NULL,
   name VARCHAR(150) NOT NULL,
-  price DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0.00,
+  price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (familia_id) REFERENCES familias(id) ON DELETE CASCADE
 );
 ```
@@ -120,29 +120,29 @@ CREATE TABLE articulos (
 ### tickets
 ```sql
 CREATE TABLE tickets (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  subtotal DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0.00,
-  discount_type ENUM('fixed', 'percent') NULL,
-  discount_value DECIMAL(10,2) UNSIGNED NULL,
-  total DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0.00,
+  id SERIAL PRIMARY KEY,
+  subtotal DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  discount_type VARCHAR(10) NULL,
+  discount_value DECIMAL(10,2) NULL,
+  total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
 ### tickets_lineas
 ```sql
 CREATE TABLE tickets_lineas (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  ticket_id INT UNSIGNED NOT NULL,
-  articulo_id INT UNSIGNED NOT NULL,
-  qty INT UNSIGNED NOT NULL DEFAULT 1,
-  unit_price DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0.00,
-  discount_type ENUM('fixed', 'percent') NULL,
-  discount_value DECIMAL(10,2) UNSIGNED NULL,
-  total DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0.00,
+  id SERIAL PRIMARY KEY,
+  ticket_id INTEGER NOT NULL,
+  articulo_id INTEGER NOT NULL,
+  qty INTEGER NOT NULL DEFAULT 1,
+  unit_price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  discount_type VARCHAR(10) NULL,
+  discount_value DECIMAL(10,2) NULL,
+  total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE,
   FOREIGN KEY (articulo_id) REFERENCES articulos(id) ON DELETE RESTRICT
 );
@@ -151,14 +151,14 @@ CREATE TABLE tickets_lineas (
 ### datos_empresa
 ```sql
 CREATE TABLE datos_empresa (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   name VARCHAR(200) NOT NULL,
   nif VARCHAR(20) NOT NULL UNIQUE,
   address VARCHAR(255) NOT NULL,
   phone VARCHAR(20) NULL,
   email VARCHAR(255) NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
@@ -241,17 +241,13 @@ DELETE /datos-empresa/:id       # Eliminar datos de la empresa
 ### Variables de entorno
 Crear archivo `.env` para configuración local:
 ```
-DB_HOST=localhost
-DB_PORT=3306
-DB_USERNAME=root
-DB_PASSWORD=your_password
-DB_DATABASE=easy_tpv
+DATABASE_URL=postgresql://user:password@localhost:5432/easy_tpv
 PORT=3001
 ```
 
 ### Base de datos
 La configuración está en `src/config/database.config.ts`.
-Asegurar que MySQL/MariaDB esté corriendo antes de iniciar la aplicación.
+Asegurar que PostgreSQL esté corriendo antes de iniciar la aplicación.
 
 ## 🧪 Testing
 
