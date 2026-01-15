@@ -92,6 +92,12 @@ export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOs
             <h2 className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Gestión de Datos</h2>
             <div className="flex gap-2">
               <button
+                onClick={() => {}}
+                className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+              >
+                📊 Informe
+              </button>
+              <button
                 onClick={handleBackToMenu}
                 className={`${esTemaOscuro ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-300 hover:bg-gray-400'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
               >
