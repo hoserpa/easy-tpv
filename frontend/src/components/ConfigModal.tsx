@@ -21,11 +21,14 @@ interface SelectOption {
 }
 
 export default function ConfigModal({ isOpen, onClose, esTemaOscuro, setEsTemaOscuro }: ConfigModalProps) {
-const [selectedOption, setSelectedOption] = useState<string>('familias');
+  const [selectedOption, setSelectedOption] = useState<string>('familias');
   const [showCrudView, setShowCrudView] = useState(false);
   const [showBillingView, setShowBillingView] = useState(false);
   const [showCompanyDataView, setShowCompanyDataView] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<number | null>(null);
+  const [mostrarModalInforme, setMostrarModalInforme] = useState(false);
+  const [datosEmpresaInforme, setDatosEmpresaInforme] = useState<DatosEmpresa | null>(null);
+  const [ticketsParaInforme, setTicketsParaInforme] = useState<Ticket[]>([]);
 
   const options: SelectOption[] = [
     { value: 'familias', label: 'Familias' },
@@ -52,6 +55,25 @@ const [selectedOption, setSelectedOption] = useState<string>('familias');
 
   const handleViewTicketDetail = (ticketId: number) => {
     setSelectedTicket(ticketId);
+  };
+
+  const handleOpenInforme = async (tickets: Ticket[]) => {
+    try {
+      const empresaData = await apiService.getFirstDatosEmpresa();
+      setDatosEmpresaInforme(empresaData);
+      setTicketsParaInforme(tickets);
+      setMostrarModalInforme(true);
+    } catch (_err) {
+      setDatosEmpresaInforme(null);
+      setTicketsParaInforme(tickets);
+      setMostrarModalInforme(true);
+    }
+  };
+
+  const handleCloseInforme = () => {
+    setMostrarModalInforme(false);
+    setDatosEmpresaInforme(null);
+    setTicketsParaInforme([]);
   };
 
   const handleCloseTicketDetail = () => {
@@ -119,25 +141,13 @@ if (showBillingView) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col`}>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Facturación</h2>
-            <div className="flex gap-2">
-              <button
-                onClick={handleBackToMenu}
-                className={`${esTemaOscuro ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-300 hover:bg-gray-400'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
-              >
-                ← Volver
-              </button>
-              <button
-                onClick={onClose}
-                className={`${esTemaOscuro ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
-              >
-                ×
-              </button>
-            </div>
-          </div>
           <div className={`flex-1 overflow-y-auto rounded-lg p-4 ${esTemaOscuro ? 'bg-slate-900' : 'bg-gray-50'}`}>
-            <BillingViewContent onViewTicket={handleViewTicketDetail} esTemaOscuro={esTemaOscuro} />
+            <BillingViewContent 
+              onViewTicket={handleViewTicketDetail} 
+              esTemaOscuro={esTemaOscuro} 
+              onBack={handleBackToMenu}
+              onClose={onClose}
+            />
           </div>
         </div>
 </div>
@@ -731,7 +741,7 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
                 ×
               </button>
             </div>
-             
+
             <div className="border-2 border-gray-300 bg-white p-4 text-xs font-mono text-black max-w-sm mx-auto mb-4 print-ticket">
               <div className="text-center mb-3">
                 <div className="font-bold text-sm">{datosEmpresa?.name || 'Nombre Empresa'}</div>
@@ -878,13 +888,15 @@ function TicketDetailModal({ ticketId, onClose, onBack, esTemaOscuro }: TicketDe
   );
 }
 
-function BillingViewContent({ onViewTicket, esTemaOscuro }: { onViewTicket: (ticketId: number) => void; esTemaOscuro: boolean }) {
+function BillingViewContent({ onViewTicket, esTemaOscuro, onBack, onClose }: { onViewTicket: (ticketId: number) => void; esTemaOscuro: boolean; onBack: () => void; onClose: () => void }) {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(false);
   const today = new Date().toISOString().split('T')[0];
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(today);
   const [allTickets, setAllTickets] = useState<Ticket[]>([]);
+  const [mostrarModalInforme, setMostrarModalInforme] = useState(false);
+  const [datosEmpresa, setDatosEmpresa] = useState<DatosEmpresa | null>(null);
 
   // Cargar tickets desde la API
   const loadTickets = useCallback(async () => {
@@ -925,6 +937,17 @@ function BillingViewContent({ onViewTicket, esTemaOscuro }: { onViewTicket: (tic
     setEndDate('');
   };
 
+  const handleOpenInforme = async () => {
+    try {
+      const empresaData = await apiService.getFirstDatosEmpresa();
+      setDatosEmpresa(empresaData);
+      setMostrarModalInforme(true);
+    } catch (_err) {
+      setDatosEmpresa(null);
+      setMostrarModalInforme(true);
+    }
+  };
+
 
 
   if (loading) {
@@ -961,6 +984,29 @@ function BillingViewContent({ onViewTicket, esTemaOscuro }: { onViewTicket: (tic
 
   return (
       <div>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className={`text-2xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Facturación</h2>
+          <div className="flex gap-2">
+            <button
+              onClick={handleOpenInforme}
+              className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+            >
+              📊 Informe
+            </button>
+            <button
+              onClick={onBack}
+              className={`${esTemaOscuro ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-300 hover:bg-gray-400'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
+            >
+              ← Volver
+            </button>
+            <button
+              onClick={onClose}
+              className={`${esTemaOscuro ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600'} text-white font-bold py-2 px-4 rounded-lg transition-colors`}
+            >
+              ×
+            </button>
+          </div>
+        </div>
         <div className="mb-4">
           <h3 className={`text-xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>Tickets</h3>
         </div>
@@ -1066,6 +1112,104 @@ function BillingViewContent({ onViewTicket, esTemaOscuro }: { onViewTicket: (tic
             </div>
         )}
       </div>
+
+      {mostrarModalInforme && (
+        <>
+          <style>{`
+            @media print {
+              body * {
+                visibility: hidden;
+              }
+              .print-informe,
+              .print-informe * {
+                visibility: visible;
+              }
+              .print-informe {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 10mm;
+                border: none;
+                box-shadow: none;
+              }
+            }
+          `}</style>
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
+            <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto`}>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className={`text-xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
+                  Informe de Tickets
+                </h2>
+                <button
+                  onClick={() => setMostrarModalInforme(false)}
+                  className={`${esTemaOscuro ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-800'} text-2xl font-bold`}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="border-2 border-gray-300 bg-white p-4 text-sm font-mono text-black max-w-sm mx-auto mb-4 print-informe">
+                <div className="text-center mb-3">
+                  <div className="font-bold text-base">{datosEmpresa?.name || 'Nombre Empresa'}</div>
+                  <div className="text-xs">{datosEmpresa?.nif || 'NIF/CIF'}</div>
+                  <div className="text-xs">{datosEmpresa?.address || 'Dirección'}</div>
+                  {datosEmpresa?.phone && <div className="text-xs">Tel: {datosEmpresa.phone}</div>}
+                  {datosEmpresa?.email && <div className="text-xs">{datosEmpresa.email}</div>}
+                </div>
+                
+                <div className="border-t border-dashed border-gray-400 pt-2 mb-2">
+                  <div className="text-center font-bold text-sm">INFORME DE VENTAS</div>
+                  <div className="text-center text-xs text-gray-600">
+                    {startDate || 'Desde inicio'} - {endDate || 'Hasta hoy'}
+                  </div>
+                </div>
+
+                <div className="space-y-1 mb-2">
+                  {tickets.map((ticket) => (
+                    <div key={ticket.id} className="flex justify-between text-xs">
+                      <div>
+                        <div>#{ticket.id} - {new Date(ticket.created_at).toLocaleDateString('es-ES')}</div>
+                        {ticket.discount_type && ticket.discount_value && (
+                          <div className="text-gray-600">
+                            Desc: {ticket.discount_type === 'fixed' 
+                              ? `${parseFloat(String(ticket.discount_value)).toFixed(2)}€`
+                              : `${parseFloat(String(ticket.discount_value))}%`}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-right font-semibold">{parseFloat(String(ticket.total)).toFixed(2)}€</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="border-t border-dashed border-gray-400 pt-2">
+                  <div className="flex justify-between text-xs mb-1">
+                    <span>Numero de tickets:</span>
+                    <span>{tickets.length}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-base mt-1">
+                    <span>TOTAL:</span>
+                    <span>{tickets.reduce((sum, t) => sum + parseFloat(String(t.total)), 0).toFixed(2)}€</span>
+                  </div>
+                </div>
+
+                <div className="text-center mt-3 pt-2 border-t border-dashed border-gray-400">
+                  <div className="font-bold text-xs">Informe generado el {new Date().toLocaleString('es-ES')}</div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => window.print()}
+                className="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 rounded-lg transition-colors"
+              >
+                🖨️ Imprimir Informe
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
