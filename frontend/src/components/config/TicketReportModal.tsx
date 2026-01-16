@@ -133,12 +133,14 @@ export default function TicketReportModal({ isOpen, onClose, tickets, startDate,
                 </div>
               </div>
 
-              <button
-                onClick={handlePrint}
-                className="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 rounded-lg transition-colors"
-              >
-                🖨️ Imprimir Informe
-              </button>
+              <div className="max-w-sm mx-auto">
+                <button
+                  onClick={handlePrint}
+                  className="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 rounded-lg transition-colors"
+                >
+                  🖨️ Imprimir Informe
+                </button>
+              </div>
             </>
           )}
         </div>

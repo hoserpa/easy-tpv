@@ -135,12 +135,14 @@ export default function CatalogReportModal({ isOpen, onClose, esTemaOscuro }: Ca
                 </div>
               </div>
 
-              <button
-                onClick={handlePrint}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition-colors"
-              >
-                🖨️ Imprimir
-              </button>
+              <div className="max-w-sm mx-auto">
+                <button
+                  onClick={handlePrint}
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition-colors"
+                >
+                  🖨️ Imprimir
+                </button>
+              </div>
             </>
           )}
         </div>

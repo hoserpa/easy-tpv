@@ -84,7 +84,7 @@ export default function PrintTicketModal({ isOpen, onClose, ticketId, esTemaOscu
         }
       `}</style>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
-        <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6 w-96`}>
+        <div className={`${esTemaOscuro ? 'bg-slate-800' : 'bg-white'} rounded-lg p-6`}>
           <div className="flex justify-between items-center mb-4">
             <h2 className={`text-xl font-bold ${esTemaOscuro ? 'text-white' : 'text-gray-800'}`}>
               Vista previa de impresión
@@ -150,19 +150,21 @@ export default function PrintTicketModal({ isOpen, onClose, ticketId, esTemaOscu
               </div>
             </div>
 
-            <div className="text-center mt-3 pt-2 border-t border-dashed border-gray-400">
-              <div className="font-bold">¡Gracias por su compra!</div>
-            </div>
-          </div>
+             <div className="text-center mt-3 pt-2 border-t border-dashed border-gray-400">
+               <div className="font-bold">¡Gracias por su compra!</div>
+             </div>
+           </div>
 
-          <button
-            onClick={() => window.print()}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition-colors"
-          >
-            🖨️ Imprimir
-          </button>
-        </div>
-      </div>
+           <div className="max-w-sm mx-auto">
+             <button
+               onClick={() => window.print()}
+               className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition-colors"
+             >
+               🖨️ Imprimir
+             </button>
+           </div>
+         </div>
+       </div>
     </>
   );
 }
