@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
-import ConfigModal from '../components/ConfigModal';
+import ConfigModal from '../components/config/ConfigModal';
 import { apiService, Familia, Articulo, Ticket, TicketLine, DatosEmpresa } from '../services/api';
 import { useToast } from '../hooks/useToast';
 import { getApiErrorMessage } from '../utils/errorUtils';
